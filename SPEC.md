@@ -30,3 +30,22 @@ Out: approval queue, rate limits, vouch, duplicate check, AI triage beyond a tit
 - Org bots already run this way: plugin marketplace issue automation is GitHub Actions + Node 24 `.mjs` + `gh`/`jq`.
 - omarchybot (semi-official reviewer, a regular bot account, not a GitHub App) is the natural owner of the token.
 - Design doc lands as a PR to `omacom/omarchy` under `plans/x-issues.md`.
+
+## Later: tag @omarchy to change your own machine
+Idea: a user tags @omarchy on X ("@omarchy switch me to the tokyo-night theme", "@omarchy install obsidian") and the request is routed to *their own* Omarchy machine, which runs it locally.
+
+How it could work:
+1. **Opt-in pairing.** The user runs something like `omarchy-x link` on their machine, which proves they own the X handle (OAuth or a one-time code posted from that account). This links handle to device. Unlinked handles are ignored.
+2. **Local agent pulls, never listens.** A small user service on the machine polls a relay (for example, a Cloudflare Worker, like other omacom Workers) for requests addressed to that device. No open inbound ports.
+3. **Intent, not shell.** Post text is never executed. It's mapped to a fixed allowlist of Omarchy actions that already exist as `omarchy-*` commands (theme, font, install or remove a package, toggle a setting, update). Anything else is refused.
+4. **Confirm on device.** Each request pops a local notification with the exact command, and nothing runs until the user approves it on the machine. Optionally trust low-risk actions like the theme.
+5. **Signed and short-lived.** Requests are signed by the relay, expire in minutes, and are single-use, so they can't be replayed.
+6. **Reply on X.** The bot replies "Done" or "Declined" without echoing anything private about the machine.
+
+Risks to solve first:
+- X posts are public and spoofable by look-alike handles. Pairing plus on-device confirmation is the main defense.
+- Prompt injection through quoted or replied-to posts. Only the tagging author's own text counts.
+- Abuse from a compromised X account. Keep confirm-on-device as the default, and add a kill switch (`omarchy-x unlink`).
+- Privacy. Commands are public posts, so keep the action set non-sensitive.
+
+Relationship to the plan: this builds on `plans/remote.md` and reuses the same mention-polling loop. Phase: after the issue bot is proven (Phase 3+).
