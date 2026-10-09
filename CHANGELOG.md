@@ -1,3 +1,9 @@
+0.16.0
+
+  Pin actions to SHAs
+  Update actions to Node 24
+  Add demo scripts
+
 0.15.0
 
   Add second pass

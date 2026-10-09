@@ -18,6 +18,8 @@ npm test
 MODE=test X_BEARER_TOKEN=... XAI_API_KEY=... node scripts/x-mentions-to-issues.mjs
 ```
 
+Trigger a run on GitHub from your terminal and watch it: `npm run demo:test` (logs only) or `npm run demo` (files for real).
+
 Test mode prints each issue it would file and writes nothing to GitHub. Without `XAI_API_KEY`, test mode prints plain draft issues and no AI draft. Live mode refuses to start without it.
 
 <br />
