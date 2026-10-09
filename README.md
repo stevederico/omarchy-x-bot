@@ -40,6 +40,7 @@ A dry run prints each issue it would file and writes nothing to GitHub. `MODELS_
 - **Dry run by default** on every scheduled run
 - **Refuses `omacom/omarchy`**; files into a fork only
 - **No X reply** unless an @omarchy token is set
+- **No GitHub pings**: @handles from X are broken so they never @mention GitHub users
 - **Posts are untrusted**: the model is told never to follow them, and links it adds that aren't in the posts are removed
 
 <br />

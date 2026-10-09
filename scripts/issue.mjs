@@ -20,17 +20,22 @@ export function parentOf(post, tweets = {}) {
   return ref && tweets[ref.id]
 }
 
+// X handles are GitHub @mentions too (github.com/omarchy is a real user), so break them with a zero-width space.
+export function noPing(s) {
+  return s.replace(/@(?=[\w-])/g, '@\u200b')
+}
+
 export function toIssue(post, { users = {}, tweets = {}, ai = null } = {}) {
   const user = users[post.author_id]
   const handle = user?.username
   const url = handle ? `https://x.com/${handle}/status/${post.id}` : `https://x.com/i/status/${post.id}`
-  const by = handle ? `by ${user.name ? `${user.name} ` : ''}(@${handle}) ` : ''
+  const by = handle ? `by ${user.name ? `${noPing(user.name)} ` : ''}(${noPing(`@${handle}`)}) ` : ''
   const parent = parentOf(post, tweets)
   const text = stripMentions(post.text) || stripMentions(parent?.text ?? '')
   const firstLine = clip(text.split('\n')[0], 80) || 'Tagged post'
-  const quote = s => s.split('\n').map(l => `> ${l}`).join('\n')
+  const quote = s => noPing(s).split('\n').map(l => `> ${l}`).join('\n')
 
-  let body = ai ? `_AI summary of the X post below. Check it against the post._\n\n${ai.body}\n\n---\n\n` : ''
+  let body = ai ? `_AI summary of the X post below. Check it against the post._\n\n${noPing(ai.body)}\n\n---\n\n` : ''
   body += `Reported ${by}on X: ${url}\n\n${quote(post.text)}\n`
   if (parent) body += `\nIn reply to:\n\n${quote(parent.text)}\n`
   body += '\n_Filed automatically from X (prototype)._\n'

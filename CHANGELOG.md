@@ -1,3 +1,8 @@
+0.3.0
+
+  Stop GitHub pings
+  Rebase before state push
+
 0.2.0
 
   Save state per post

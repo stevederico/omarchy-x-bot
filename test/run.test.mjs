@@ -65,7 +65,7 @@ test('authors are looked up only for posts being filed', async () => {
   })
   await run({ env: live, state: memoryState(), fetchImpl })
   assert.deepEqual(calls.userLookups, ['w'])
-  assert.match(calls.issues[0].body, /Reported by W \(@w\)/)
+  assert.match(calls.issues[0].body, /Reported by W \(@\u200bw\)/)
 })
 
 test('a rate-limited AI stops the run before that post, without filing it', async () => {

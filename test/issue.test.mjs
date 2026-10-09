@@ -7,7 +7,7 @@ test('a tagged post without an AI verdict becomes a draft issue, no bug label', 
   const issue = toIssue({ id: '99', author_id: '1', text: '@omarchy wifi drops after resume' })
   assert.equal(issue.title, '[X] wifi drops after resume')
   assert.match(issue.body, /Reported on X: https:\/\/x.com\/i\/status\/99/)
-  assert.match(issue.body, /> @omarchy wifi drops after resume/)
+  assert.match(issue.body, /> @\u200bomarchy wifi drops after resume/)
   assert.deepEqual(issue.labels, ['from-x', 'needs-triage'])
 })
 
@@ -47,14 +47,22 @@ test('any mention with a keyword counts as a report', () => {
 
 test('a matched author shows up as name and handle', () => {
   const issue = toIssue({ id: '99', author_id: '1', text: 'bug @omarchy' }, { users: { '1': { name: 'Alice Smith', username: 'alice' } } })
-  assert.match(issue.body, /Reported by Alice Smith \(@alice\) on X: https:\/\/x.com\/alice\/status\/99/)
+  assert.match(issue.body, /Reported by Alice Smith \(@\u200balice\) on X: https:\/\/x.com\/alice\/status\/99/)
+})
+
+test('handles in the body never @mention GitHub users', () => {
+  const tweets = { '5': { id: '5', text: 'cc @tcballard' } }
+  const post = { id: '9', author_id: '1', text: '@omarchy bug, see @ubermetroid', referenced_tweets: [{ type: 'replied_to', id: '5' }] }
+  const issue = toIssue(post, { tweets, users: { '1': { name: '@pinger', username: 'alex' } }, ai: { title: 'T', body: 'ask @someone' } })
+  assert.doesNotMatch(issue.body, /@[\w-]/)
+  assert.equal(issue.url, 'https://x.com/alex/status/9')
 })
 
 test('an AI draft becomes the title and body, marked as a summary, with the X post kept below', () => {
   const issue = toIssue({ id: '7', text: '@omarchy chrome is broken' }, { ai: { title: 'Chrome flickers on 4K', body: "## What's wrong?\nFlicker" } })
   assert.equal(issue.title, 'Chrome flickers on 4K')
   assert.match(issue.body, /^_AI summary of the X post below\. Check it against the post\._\n\n## What's wrong\?/)
-  assert.match(issue.body, /> @omarchy chrome is broken/)
+  assert.match(issue.body, /> @\u200bomarchy chrome is broken/)
   assert.deepEqual(issue.labels, ['bug', 'from-x', 'needs-triage'])
 })
 
