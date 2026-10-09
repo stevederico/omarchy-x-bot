@@ -1,7 +1,7 @@
 // Turn one X mention into a GitHub issue draft, and file it with the GitHub REST API via fetch.
 const GH = 'https://api.github.com'
 
-export const LABELS = ['from-x', 'needs-triage']
+export const LABELS = ['bug', 'from-x', 'needs-triage']
 
 export const KEYWORDS = ['bug', 'broken', 'fix', 'issue']
 
@@ -27,7 +27,7 @@ export function toIssue(post, { users = {}, tweets = {}, ai = null } = {}) {
   if (parent) body += `\nIn reply to:\n\n${quote(parent.text)}\n`
   body += ai ? '\n_Written by AI from the X post. Filed automatically (prototype)._\n' : '\n_Filed automatically from X (prototype)._\n'
 
-  return { title: `[X] ${ai?.title || firstLine}`, body, labels: LABELS, url }
+  return { title: ai?.title || `[X] ${firstLine}`, body, labels: LABELS, url }
 }
 
 export function stripMentions(text) {
@@ -54,7 +54,7 @@ export async function fileIssue({ repo, title, body, labels, token, fetchImpl = 
 
 // Create the labels if missing; 422 means it already exists.
 export async function ensureLabels({ repo, token, fetchImpl = fetch }) {
-  const colors = { 'from-x': '000000', 'needs-triage': 'fbca04' }
+  const colors = { bug: 'd73a4a', 'from-x': '000000', 'needs-triage': 'fbca04' }
   for (const name of LABELS) {
     const res = await fetchImpl(`${GH}/repos/${repo}/labels`, {
       method: 'POST', headers: headers(token), body: JSON.stringify({ name, color: colors[name] })

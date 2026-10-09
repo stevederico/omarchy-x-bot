@@ -31,6 +31,7 @@ if (!dryRun && reports.length) await ensureLabels({ repo, token })
 for (const post of reports) {
   const parentId = post.referenced_tweets?.find(r => r.type === 'replied_to')?.id
   const ai = await draftIssue({ text: post.text, parentText: tweets[parentId]?.text, token: env.MODELS_TOKEN, model: env.AI_MODEL || undefined })
+  if (ai?.bug === false) { console.log(`skip, not a bug: https://x.com/i/status/${post.id}`); continue }
   const issue = toIssue(post, { users, tweets, ai })
   if (dryRun) {
     console.log(`would file: ${issue.title}\n  from ${issue.url}\n${issue.body.replace(/^/gm, '  | ')}`)

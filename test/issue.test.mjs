@@ -52,7 +52,7 @@ test('a matched author shows up as name and handle', () => {
 
 test('an AI draft becomes the title and body, with the X post kept below', () => {
   const issue = toIssue({ id: '7', text: '@omarchy chrome is broken' }, { ai: { title: 'Chrome flickers on 4K', body: "## What's wrong?\nFlicker" } })
-  assert.equal(issue.title, '[X] Chrome flickers on 4K')
+  assert.equal(issue.title, 'Chrome flickers on 4K')
   assert.match(issue.body, /^## What's wrong\?/)
   assert.match(issue.body, /> @omarchy chrome is broken/)
 })

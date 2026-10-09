@@ -13,3 +13,7 @@ test('returns null on bad output or no token, so the plain issue is used', async
   assert.equal(await draftIssue({ text: 'x', token: 't', fetchImpl: reply('nope') }), null)
   assert.equal(await draftIssue({ text: 'x', token: '' }), null)
 })
+
+test('a post that is not a bug is flagged so it gets skipped', async () => {
+  assert.deepEqual(await draftIssue({ text: 'x', token: 't', fetchImpl: reply('{"bug":false}') }), { bug: false })
+})

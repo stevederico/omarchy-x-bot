@@ -29,7 +29,8 @@ A dry run prints each issue it would file, AI draft included, and writes nothing
 - **Moving window** saves the last post read, so each run only pays for new posts
 
 ### 🤖 **AI-Written Issues**
-- **Full bug report** written by GitHub Models: title, what's wrong, steps, expected vs. actual, system details
+- **Omarchy's bug template**: GitHub Models fills in System details and What's wrong?, and asks for `omarchy-debug` output
+- **Bugs only**: support questions, ideas, and jokes are skipped
 - **No guessing**: anything the post doesn't say is marked "Not mentioned"
 - **Original post kept** under the report, with the author's name, @handle, and link
 - **Falls back** to a plain issue if the model fails
@@ -80,7 +81,7 @@ Zero npm packages: no `dependencies`, no lockfile, no `npm ci`.
 
 ## 🏗️ Architecture
 
-Each run reads mentions since `state/since_id.txt`, keeps the ones that match a keyword, and looks up only those authors. For each match, GitHub Models drafts the report, and the bot files it with the `from-x` and `needs-triage` labels. The workflow then commits the new `since_id`.
+Each run reads mentions since `state/since_id.txt`, keeps the ones that match a keyword, and looks up only those authors. For each match, GitHub Models drafts the report, and the bot files it with the `bug`, `from-x`, and `needs-triage` labels. The workflow then commits the new `since_id`.
 
 ```
 scripts/x-mentions-to-issues.mjs   # the loop
