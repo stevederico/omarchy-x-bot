@@ -9,7 +9,8 @@ export async function dispatch(env, fetchImpl = fetch) {
       'x-github-api-version': '2022-11-28',
       'user-agent': 'omarchy-x-bot-trigger'
     },
-    body: JSON.stringify({ ref: env.REF })
+    // auto: the workflow follows its MODE variable, so going live or back to test is one GitHub setting.
+    body: JSON.stringify({ ref: env.REF, inputs: { mode: 'auto' } })
   })
   if (res.status !== 204) throw new Error(`GitHub dispatch ${res.status}: ${await res.text()}`)
 }

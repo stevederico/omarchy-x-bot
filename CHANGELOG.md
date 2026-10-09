@@ -1,3 +1,7 @@
+0.18.0
+
+  Follow MODE from cron
+
 0.17.0
 
   Add Cloudflare trigger

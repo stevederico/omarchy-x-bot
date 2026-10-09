@@ -8,9 +8,9 @@ on:
   workflow_dispatch:
     inputs:
       mode:
-        description: 'test logs what would be filed and replied; live files and replies'
+        description: 'test logs what would be filed and replied; live files and replies; auto uses the MODE variable'
         type: choice
-        options: [test, live]
+        options: [test, live, auto]
         default: test
 
 permissions:
@@ -51,7 +51,8 @@ jobs:
           AI_MODEL: ${{ vars.AI_MODEL }}
           X_ACCOUNT_ID: ${{ vars.X_ACCOUNT_ID || '2108454467309883392' }}
           TARGET_REPO: ${{ vars.TARGET_REPO || 'stevederico/omarchy' }}
-          MODE: ${{ inputs.mode || vars.MODE || 'test' }}
+          # The Cloudflare cron sends auto, and the schedule sends nothing: both follow the MODE variable.
+          MODE: ${{ (inputs.mode == 'auto' || inputs.mode == '') && (vars.MODE || 'test') || inputs.mode }}
         run: node scripts/x-mentions-to-issues.mjs
 
       # Also after a failed run, so posts already handled aren't judged again.

@@ -9,7 +9,7 @@ test('the cron dispatches the workflow on main with the token', async () => {
   await dispatch(env, async (url, init) => { call = { url, init }; return { status: 204 } })
   assert.equal(call.url, 'https://api.github.com/repos/me/bot/actions/workflows/x-mentions.yml/dispatches')
   assert.equal(call.init.headers.authorization, 'Bearer tok')
-  assert.deepEqual(JSON.parse(call.init.body), { ref: 'main' })
+  assert.deepEqual(JSON.parse(call.init.body), { ref: 'main', inputs: { mode: 'auto' } })
 })
 
 test('a failed dispatch throws so it shows in the Worker logs', async () => {
