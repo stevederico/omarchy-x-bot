@@ -16,7 +16,7 @@ test/issue.test.mjs                # node --test
 ## Setup
 Secrets:
 - `X_BEARER_TOKEN`: reads @omarchy mentions
-- `X_OMARCHY_USER_TOKEN`: OAuth 2.0 user token for @omarchy (`tweet.write`), to reply
+- `X_OMARCHY_USER_TOKEN` (optional): OAuth 2.0 user token for @omarchy (`tweet.write`). If it's unset, the bot files issues and skips the "Tracked:" reply on X
 - `OMARCHY_X_BOT_TOKEN`: bot account PAT with `issues: write` on the target repo
 
 Variables (optional):
