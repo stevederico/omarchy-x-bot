@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { toIssue, stripMentions, fileIssue, ensureLabels } from '../scripts/issue.mjs'
+import { toIssue, stripMentions, fileIssue, ensureLabels, isReport } from '../scripts/issue.mjs'
 
 const users = { '1': { id: '1', username: 'alice' } }
 
@@ -36,4 +36,15 @@ test('the issue is POSTed to the target repo with both labels', async () => {
 test('an existing label (422) is fine', async () => {
   const fetchImpl = async () => ({ ok: false, status: 422, text: async () => 'exists' })
   await ensureLabels({ repo: 'me/fork', token: 'x', fetchImpl })
+})
+
+test('only typed @omarchy plus a keyword counts as a report', () => {
+  const reply = { referenced_tweets: [{ type: 'replied_to', id: '1' }] }
+  assert.equal(isReport({ ...reply, text: '@omarchy Welcome to X!' }), false)
+  assert.equal(isReport({ ...reply, text: '@omarchy please fix polkit, windows are broken' }), false)
+  assert.equal(isReport({ text: '@omarchy please fix polkit, windows are broken' }), true)
+  assert.equal(isReport({ text: 'polkit is broken after update @omarchy' }), true)
+  assert.equal(isReport({ text: 'Hey @omarchy found a bug in the bar clock' }), true)
+  assert.equal(isReport({ text: 'love it @omarchy' }), false)
+  assert.equal(isReport({ text: '@omarchy @dhh this is a real issue, @omarchy fix it' }), true)
 })

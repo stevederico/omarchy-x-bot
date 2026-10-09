@@ -3,6 +3,16 @@ const GH = 'https://api.github.com'
 
 export const LABELS = ['from-x', 'needs-triage']
 
+export const KEYWORDS = ['bug', 'broken', 'fix', 'issue']
+
+// File only when the author typed @omarchy themselves (not the auto reply prefix) and used a keyword.
+export function isReport(post) {
+  const isReply = post.referenced_tweets?.some(r => r.type === 'replied_to')
+  const text = isReply ? post.text.replace(/^(@\w+\s+)+/, '') : post.text
+  if (!/(^|\W)@omarchy\b/i.test(text)) return false
+  return KEYWORDS.some(k => new RegExp(`\\b${k}`, 'i').test(text))
+}
+
 export function toIssue(post, { users = {}, tweets = {} } = {}) {
   const handle = users[post.author_id]?.username ?? post.author_id
   const url = `https://x.com/${handle}/status/${post.id}`

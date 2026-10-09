@@ -43,3 +43,6 @@ DRY_RUN=true X_BEARER_TOKEN=... node scripts/x-mentions-to-issues.mjs
 | `actions/checkout`, `actions/setup-node` | GitHub Actions | Standard workflow steps, not npm packages |
 
 Not used: `twitter-api-sdk`, `@octokit/*`, or any other library. The `gh` CLI and `jq` aren't needed either, since everything goes through `fetch`.
+
+## Filter
+A mention is filed only if the author typed `@omarchy` in their own text (on replies, the automatic `@handle` prefix doesn't count) and it contains one of `bug`, `broken`, `fix`, or `issue`. The list is `KEYWORDS` in `scripts/issue.mjs`.
