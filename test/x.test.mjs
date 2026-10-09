@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { fetchMentions } from '../scripts/x.mjs'
+import { fetchMentions, oauth1Header } from '../scripts/x.mjs'
 
 test('long posts and their parents come back whole, not cut at 280 characters', async () => {
   const long = `bug: ${'a'.repeat(400)}`
@@ -16,4 +16,17 @@ test('long posts and their parents come back whole, not cut at 280 characters', 
   assert.match(new URL(url).searchParams.get('tweet.fields'), /note_tweet/)
   assert.deepEqual(res.data.map(t => t.text), [long, 'short'])
   assert.equal(res.includes.tweets[0].text, 'whole parent')
+})
+
+// X's own worked example: https://docs.x.com/resources/fundamentals/authentication/oauth-1-0a/creating-a-signature
+test('OAuth 1.0a signature matches the published example', () => {
+  const header = oauth1Header({
+    method: 'POST', url: 'https://api.twitter.com/1.1/statuses/update.json?include_entities=true',
+    apiKey: 'xvz1evFS4wEEPTGEFPHBog', apiSecret: 'kAcSOqF21Fu85e7zjz7ZN2U4ZRhfV3WpwPAoE3Z7kBw',
+    accessToken: '370773112-GmHxMAgYyLbNEtIKZeRNFsMKPR9EyMZeS9weJAEb', accessSecret: 'LswwdoUaIvS8ltyTt5jkRh4J50vUPVVHtR2YPi5kE',
+    nonce: 'kYjzVBB8Y0ZFabxSWbWovY3uYSQ2pTgmZeNu2VS4cg', timestamp: '1318622958'
+  })
+  // Same inputs minus the form body (ours is JSON, which isn't signed); cross-checked with a separate implementation
+  // that reproduces the docs' hCtSmYh+iHYCEqBWrE7C7hYmtUk= when the body is included.
+  assert.equal(decodeURIComponent(header.match(/oauth_signature="(.+?)"/)[1]), 'swB2/K4QtoSNF7fQfLzyNivuoj4=')
 })

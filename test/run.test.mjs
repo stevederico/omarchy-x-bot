@@ -46,6 +46,23 @@ function memoryState(since) {
 
 const live = { MODE: 'live', TARGET_REPO: 'me/fork', X_ACCOUNT_ID: '0', XAI_API_KEY: 'k', GH_TOKEN: 'g', X_BEARER_TOKEN: 'x' }
 const post = (id, text, author = 'a') => ({ id, text, author_id: author })
+const replyKeys = { X_API_KEY: 'k', X_API_SECRET: 's', X_REPLY_ACCESS_TOKEN: 't', X_REPLY_ACCESS_SECRET: 'ts' }
+
+test('with all four reply keys, the bot account replies with the issue link and a fixed ask, signed with OAuth 1.0a', async () => {
+  let auth
+  const { calls, fetchImpl } = world({ posts: [post('1', 'one is broken')] })
+  const spy = async (url, init) => { if (url.endsWith('/tweets')) auth = init.headers.authorization; return fetchImpl(url, init) }
+  await run({ env: { ...live, ...replyKeys }, state: memoryState(), fetchImpl: spy })
+  assert.deepEqual(calls.replies, [{ text: 'Tracked: https://github.com/me/fork/issues/1\n\nTo help fix it, add your Omarchy version, the app involved, and the output of omarchy-debug to the issue.', reply: { in_reply_to_tweet_id: '1' } }])
+  assert.match(auth, /^OAuth oauth_consumer_key="k", .*oauth_signature="[^"]+"/)
+})
+
+test('missing any reply key means no reply', async () => {
+  const { calls, fetchImpl } = world({ posts: [post('1', 'one is broken')] })
+  await run({ env: { ...live, ...replyKeys, X_REPLY_ACCESS_SECRET: '' }, state: memoryState(), fetchImpl })
+  assert.equal(calls.issues.length, 1)
+  assert.equal(calls.replies.length, 0)
+})
 
 test('files bugs, records skipped posts, and moves since_id to the newest post', async () => {
   const { calls, fetchImpl } = world({
@@ -128,7 +145,7 @@ test('a failed issue keeps since_id at the last filed post, so nothing is filed 
 test('a failed X reply does not stop the run or refile the issue', async () => {
   const { calls, fetchImpl } = world({ posts: [post('1', 'one is broken'), post('2', 'two is broken')], failReply: true })
   const state = memoryState()
-  await run({ env: { ...live, X_OMARCHY_USER_TOKEN: 'u' }, state, fetchImpl })
+  await run({ env: { ...live, ...replyKeys }, state, fetchImpl })
   assert.equal(calls.issues.length, 2)
   assert.equal(state.since, '2')
 })

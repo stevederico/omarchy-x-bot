@@ -41,7 +41,10 @@ jobs:
       - name: File tagged posts as issues and reply on X
         env:
           X_BEARER_TOKEN: ${{ secrets.X_READ_TOKEN }}
-          X_OMARCHY_USER_TOKEN: ${{ secrets.X_OMARCHY_USER_TOKEN }}
+          X_API_KEY: ${{ secrets.X_API_KEY }}
+          X_API_SECRET: ${{ secrets.X_API_SECRET }}
+          X_REPLY_ACCESS_TOKEN: ${{ secrets.X_REPLY_ACCESS_TOKEN }}
+          X_REPLY_ACCESS_SECRET: ${{ secrets.X_REPLY_ACCESS_SECRET }}
           GH_TOKEN: ${{ secrets.OMARCHY_X_BOT_TOKEN }}
           XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
           AI_MODEL: ${{ vars.AI_MODEL }}

@@ -1,3 +1,10 @@
+0.11.0
+
+  Reply from bot account
+  Sign with OAuth 1.0a
+  Add fixed ask
+  Remove prototype wording
+
 0.10.0
 
   Add likely area

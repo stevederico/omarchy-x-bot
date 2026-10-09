@@ -1,4 +1,6 @@
 // Minimal X API v2 client: read mentions, post a reply.
+import { createHmac, randomBytes } from 'node:crypto'
+
 const API = 'https://api.x.com/2'
 
 export async function fetchMentions({ accountId, sinceId, bearer, fetchImpl = fetch }) {
@@ -32,10 +34,23 @@ export async function fetchUsers({ ids, bearer, fetchImpl = fetch }) {
   return Object.fromEntries((body.data ?? []).map(u => [u.id, u]))
 }
 
-export async function postReply({ text, inReplyTo, userToken, fetchImpl = fetch }) {
-  const res = await fetchImpl(`${API}/tweets`, {
+// OAuth 1.0a user auth for posting replies from the bot's own X account (not @omarchy). Unlike OAuth 2 user tokens, these never expire,
+// so they can live in GitHub secrets. A JSON body isn't part of the signature.
+export function oauth1Header({ method, url, apiKey, apiSecret, accessToken, accessSecret, nonce = randomBytes(16).toString('hex'), timestamp = String(Math.floor(Date.now() / 1000)) }) {
+  const enc = s => encodeURIComponent(s).replace(/[!'()*]/g, c => `%${c.charCodeAt(0).toString(16).toUpperCase()}`)
+  const params = { oauth_consumer_key: apiKey, oauth_nonce: nonce, oauth_signature_method: 'HMAC-SHA1', oauth_timestamp: timestamp, oauth_token: accessToken, oauth_version: '1.0' }
+  const u = new URL(url)
+  const all = [...Object.entries(params), ...u.searchParams].map(([k, v]) => [enc(k), enc(v)]).sort(([a, x], [b, y]) => a < b ? -1 : a > b ? 1 : x < y ? -1 : 1)
+  const base = [method.toUpperCase(), enc(`${u.origin}${u.pathname}`), enc(all.map(([k, v]) => `${k}=${v}`).join('&'))].join('&')
+  params.oauth_signature = createHmac('sha1', `${enc(apiSecret)}&${enc(accessSecret)}`).update(base).digest('base64')
+  return 'OAuth ' + Object.entries(params).map(([k, v]) => `${enc(k)}="${enc(v)}"`).join(', ')
+}
+
+export async function postReply({ text, inReplyTo, auth, fetchImpl = fetch }) {
+  const url = `${API}/tweets`
+  const res = await fetchImpl(url, {
     method: 'POST',
-    headers: { authorization: `Bearer ${userToken}`, 'content-type': 'application/json' },
+    headers: { authorization: oauth1Header({ method: 'POST', url, ...auth }), 'content-type': 'application/json' },
     body: JSON.stringify({ text, reply: { in_reply_to_tweet_id: inReplyTo } })
   })
   if (!res.ok) throw new Error(`X reply ${res.status}: ${await res.text()}`)

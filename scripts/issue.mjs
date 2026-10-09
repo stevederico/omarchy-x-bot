@@ -39,7 +39,7 @@ export function toIssue(post, { users = {}, tweets = {}, ai = null } = {}) {
   let body = ai ? `_AI summary of the X post below. Check it against the post._\n\n${noPing(ai.body)}\n\n---\n\n` : ''
   body += `Reported ${by}on X: ${url}\n\n${quote(post.text)}\n`
   if (parent) body += `\nIn reply to:\n\n${quote(parent.text)}\n`
-  body += '\n_Filed automatically from X (prototype)._\n'
+  body += '\n_Filed automatically from X._\n'
 
   return { title: ai?.title || `[X] ${firstLine}`, body, labels: ai ? LABELS : DRAFT_LABELS, url }
 }

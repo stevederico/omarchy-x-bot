@@ -1,4 +1,4 @@
-// Prototype loop: X mentions of @omarchy -> one issue each -> optional reply with the link.
+// The loop: X mentions of @omarchy -> one issue each -> optional reply with the link from the bot's own account.
 // No approval, rate limits, or vouch. Never point TARGET_REPO at omacom/omarchy.
 import { readFileSync, writeFileSync, appendFileSync, existsSync, mkdirSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
@@ -16,16 +16,23 @@ export const fileState = {
   note: line => { if (process.env.GITHUB_STEP_SUMMARY) appendFileSync(process.env.GITHUB_STEP_SUMMARY, `- ${line}\n`) }
 }
 
+// A fixed reply, never AI text, so a crafted post can't make the bot say anything else.
+export function replyText(issueUrl) {
+  return `Tracked: ${issueUrl}\n\nTo help fix it, add your Omarchy version, the app involved, and the output of omarchy-debug to the issue.`
+}
+
 // since_id moves forward after each post, so a crash mid-run never files the same post twice.
 export async function run({ env = process.env, state = fileState, fetchImpl = fetch } = {}) {
   const repo = env.TARGET_REPO || 'stevederico/omarchy'
   const accountId = env.X_ACCOUNT_ID || '2108454467309883392'
   const live = String(env.MODE ?? '').toLowerCase() === 'live' // anything else is test mode
-  const replyOnX = Boolean(env.X_OMARCHY_USER_TOKEN) // no token, no reply; issues only
+  // OAuth 1.0a keys for the X app and the account that replies (one you control, not @omarchy); without all four, issues only.
+  const auth = { apiKey: env.X_API_KEY, apiSecret: env.X_API_SECRET, accessToken: env.X_REPLY_ACCESS_TOKEN, accessSecret: env.X_REPLY_ACCESS_SECRET }
+  const replyOnX = Object.values(auth).every(Boolean)
   const bearer = env.X_BEARER_TOKEN
   const token = env.GH_TOKEN
 
-  if (repo.toLowerCase() === 'omacom/omarchy') throw new Error('Refusing to file into omacom/omarchy from the prototype. Use a fork.')
+  if (repo.toLowerCase() === 'omacom/omarchy') throw new Error('Refusing to file into omacom/omarchy. Use a fork.')
   // Without a verdict, every keyword match would be filed, and nearly all of them are chatter.
   if (live && !env.XAI_API_KEY) throw new Error('XAI_API_KEY is required to go live.')
 
@@ -76,7 +83,7 @@ export async function run({ env = process.env, state = fileState, fetchImpl = fe
           state.note(`filed: ${issueUrl} (${issue.url})`)
           if (replyOnX) {
             try {
-              await postReply({ text: `Tracked: ${issueUrl}`, inReplyTo: post.id, userToken: env.X_OMARCHY_USER_TOKEN, fetchImpl })
+              await postReply({ text: replyText(issueUrl), inReplyTo: post.id, auth, fetchImpl })
             } catch (e) {
               console.error(`${e.message}; issue filed, reply skipped`)
             }

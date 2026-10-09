@@ -1,7 +1,7 @@
-# @omarchy X → GitHub Issue Bot: Prototype
+# @omarchy X → GitHub Issue Bot
 
 **Goal:** prove the loop works once, end to end, with the least code.
-Tag `@omarchy` on X → one draft issue appears in `omacom/omarchy` → `@omarchy` replies on X with the issue link.
+Tag `@omarchy` on X → one draft issue appears in `omacom/omarchy` → the bot's own X account replies with the issue link.
 
 ## Scope
 In: tag detection, one issue per tagged post, one reply.
@@ -15,16 +15,16 @@ Out: approval queue, rate limits, vouch, close-the-loop replies.
    - **Not a bug:** no issue. The post URL is listed on the run's summary page (kept 90 days) so it can be reviewed or replayed.
    - **No verdict** (unusable answer, or no key in test mode): a draft issue titled `[X] ` + first 80 chars of the post (or its parent). Labels: `from-x`, `needs-triage`. No `bug` label, since nothing checked it.
    - **AI API fails** (rate limit, outage, timeout, bad key, retired model, non-JSON reply): stop the run and fail the job. The next run retries from this post. A live run refuses to start without `XAI_API_KEY`.
-   - Every issue body keeps the author handle, post URL, quoted post text, and the footer "Filed automatically from X (prototype)."
+   - Every issue body keeps the author handle, post URL, quoted post text, and the footer "Filed automatically from X."
 3. Look up the author only for posts being filed, and create the issue with the GitHub REST API.
-4. Reply from `@omarchy`: "Tracked: <issue url>". A failed reply is logged and doesn't stop the run.
+4. Reply from the bot's own X account (we don't control `@omarchy`): "Tracked: <issue url>" plus a fixed ask for the Omarchy version, the app, and `omarchy-debug` output. Never AI text. Signed with OAuth 1.0a, whose tokens don't expire. A failed reply is logged and doesn't stop the run.
 5. Save `since_id` after each post, so a crash midway never files a post twice. The workflow saves `state/` to the Actions cache even when the run fails; nothing is committed.
 6. Before judging a post in live mode, skip it if an issue labeled `from-x` already links to it, so a lost cache never files duplicates.
 
 ## Runtime
 - One Node 24 `.mjs` script, `scripts/x-mentions-to-issues.mjs`, run by a GitHub Actions workflow on `schedule` (every 5 minutes, `cron: '*/5 * * * *'`) plus `workflow_dispatch`.
 - `since_id` stored in the Actions cache (a new key per run, restored by prefix).
-- Secrets: `X_READ_TOKEN` (read mentions), `X_OMARCHY_USER_TOKEN` (post the reply as @omarchy), `OMARCHY_X_BOT_TOKEN` (bot-account PAT with `issues: write`). `XAI_API_KEY` (Grok). GitHub Models was retired on 2026-07-30.
+- Secrets: `X_READ_TOKEN` (read mentions), `X_API_KEY`, `X_API_SECRET`, `X_REPLY_ACCESS_TOKEN`, `X_REPLY_ACCESS_SECRET` (optional, OAuth 1.0a for the replying account), `OMARCHY_X_BOT_TOKEN` (bot-account PAT with `issues: write`). `XAI_API_KEY` (Grok). GitHub Models was retired on 2026-07-30.
 
 ## Proving it works
 - Tag @omarchy from a test account → within an hour an issue exists with the post link and @omarchy replied with the issue URL.
@@ -72,7 +72,7 @@ Some reports are already solved by a community plugin. The bot points people the
 2. **Match:** the AI compares the post with each plugin's name and description and picks at most 3 that clearly fit, or none.
 3. **Where it shows up:**
    - a "Plugins that might help" section in the issue or PR
-   - the X reply, when there's an @omarchy token
+   - the X reply, when reply keys are set
    - posts that aren't bugs (support or feature ideas), which can get a plugin suggestion instead of an issue
 4. **Guardrails:** recommend only plugins listed in the marketplace, link to each one's page, and never install anything.
 

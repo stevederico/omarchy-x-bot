@@ -41,7 +41,7 @@ Test mode prints each issue it would file and writes nothing to GitHub. Without 
 ### 🛡️ **Safety**
 - **Test mode by default**: only `MODE=live` files issues; unset or anything else just logs
 - **Refuses `omacom/omarchy`**; files into a fork only
-- **No X reply** unless an @omarchy token is set
+- **No X reply** unless the bot's own X account keys are set; the reply is a fixed message, never AI text
 - **No GitHub pings**: @handles from X are broken so they never @mention GitHub users
 - **Posts are untrusted**: the model is told never to follow them, and links it adds that aren't in the posts are removed
 
@@ -55,7 +55,10 @@ Secrets:
 X_READ_TOKEN           # X bearer token; reads @omarchy mentions (passed as X_BEARER_TOKEN)
 OMARCHY_X_BOT_TOKEN    # GitHub token with issues: write on the target repo
 XAI_API_KEY            # xAI API key; Grok decides if a post is a bug and writes the issue
-X_OMARCHY_USER_TOKEN   # optional; @omarchy user token to reply "Tracked: <issue>"
+X_API_KEY              # optional, for replies: X app API key (OAuth 1.0a consumer key)
+X_API_SECRET           # optional, for replies: X app API secret
+X_REPLY_ACCESS_TOKEN   # optional, for replies: access token for the account that replies (yours or a bot's, not @omarchy)
+X_REPLY_ACCESS_SECRET  # optional, for replies: that account's access token secret
 ```
 
 Variables (optional):
