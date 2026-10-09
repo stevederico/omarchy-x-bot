@@ -1,48 +1,121 @@
-# omarchy-x-bot (prototype)
+<div align="center">
 
-Tag `@omarchy` on X → one issue in a **test fork** → `@omarchy` replies "Tracked: <issue url>".
-Prototype only: no approval, rate limits, vouch, or duplicate check. See `SPEC.md`.
+# omarchy-x-bot
 
-## Layout
-```
-.github/workflows/x-mentions.yml   # hourly at :23 + manual run (dry run by default)
-scripts/x-mentions-to-issues.mjs   # the loop
-scripts/x.mjs                      # X API: mentions, reply
-scripts/issue.mjs                  # post -> issue, GitHub REST via fetch
-state/since_id.txt                 # newest mention handled
-test/issue.test.mjs                # node --test
-```
+### tag @omarchy on x, get a github issue. node 24, github actions, github models, zero deps
 
-## Setup
-Secrets:
-- `X_READ_TOKEN` (passed to the script as `X_BEARER_TOKEN`): reads @omarchy mentions
-- `X_OMARCHY_USER_TOKEN` (optional): OAuth 2.0 user token for @omarchy (`tweet.write`). If it's unset, the bot files issues and skips the "Tracked:" reply on X
-- `OMARCHY_X_BOT_TOKEN`: bot account PAT with `issues: write` on the target repo
+</div>
 
-Variables (optional):
-- `TARGET_REPO` (default `stevederico/omarchy`). The script refuses `omacom/omarchy`.
-- `X_ACCOUNT_ID` (default @omarchy, `2108454467309883392`)
-- `DRY_RUN` (`true` until you set it to `false`)
+<br />
 
-## Run
-```
+## 🚀 Quick Start
+
+```bash
+git clone https://github.com/stevederico/omarchy-x-bot && cd omarchy-x-bot
 npm test
 DRY_RUN=true X_BEARER_TOKEN=... node scripts/x-mentions-to-issues.mjs
 ```
 
-## Dependencies
-**Zero npm packages.** `package.json` has no `dependencies` or `devDependencies`, and there is no lockfile or `npm ci` step.
+A dry run prints each issue it would file, AI draft included, and writes nothing to GitHub.
 
-| What | Where it comes from | Why |
+<br />
+
+## ✨ What's Included
+
+### 🐦 **X Mentions**
+- **Hourly read** of new @omarchy mentions at :23, plus a manual run button
+- **Keyword filter** files only posts that say `bug`, `broken`, `fix`, or `issue`
+- **Typed tags and plain replies** to @omarchy both count
+- **Moving window** saves the last post read, so each run only pays for new posts
+
+### 🤖 **AI-Written Issues**
+- **Full bug report** written by GitHub Models: title, what's wrong, steps, expected vs. actual, system details
+- **No guessing**: anything the post doesn't say is marked "Not mentioned"
+- **Original post kept** under the report, with the author's name, @handle, and link
+- **Falls back** to a plain issue if the model fails
+
+### 🛡️ **Safety**
+- **Dry run by default** on every scheduled run
+- **Refuses `omacom/omarchy`**; files into a fork only
+- **No X reply** unless an @omarchy token is set
+
+<br />
+
+## ⚙️ Configuration
+
+Secrets:
+
+```bash
+X_READ_TOKEN           # X bearer token; reads @omarchy mentions (passed as X_BEARER_TOKEN)
+OMARCHY_X_BOT_TOKEN    # GitHub token with issues: write on the target repo
+X_OMARCHY_USER_TOKEN   # optional; @omarchy user token to reply "Tracked: <issue>"
+```
+
+Variables (optional):
+
+```bash
+TARGET_REPO=stevederico/omarchy      # where issues go
+X_ACCOUNT_ID=2108454467309883392     # @omarchy
+AI_MODEL=xai/grok-3-mini             # any GitHub Models id
+DRY_RUN=true                         # set to false to go live
+```
+
+The workflow's built-in `GITHUB_TOKEN` (with `models: read`) pays for the AI, so there's no AI key to manage.
+
+<br />
+
+## 🧱 Tech Stack
+
+| Technology | Version | Purpose |
 |---|---|---|
-| Node 24 | `actions/setup-node` | Runs the `.mjs` scripts |
-| `fetch` | Node 24 built-in | X API (read mentions, post reply) and GitHub REST API (create labels, create issue) |
-| `node:fs` | Node built-in | Read and write `state/since_id.txt` |
-| `node:test`, `node:assert` | Node built-in | Tests |
-| `git` | GitHub-hosted runner | Commit the updated `since_id` |
-| `actions/checkout`, `actions/setup-node` | GitHub Actions | Standard workflow steps, not npm packages |
+| **Node** | 24 | Runs the `.mjs` scripts, with built-in `fetch` and `node:test` |
+| **GitHub Actions** | `ubuntu-latest` | Hourly schedule, secrets, logs |
+| **GitHub Models** | `xai/grok-3-mini` | Writes the issue |
+| **X API** | v2, pay-per-use | Mentions, authors, optional reply |
+| **GitHub REST API** | 2022-11-28 | Labels and issues |
 
-Not used: `twitter-api-sdk`, `@octokit/*`, or any other library. The `gh` CLI and `jq` aren't needed either, since everything goes through `fetch`.
+Zero npm packages: no `dependencies`, no lockfile, no `npm ci`.
 
-## Filter
-A mention is filed if it contains `bug`, `broken`, `fix`, or `issue`. That covers both posts that type `@omarchy` and plain replies to @omarchy's posts. The list is `KEYWORDS` in `scripts/issue.mjs`.
+<br />
+
+## 🏗️ Architecture
+
+Each run reads mentions since `state/since_id.txt`, keeps the ones that match a keyword, and looks up only those authors. For each match, GitHub Models drafts the report, and the bot files it with the `from-x` and `needs-triage` labels. The workflow then commits the new `since_id`.
+
+```
+scripts/x-mentions-to-issues.mjs   # the loop
+scripts/x.mjs                      # X API: mentions, authors, reply
+scripts/ai.mjs                     # GitHub Models: write the issue
+scripts/issue.mjs                  # filter, issue body, GitHub REST
+state/since_id.txt                 # last post read
+```
+
+See `SPEC.md` for the full design and later ideas.
+
+<br />
+
+## 💸 Costs
+
+| What | Cost |
+|---|---|
+| **X post read** | $0.005 per new mention |
+| **X author lookup** | $0.01 per matched post only |
+| **GitHub Actions** | Free tier (unlimited if the repo is public) |
+| **GitHub Models** | Free, within rate limits |
+
+<br />
+
+## 🤝 Contributing
+
+```bash
+git clone https://github.com/stevederico/omarchy-x-bot && cd omarchy-x-bot
+npm test
+```
+
+<br />
+
+<div align="center">
+
+Built with Node, GitHub Actions, and GitHub Models · [@stevederico](https://x.com/stevederico)
+
+</div>

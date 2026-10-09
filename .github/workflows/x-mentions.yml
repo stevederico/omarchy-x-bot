@@ -13,6 +13,7 @@ on:
 
 permissions:
   contents: write   # commit state/since_id.txt
+  models: read      # GitHub Models writes the issue
 
 concurrency:
   group: x-mentions
@@ -33,6 +34,8 @@ jobs:
           X_BEARER_TOKEN: ${{ secrets.X_READ_TOKEN }}
           X_OMARCHY_USER_TOKEN: ${{ secrets.X_OMARCHY_USER_TOKEN }}
           GH_TOKEN: ${{ secrets.OMARCHY_X_BOT_TOKEN }}
+          MODELS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          AI_MODEL: ${{ vars.AI_MODEL || 'xai/grok-3-mini' }}
           X_ACCOUNT_ID: ${{ vars.X_ACCOUNT_ID || '2108454467309883392' }}
           TARGET_REPO: ${{ vars.TARGET_REPO || 'stevederico/omarchy' }}
           # format() turns a false input into the string 'false', so it isn't skipped.

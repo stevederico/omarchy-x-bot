@@ -11,7 +11,7 @@ export function isReport(post) {
 }
 
 
-export function toIssue(post, { users = {}, tweets = {} } = {}) {
+export function toIssue(post, { users = {}, tweets = {}, ai = null } = {}) {
   const user = users[post.author_id]
   const handle = user?.username
   const url = handle ? `https://x.com/${handle}/status/${post.id}` : `https://x.com/i/status/${post.id}`
@@ -22,11 +22,12 @@ export function toIssue(post, { users = {}, tweets = {} } = {}) {
   const firstLine = text.split('\n')[0].slice(0, 80) || 'Tagged post'
   const quote = s => s.split('\n').map(l => `> ${l}`).join('\n')
 
-  let body = `Reported ${by}on X: ${url}\n\n${quote(post.text)}\n`
+  let body = ai ? `${ai.body}\n\n---\n\n` : ''
+  body += `Reported ${by}on X: ${url}\n\n${quote(post.text)}\n`
   if (parent) body += `\nIn reply to:\n\n${quote(parent.text)}\n`
-  body += '\n_Filed automatically from X (prototype)._\n'
+  body += ai ? '\n_Written by AI from the X post. Filed automatically (prototype)._\n' : '\n_Filed automatically from X (prototype)._\n'
 
-  return { title: `[X] ${firstLine}`, body, labels: LABELS, url }
+  return { title: `[X] ${ai?.title || firstLine}`, body, labels: LABELS, url }
 }
 
 export function stripMentions(text) {

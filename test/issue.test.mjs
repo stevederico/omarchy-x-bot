@@ -49,3 +49,10 @@ test('a matched author shows up as name and handle', () => {
   const issue = toIssue({ id: '99', author_id: '1', text: 'bug @omarchy' }, { users: { '1': { name: 'Alice Smith', username: 'alice' } } })
   assert.match(issue.body, /Reported by Alice Smith \(@alice\) on X: https:\/\/x.com\/alice\/status\/99/)
 })
+
+test('an AI draft becomes the title and body, with the X post kept below', () => {
+  const issue = toIssue({ id: '7', text: '@omarchy chrome is broken' }, { ai: { title: 'Chrome flickers on 4K', body: "## What's wrong?\nFlicker" } })
+  assert.equal(issue.title, '[X] Chrome flickers on 4K')
+  assert.match(issue.body, /^## What's wrong\?/)
+  assert.match(issue.body, /> @omarchy chrome is broken/)
+})

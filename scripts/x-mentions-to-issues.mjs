@@ -2,6 +2,7 @@
 // No approval, rate limits, vouch, or duplicate check. Never point TARGET_REPO at omacom/omarchy.
 import { readFileSync, writeFileSync, existsSync } from 'node:fs'
 import { fetchMentions, fetchUsers, postReply } from './x.mjs'
+import { draftIssue } from './ai.mjs'
 import { toIssue, fileIssue, ensureLabels, isReport } from './issue.mjs'
 
 const STATE = new URL('../state/since_id.txt', import.meta.url)
@@ -28,9 +29,11 @@ const token = env.GH_TOKEN
 if (!dryRun && reports.length) await ensureLabels({ repo, token })
 
 for (const post of reports) {
-  const issue = toIssue(post, { users, tweets })
+  const parentId = post.referenced_tweets?.find(r => r.type === 'replied_to')?.id
+  const ai = await draftIssue({ text: post.text, parentText: tweets[parentId]?.text, token: env.MODELS_TOKEN, model: env.AI_MODEL || undefined })
+  const issue = toIssue(post, { users, tweets, ai })
   if (dryRun) {
-    console.log(`would file: ${issue.title}\n  from ${issue.url}`)
+    console.log(`would file: ${issue.title}\n  from ${issue.url}\n${issue.body.replace(/^/gm, '  | ')}`)
     continue
   }
   const issueUrl = await fileIssue({ repo, ...issue, token })
