@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { toIssue, stripMentions, fileIssue, ensureLabels, isReport, parentOf } from '../scripts/issue.mjs'
+import { toIssue, stripMentions, fileIssue, ensureLabels, isReport, parentOf, findRelated } from '../scripts/issue.mjs'
 
 
 test('a tagged post without an AI verdict becomes a draft issue, no bug label', () => {
@@ -83,4 +83,33 @@ test('parentOf finds the replied-to post only', () => {
   assert.equal(parentOf({ referenced_tweets: [{ type: 'quoted', id: '6' }, { type: 'replied_to', id: '5' }] }, tweets).text, 'p')
   assert.equal(parentOf({ referenced_tweets: [{ type: 'quoted', id: '6' }] }, tweets), undefined)
   assert.equal(parentOf({}, tweets), undefined)
+})
+
+test('related upstream issues are listed as code, not links, so omacom gets no backlink', () => {
+  const related = [{ number: 6475, state: 'open', title: 'D-Bus idle inhibits dropped `x` @dhh' }]
+  const issue = toIssue({ id: '1', text: '@omarchy idle is broken' }, { ai: { title: 'T', body: 'B' }, related })
+  assert.match(issue.body, /### Possibly related upstream \(search match, not verified\)\n\n- `omacom\/omarchy#6475` \(open\) D-Bus idle inhibits dropped 'x' @\u200bdhh\n\n---/)
+  assert.doesNotMatch(issue.body, /github\.com\/omacom/)
+})
+
+test('findRelated searches the upstream repo with cleaned terms and keeps 3', async () => {
+  let url
+  const fetchImpl = async u => { url = u; return { ok: true, json: async () => ({ items: [1, 2, 3, 4].map(n => ({ number: n, title: `t${n}`, state: 'open' })) }) } }
+  const r = await findRelated({ terms: 'idle inhibit repo:evil/x "video"', token: 't', fetchImpl })
+  assert.equal(r.length, 3)
+  assert.equal(new URL(url).searchParams.get('q'), 'repo:omacom/omarchy is:issue idle inhibit repo evil x')
+  assert.deepEqual(await findRelated({ terms: '', token: 't', fetchImpl: async () => { throw new Error('no call') } }), [])
+})
+
+test('findRelated drops words until something matches, down to two', async () => {
+  const queries = []
+  const fetchImpl = async u => {
+    const q = new URL(u).searchParams.get('q'); queries.push(q)
+    return { ok: true, json: async () => ({ items: q.endsWith('idle inhibit') ? [{ number: 1, title: 't', state: 'open' }] : [] }) }
+  }
+  assert.equal((await findRelated({ terms: 'idle inhibit screen sleep', token: 't', fetchImpl })).length, 1)
+  assert.deepEqual(queries.map(q => q.split('is:issue ')[1]), ['idle inhibit screen sleep', 'idle inhibit screen', 'idle inhibit'])
+  queries.length = 0
+  assert.deepEqual(await findRelated({ terms: 'nothing here', token: 't', fetchImpl }), [])
+  assert.equal(queries.length, 1)
 })

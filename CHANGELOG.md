@@ -1,3 +1,9 @@
+0.12.0
+
+  Search upstream issues
+  List related matches
+  Avoid upstream backlinks
+
 0.11.0
 
   Reply from bot account

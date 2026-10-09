@@ -4,7 +4,7 @@ import { readFileSync, writeFileSync, appendFileSync, existsSync, mkdirSync } fr
 import { fileURLToPath } from 'node:url'
 import { fetchMentions, fetchUsers, postReply } from './x.mjs'
 import { draftIssue, AIUnavailableError } from './ai.mjs'
-import { toIssue, fileIssue, ensureLabels, isReport, parentOf, filedPostIds } from './issue.mjs'
+import { toIssue, fileIssue, ensureLabels, isReport, parentOf, filedPostIds, findRelated } from './issue.mjs'
 
 const SINCE = new URL('../state/since_id.txt', import.meta.url)
 
@@ -73,7 +73,15 @@ export async function run({ env = process.env, state = fileState, fetchImpl = fe
           }
           users[post.author_id] ??= null
         }
-        const issue = toIssue(post, { users, tweets, ai })
+        let related = []
+        if (ai?.search && token) {
+          try {
+            related = await findRelated({ terms: ai.search, token, fetchImpl })
+          } catch (e) {
+            console.error(`${e.message}; filing without related issues`)
+          }
+        }
+        const issue = toIssue(post, { users, tweets, ai, related })
         if (!live) {
           console.log(`would file: ${issue.title} [${issue.labels.join(', ')}]\n  from ${issue.url}\n${issue.body.replace(/^/gm, '  | ')}`)
           state.note(`would file: ${issue.title} (${issue.url})`)
