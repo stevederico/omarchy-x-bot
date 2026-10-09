@@ -2,8 +2,8 @@ name: X mentions to issues
 
 on:
   schedule:
-    # Hourly, off the hour, like the org's other scheduled jobs.
-    - cron: '23 * * * *'
+    # Every 5 minutes, GitHub's shortest schedule. Free because the repo is public.
+    - cron: '*/5 * * * *'
   workflow_dispatch:
     inputs:
       mode:
