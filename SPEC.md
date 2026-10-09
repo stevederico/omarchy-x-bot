@@ -22,7 +22,7 @@ Out: approval queue, rate limits, vouch, close-the-loop replies.
 6. Before judging a post in live mode, skip it if an issue labeled `from-x` already links to it, so a lost cache never files duplicates.
 
 ## Runtime
-- One Node 24 `.mjs` script, `scripts/x-mentions-to-issues.mjs`, run by a GitHub Actions workflow on `schedule` (every 5 minutes, `cron: '*/5 * * * *'`) plus `workflow_dispatch`.
+- One Node 24 `.mjs` script, `scripts/x-mentions-to-issues.mjs`, run by a GitHub Actions workflow on `schedule` started every 2 minutes by a Cloudflare Worker cron (`worker/`) through `workflow_dispatch`, because GitHub's own schedule is best-effort and can be hours late. An hourly GitHub cron stays as a backup.
 - `since_id` stored in the Actions cache (a new key per run, restored by prefix).
 - Secrets: `X_READ_TOKEN` (read mentions), `X_API_KEY`, `X_API_SECRET`, `X_REPLY_ACCESS_TOKEN`, `X_REPLY_ACCESS_SECRET` (optional, OAuth 1.0a for the replying account), `OMARCHY_X_BOT_TOKEN` (bot-account PAT with `issues: write`). `XAI_API_KEY` (Grok). GitHub Models was retired on 2026-07-30.
 

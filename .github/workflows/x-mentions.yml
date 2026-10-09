@@ -2,8 +2,9 @@ name: X mentions to issues
 
 on:
   schedule:
-    # Every 5 minutes, GitHub's shortest schedule. Free because the repo is public.
-    - cron: '*/5 * * * *'
+    # Backup only. The Cloudflare Worker in worker/ triggers this every 2 minutes, because
+    # GitHub's schedule is best-effort and can be hours late. Off the hour, when load is lower.
+    - cron: '17 * * * *'
   workflow_dispatch:
     inputs:
       mode:

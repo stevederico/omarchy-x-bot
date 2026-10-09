@@ -1,0 +1,14 @@
+# Cloudflare Worker that triggers .github/workflows/x-mentions.yml every 2 minutes.
+# Deploy: npx wrangler deploy, then npx wrangler secret put GITHUB_TOKEN
+# (a fine-grained token with Actions: read and write on REPO only).
+name = "omarchy-x-bot-trigger"
+main = "worker/index.js"
+compatibility_date = "2026-09-01"
+
+[triggers]
+crons = ["*/2 * * * *"]
+
+[vars]
+REPO = "stevederico/omarchy-x-bot"
+WORKFLOW = "x-mentions.yml"
+REF = "main"

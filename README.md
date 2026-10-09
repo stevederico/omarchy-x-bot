@@ -27,7 +27,7 @@ Test mode prints each issue it would file and writes nothing to GitHub. Without 
 ## ✨ What's Included
 
 ### 🐦 **X Mentions**
-- **Every 5 minutes**, a read of new @omarchy mentions, plus a manual run button with a test or live choice
+- **Every 2 minutes**, a read of new @omarchy mentions (Cloudflare cron), plus a manual run button with a test or live choice
 - **Keyword filter** sends only posts that say `bug`, `broken`, `fix`, `issue`, `crash`, `error`, `not working`, or `doesn't work` to the AI (word starts, any case)
 - **Typed tags and plain replies** to @omarchy both count
 - **Moving window** saves the last post handled after each one, so each run only pays for new posts and a crash never files a post twice
@@ -78,12 +78,27 @@ GitHub Models was retired on July 30, 2026, so the AI is xAI's API, paid per tok
 
 <br />
 
+## ⏱️ Trigger
+
+GitHub's own schedule is best-effort and can be hours late, so a Cloudflare Worker cron starts the workflow every 2 minutes. The hourly GitHub cron stays as a backup.
+
+```bash
+npx wrangler login
+npx wrangler deploy
+npx wrangler secret put GITHUB_TOKEN   # fine-grained token: Actions read and write on this repo only
+```
+
+Settings are in `wrangler.toml` (`REPO`, `WORKFLOW`, `REF`, cron).
+
+<br />
+
 ## 🧱 Tech Stack
 
 | Technology | Version | Purpose |
 |---|---|---|
 | **Node** | 24 | Runs the `.mjs` scripts, with built-in `fetch` and `node:test` |
-| **GitHub Actions** | `ubuntu-latest` | 5-minute schedule, state cache, secrets, logs |
+| **GitHub Actions** | `ubuntu-latest` | Runs the bot, state cache, secrets, logs |
+| **Cloudflare Workers** | cron | Starts the workflow every 2 minutes |
 | **xAI API** | `grok-4.20-non-reasoning` | Decides bug or not, writes the issue |
 | **X API** | v2, pay-per-use | Mentions, authors, optional reply |
 | **GitHub REST API** | 2022-11-28 | Labels and issues |
@@ -101,6 +116,8 @@ scripts/x-mentions-to-issues.mjs   # the loop
 scripts/x.mjs                      # X API: mentions, authors, reply
 scripts/ai.mjs                     # xAI: decide and write the issue
 scripts/issue.mjs                  # filter, issue body, GitHub REST
+scripts/context.mjs                # related issue bodies and Omarchy repo context
+worker/index.js                    # Cloudflare cron that starts the workflow
 state/since_id.txt                 # last post handled (Actions cache, not in git)
 ```
 

@@ -1,3 +1,9 @@
+0.17.0
+
+  Add Cloudflare trigger
+  Run every 2 minutes
+  Keep hourly backup
+
 0.16.0
 
   Pin actions to SHAs

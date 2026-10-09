@@ -1,6 +1,6 @@
 {
   "name": "omarchy-x-bot",
-  "version": "0.16.0",
+  "version": "0.17.0",
   "private": true,
   "license": "MIT",
   "type": "module",
@@ -11,6 +11,7 @@
     "mentions": "node scripts/x-mentions-to-issues.mjs",
     "test": "node --test test/",
     "demo": "gh workflow run x-mentions.yml -f mode=live && sleep 5 && gh run watch $(gh run list -w x-mentions.yml -L 1 --json databaseId -q '.[0].databaseId') --exit-status",
-    "demo:test": "gh workflow run x-mentions.yml -f mode=test && sleep 5 && gh run watch $(gh run list -w x-mentions.yml -L 1 --json databaseId -q '.[0].databaseId') --exit-status"
+    "demo:test": "gh workflow run x-mentions.yml -f mode=test && sleep 5 && gh run watch $(gh run list -w x-mentions.yml -L 1 --json databaseId -q '.[0].databaseId') --exit-status",
+    "deploy": "npx wrangler deploy"
   }
 }
