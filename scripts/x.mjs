@@ -5,8 +5,7 @@ export async function fetchMentions({ accountId, sinceId, bearer, fetchImpl = fe
   const params = new URLSearchParams({
     max_results: '100',
     'tweet.fields': 'author_id,created_at,referenced_tweets,conversation_id',
-    expansions: 'author_id,referenced_tweets.id',
-    'user.fields': 'username'
+    expansions: 'referenced_tweets.id' // no author_id: user lookups cost $0.01 each
   })
   if (sinceId) params.set('since_id', sinceId)
   const res = await fetchImpl(`${API}/users/${accountId}/mentions?${params}`, {

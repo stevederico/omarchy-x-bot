@@ -11,16 +11,15 @@ export function isReport(post) {
 }
 
 
-export function toIssue(post, { users = {}, tweets = {} } = {}) {
-  const handle = users[post.author_id]?.username ?? post.author_id
-  const url = `https://x.com/${handle}/status/${post.id}`
+export function toIssue(post, { tweets = {} } = {}) {
+  const url = `https://x.com/i/status/${post.id}`
   const parentRef = post.referenced_tweets?.find(r => r.type === 'replied_to')
   const parent = parentRef && tweets[parentRef.id]
   const text = stripMentions(post.text) || stripMentions(parent?.text ?? '')
   const firstLine = text.split('\n')[0].slice(0, 80) || 'Tagged post'
   const quote = s => s.split('\n').map(l => `> ${l}`).join('\n')
 
-  let body = `Reported by @${handle} on X: ${url}\n\n${quote(post.text)}\n`
+  let body = `Reported on X: ${url}\n\n${quote(post.text)}\n`
   if (parent) body += `\nIn reply to:\n\n${quote(parent.text)}\n`
   body += '\n_Filed automatically from X (prototype)._\n'
 

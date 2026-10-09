@@ -20,7 +20,6 @@ const sinceId = existsSync(STATE) ? readFileSync(STATE, 'utf8').trim() || undefi
 const res = await fetchMentions({ accountId, sinceId, bearer: env.X_BEARER_TOKEN })
 const posts = (res.data ?? []).filter(p => p.author_id !== accountId).reverse() // oldest first
 const reports = posts.filter(isReport)
-const users = Object.fromEntries((res.includes?.users ?? []).map(u => [u.id, u]))
 const tweets = Object.fromEntries((res.includes?.tweets ?? []).map(t => [t.id, t]))
 
 console.log(`${posts.length} new mention(s), ${reports.length} look like reports, since ${sinceId ?? 'the start'}; target ${repo}; dry run ${dryRun}; reply on X ${replyOnX}`)
@@ -28,7 +27,7 @@ const token = env.GH_TOKEN
 if (!dryRun && reports.length) await ensureLabels({ repo, token })
 
 for (const post of reports) {
-  const issue = toIssue(post, { users, tweets })
+  const issue = toIssue(post, { tweets })
   if (dryRun) {
     console.log(`would file: ${issue.title}\n  from ${issue.url}`)
     continue
