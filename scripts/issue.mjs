@@ -1,7 +1,11 @@
 // Turn one X mention into a GitHub issue draft, and file it with the GitHub REST API via fetch.
+import { clip } from './ai.mjs'
+
 const GH = 'https://api.github.com'
 
+// `bug` only goes on posts the AI called a bug; the rest stay drafts for triage.
 export const LABELS = ['bug', 'from-x', 'needs-triage']
+export const DRAFT_LABELS = ['from-x', 'needs-triage']
 
 export const KEYWORDS = ['bug', 'broken', 'fix', 'issue']
 
@@ -10,24 +14,28 @@ export function isReport(post) {
   return KEYWORDS.some(k => new RegExp(`\\b${k}`, 'i').test(post.text))
 }
 
+// The post this one replies to, when X included it.
+export function parentOf(post, tweets = {}) {
+  const ref = post.referenced_tweets?.find(r => r.type === 'replied_to')
+  return ref && tweets[ref.id]
+}
 
 export function toIssue(post, { users = {}, tweets = {}, ai = null } = {}) {
   const user = users[post.author_id]
   const handle = user?.username
   const url = handle ? `https://x.com/${handle}/status/${post.id}` : `https://x.com/i/status/${post.id}`
   const by = handle ? `by ${user.name ? `${user.name} ` : ''}(@${handle}) ` : ''
-  const parentRef = post.referenced_tweets?.find(r => r.type === 'replied_to')
-  const parent = parentRef && tweets[parentRef.id]
+  const parent = parentOf(post, tweets)
   const text = stripMentions(post.text) || stripMentions(parent?.text ?? '')
-  const firstLine = text.split('\n')[0].slice(0, 80) || 'Tagged post'
+  const firstLine = clip(text.split('\n')[0], 80) || 'Tagged post'
   const quote = s => s.split('\n').map(l => `> ${l}`).join('\n')
 
-  let body = ai ? `${ai.body}\n\n---\n\n` : ''
+  let body = ai ? `_AI summary of the X post below. Check it against the post._\n\n${ai.body}\n\n---\n\n` : ''
   body += `Reported ${by}on X: ${url}\n\n${quote(post.text)}\n`
   if (parent) body += `\nIn reply to:\n\n${quote(parent.text)}\n`
-  body += ai ? '\n_Written by AI from the X post. Filed automatically (prototype)._\n' : '\n_Filed automatically from X (prototype)._\n'
+  body += '\n_Filed automatically from X (prototype)._\n'
 
-  return { title: ai?.title || `[X] ${firstLine}`, body, labels: LABELS, url }
+  return { title: ai?.title || `[X] ${firstLine}`, body, labels: ai ? LABELS : DRAFT_LABELS, url }
 }
 
 export function stripMentions(text) {

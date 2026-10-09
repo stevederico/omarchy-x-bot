@@ -1,14 +1,14 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { toIssue, stripMentions, fileIssue, ensureLabels, isReport } from '../scripts/issue.mjs'
+import { toIssue, stripMentions, fileIssue, ensureLabels, isReport, parentOf } from '../scripts/issue.mjs'
 
 
-test('a tagged post becomes an issue with link and labels', () => {
+test('a tagged post without an AI verdict becomes a draft issue, no bug label', () => {
   const issue = toIssue({ id: '99', author_id: '1', text: '@omarchy wifi drops after resume' })
   assert.equal(issue.title, '[X] wifi drops after resume')
   assert.match(issue.body, /Reported on X: https:\/\/x.com\/i\/status\/99/)
   assert.match(issue.body, /> @omarchy wifi drops after resume/)
-  assert.deepEqual(issue.labels, ['bug', 'from-x', 'needs-triage'])
+  assert.deepEqual(issue.labels, ['from-x', 'needs-triage'])
 })
 
 test('a bare tag under a post takes its title from the parent', () => {
@@ -23,7 +23,7 @@ test('mentions are stripped from the title only', () => {
   assert.equal(stripMentions('@omarchy  hi @Omarchy there'), 'hi there')
 })
 
-test('the issue is POSTed to the target repo with both labels', async () => {
+test('the issue is POSTed to the target repo with its labels', async () => {
   let call
   const fetchImpl = async (url, init) => { call = { url, init }; return { ok: true, json: async () => ({ html_url: 'https://github.com/me/fork/issues/1' }) } }
   const url = await fileIssue({ repo: 'me/fork', title: 't', body: 'b', labels: ['bug', 'from-x', 'needs-triage'], token: 'x', fetchImpl })
@@ -50,9 +50,22 @@ test('a matched author shows up as name and handle', () => {
   assert.match(issue.body, /Reported by Alice Smith \(@alice\) on X: https:\/\/x.com\/alice\/status\/99/)
 })
 
-test('an AI draft becomes the title and body, with the X post kept below', () => {
+test('an AI draft becomes the title and body, marked as a summary, with the X post kept below', () => {
   const issue = toIssue({ id: '7', text: '@omarchy chrome is broken' }, { ai: { title: 'Chrome flickers on 4K', body: "## What's wrong?\nFlicker" } })
   assert.equal(issue.title, 'Chrome flickers on 4K')
-  assert.match(issue.body, /^## What's wrong\?/)
+  assert.match(issue.body, /^_AI summary of the X post below\. Check it against the post\._\n\n## What's wrong\?/)
   assert.match(issue.body, /> @omarchy chrome is broken/)
+  assert.deepEqual(issue.labels, ['bug', 'from-x', 'needs-triage'])
+})
+
+test('a long fallback title is cut at 80 characters without splitting an emoji', () => {
+  const issue = toIssue({ id: '1', text: `@omarchy ${'a'.repeat(79)}🐛 broken` })
+  assert.equal(issue.title, `[X] ${'a'.repeat(79)}🐛`)
+})
+
+test('parentOf finds the replied-to post only', () => {
+  const tweets = { '5': { id: '5', text: 'p' }, '6': { id: '6', text: 'q' } }
+  assert.equal(parentOf({ referenced_tweets: [{ type: 'quoted', id: '6' }, { type: 'replied_to', id: '5' }] }, tweets).text, 'p')
+  assert.equal(parentOf({ referenced_tweets: [{ type: 'quoted', id: '6' }] }, tweets), undefined)
+  assert.equal(parentOf({}, tweets), undefined)
 })

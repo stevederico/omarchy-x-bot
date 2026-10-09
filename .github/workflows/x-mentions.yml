@@ -12,7 +12,7 @@ on:
         default: true
 
 permissions:
-  contents: write   # commit state/since_id.txt
+  contents: write   # commit state/
   models: read      # GitHub Models writes the issue
 
 concurrency:
@@ -35,18 +35,20 @@ jobs:
           X_OMARCHY_USER_TOKEN: ${{ secrets.X_OMARCHY_USER_TOKEN }}
           GH_TOKEN: ${{ secrets.OMARCHY_X_BOT_TOKEN }}
           MODELS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          AI_MODEL: ${{ vars.AI_MODEL || 'xai/grok-3-mini' }}
+          AI_MODEL: ${{ vars.AI_MODEL }}
           X_ACCOUNT_ID: ${{ vars.X_ACCOUNT_ID || '2108454467309883392' }}
           TARGET_REPO: ${{ vars.TARGET_REPO || 'stevederico/omarchy' }}
           # format() turns a false input into the string 'false', so it isn't skipped.
           DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && format('{0}', inputs.dry_run) || vars.DRY_RUN || 'true' }}
         run: node scripts/x-mentions-to-issues.mjs
 
-      - name: Save since_id
+      # Also after a failed run, so posts already handled aren't filed again.
+      - name: Save state
+        if: ${{ !cancelled() }}
         run: |
-          git diff --quiet -- state/since_id.txt && exit 0
+          [ -z "$(git status --porcelain -- state/)" ] && exit 0
           git config user.name "omarchy-x-bot"
           git config user.email "omarchy-x-bot@users.noreply.github.com"
-          git add state/since_id.txt
+          git add state/
           git commit -m "Remember the newest X mention"
           git push
