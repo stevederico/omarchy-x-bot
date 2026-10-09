@@ -1,3 +1,9 @@
+0.10.0
+
+  Add likely area
+  Add steps to try
+  Add missing info
+
 0.9.0
 
   Cache since_id

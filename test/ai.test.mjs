@@ -8,7 +8,15 @@ const status = code => async () => ({ ok: false, status: code, text: async () =>
 test('fills in the bug template from the model JSON, even inside a code fence', async () => {
   const d = await draftIssue({ text: 'x', token: 't', fetchImpl: reply('```json\n{"bug":true,"title":"T","system_details":"","whats_wrong":"W"}\n```') })
   assert.equal(d.title, 'T')
-  assert.equal(d.body, "### System details\n\nNot mentioned\n\n### What's wrong?\n\nW")
+  assert.equal(d.body, "### System details\n\nNot mentioned\n\n### What's wrong?\n\nW\n\n### Missing info\n\n- [ ] Output of `omarchy-debug`")
+})
+
+test('adds the likely area, steps to try, and missing info, each marked as AI', async () => {
+  const content = JSON.stringify({ bug: true, title: 'T', whats_wrong: 'W', likely_area: 'Probably hypridle.', steps_to_try: ['Play a video', 'Wait'], missing_info: ['Which app?', 'Output of `omarchy-debug`'] })
+  const d = await draftIssue({ text: 'x', token: 't', fetchImpl: reply(content) })
+  assert.match(d.body, /### Likely area \(AI guess\)\n\nProbably hypridle\./)
+  assert.match(d.body, /### Steps to try \(suggested, not from the reporter\)\n\n1\. Play a video\n1\. Wait/)
+  assert.match(d.body, /### Missing info\n\n- \[ \] Which app\?\n- \[ \] Output of `omarchy-debug`$/)
 })
 
 test('a stray { in reasoning before the answer does not break parsing', async () => {
@@ -53,7 +61,7 @@ test('the request has a timeout and wraps the posts as untrusted text', async ()
 test('links the model adds that are not in the posts are removed', async () => {
   const content = JSON.stringify({ bug: true, title: 'T', whats_wrong: 'See https://evil.sh and https://t.co/abc' })
   const d = await draftIssue({ text: 'broken https://t.co/abc', token: 't', fetchImpl: reply(content) })
-  assert.match(d.body, /See \[link removed\] and https:\/\/t\.co\/abc$/)
+  assert.match(d.body, /See \[link removed\] and https:\/\/t\.co\/abc\n/)
   assert.equal(keepSourceLinks('[x](https://a.b/c)', ''), '[x]([link removed])')
 })
 
