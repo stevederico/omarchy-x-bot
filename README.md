@@ -120,6 +120,12 @@ npm test
 
 <br />
 
+## 📄 License
+
+MIT. See `LICENSE`.
+
+<br />
+
 <div align="center">
 
 Built with Node, GitHub Actions, and Grok · [@stevederico](https://x.com/stevederico)

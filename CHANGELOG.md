@@ -1,3 +1,7 @@
+0.8.0
+
+  Add MIT license
+
 0.7.0
 
   Add crash keyword
