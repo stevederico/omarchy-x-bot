@@ -1,3 +1,8 @@
+0.6.0
+
+  Read long posts
+  Add note_tweet field
+
 0.5.0
 
   Replace DRY_RUN

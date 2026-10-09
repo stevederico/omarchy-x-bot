@@ -4,7 +4,7 @@ const API = 'https://api.x.com/2'
 export async function fetchMentions({ accountId, sinceId, bearer, fetchImpl = fetch }) {
   const params = new URLSearchParams({
     max_results: '100',
-    'tweet.fields': 'author_id,created_at,referenced_tweets,conversation_id',
+    'tweet.fields': 'author_id,created_at,referenced_tweets,conversation_id,note_tweet',
     expansions: 'referenced_tweets.id' // no author_id: user lookups cost $0.01 each
   })
   if (sinceId) params.set('since_id', sinceId)
@@ -12,7 +12,14 @@ export async function fetchMentions({ accountId, sinceId, bearer, fetchImpl = fe
     headers: { authorization: `Bearer ${bearer}` }
   })
   if (!res.ok) throw new Error(`X mentions ${res.status}: ${await res.text()}`)
-  return res.json()
+  const body = await res.json()
+  for (const t of [...(body.data ?? []), ...(body.includes?.tweets ?? [])]) t.text = fullText(t)
+  return body
+}
+
+// Posts over 280 characters come back cut in `text`; the whole post is in note_tweet.
+export function fullText(t) {
+  return t.note_tweet?.text || t.text
 }
 
 // Look up name and handle for matched posts only, in one batch ($0.01 per user).
