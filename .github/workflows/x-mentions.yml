@@ -35,7 +35,8 @@ jobs:
           GH_TOKEN: ${{ secrets.OMARCHY_X_BOT_TOKEN }}
           X_ACCOUNT_ID: ${{ vars.X_ACCOUNT_ID || '2108454467309883392' }}
           TARGET_REPO: ${{ vars.TARGET_REPO || 'stevederico/omarchy' }}
-          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || vars.DRY_RUN || 'true' }}
+          # format() turns a false input into the string 'false', so it isn't skipped.
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && format('{0}', inputs.dry_run) || vars.DRY_RUN || 'true' }}
         run: node scripts/x-mentions-to-issues.mjs
 
       - name: Save since_id
