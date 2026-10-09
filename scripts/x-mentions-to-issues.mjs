@@ -3,7 +3,7 @@
 import { readFileSync, writeFileSync, appendFileSync, existsSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { fetchMentions, fetchUsers, postReply } from './x.mjs'
-import { draftIssue, TransientAIError } from './ai.mjs'
+import { draftIssue, AIUnavailableError } from './ai.mjs'
 import { toIssue, fileIssue, ensureLabels, isReport, parentOf } from './issue.mjs'
 
 const SINCE = new URL('../state/since_id.txt', import.meta.url)
@@ -26,6 +26,8 @@ export async function run({ env = process.env, state = fileState, fetchImpl = fe
   const token = env.GH_TOKEN
 
   if (repo.toLowerCase() === 'omacom/omarchy') throw new Error('Refusing to file into omacom/omarchy from the prototype. Use a fork.')
+  // Without a verdict, every keyword match would be filed, and nearly all of them are chatter.
+  if (!dryRun && !env.XAI_API_KEY) throw new Error('XAI_API_KEY is required to go live.')
 
   const sinceId = state.read()
   const res = await fetchMentions({ accountId, sinceId, bearer, fetchImpl })
@@ -40,11 +42,11 @@ export async function run({ env = process.env, state = fileState, fetchImpl = fe
     if (isReport(post)) {
       let ai
       try {
-        ai = await draftIssue({ text: post.text, parentText: parentOf(post, tweets)?.text, token: env.MODELS_TOKEN, model: env.AI_MODEL, fetchImpl })
+        ai = await draftIssue({ text: post.text, parentText: parentOf(post, tweets)?.text, token: env.XAI_API_KEY, model: env.AI_MODEL, fetchImpl })
       } catch (e) {
-        if (!(e instanceof TransientAIError)) throw e
+        if (!(e instanceof AIUnavailableError)) throw e
         console.error(`${e.message}; stopping, will retry from this post next run`)
-        return
+        return { stopped: true }
       }
       if (ai?.bug === false) {
         console.log(`skip, not a bug: https://x.com/i/status/${post.id}`)
@@ -79,6 +81,8 @@ export async function run({ env = process.env, state = fileState, fetchImpl = fe
   }
 
   if (res.meta?.newest_id) state.write(res.meta.newest_id)
+  return { stopped: false }
 }
 
-if (process.argv[1] === fileURLToPath(import.meta.url)) await run()
+// A stopped run fails the job so a dead AI shows up red, after state is saved.
+if (process.argv[1] === fileURLToPath(import.meta.url) && (await run()).stopped) process.exitCode = 1

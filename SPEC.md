@@ -10,11 +10,11 @@ Out: approval queue, rate limits, vouch, duplicate check, close-the-loop replies
 
 ## Flow
 1. Poll X for new mentions of `@omarchy` (`GET /2/users/2108454467309883392/mentions?since_id=…`).
-2. For each new mention with a keyword (skip @omarchy's own posts), oldest first, GitHub Models reads the post and its parent as untrusted text and decides:
+2. For each new mention with a keyword (skip @omarchy's own posts), oldest first, Grok (xAI API) reads the post and its parent as untrusted text and decides:
    - **Bug:** title (under 80 chars) and body in the bug template, marked as an AI summary, with links not in the posts removed. Labels: `bug`, `from-x`, `needs-triage`.
    - **Not a bug:** no issue. The post URL is added to `state/skipped.txt` so it can be reviewed or replayed.
-   - **No verdict** (no token, or unusable output): a draft issue titled `[X] ` + first 80 chars of the post (or its parent). Labels: `from-x`, `needs-triage`. No `bug` label, since nothing checked it.
-   - **AI rate-limited, down, or timed out:** stop the run. The next run retries from this post.
+   - **No verdict** (unusable answer, or no key in a dry run): a draft issue titled `[X] ` + first 80 chars of the post (or its parent). Labels: `from-x`, `needs-triage`. No `bug` label, since nothing checked it.
+   - **AI API fails** (rate limit, outage, timeout, bad key, retired model, non-JSON reply): stop the run and fail the job. The next run retries from this post. A live run refuses to start without `XAI_API_KEY`.
    - Every issue body keeps the author handle, post URL, quoted post text, and the footer "Filed automatically from X (prototype)."
 3. Look up the author only for posts being filed, and create the issue with the GitHub REST API.
 4. Reply from `@omarchy`: "Tracked: <issue url>". A failed reply is logged and doesn't stop the run.
@@ -23,7 +23,7 @@ Out: approval queue, rate limits, vouch, duplicate check, close-the-loop replies
 ## Runtime
 - One Node 24 `.mjs` script, `scripts/x-mentions-to-issues.mjs`, run by a GitHub Actions workflow on `schedule` (hourly, off the hour, e.g. `cron: '23 * * * *'`) plus `workflow_dispatch`.
 - `since_id` stored as a repo variable or committed state file.
-- Secrets: `X_READ_TOKEN` (read mentions), `X_OMARCHY_USER_TOKEN` (post the reply as @omarchy), `OMARCHY_X_BOT_TOKEN` (bot-account PAT with `issues: write`). GitHub Models uses the workflow's `GITHUB_TOKEN`.
+- Secrets: `X_READ_TOKEN` (read mentions), `X_OMARCHY_USER_TOKEN` (post the reply as @omarchy), `OMARCHY_X_BOT_TOKEN` (bot-account PAT with `issues: write`). `XAI_API_KEY` (Grok). GitHub Models was retired on 2026-07-30.
 
 ## Proving it works
 - Tag @omarchy from a test account → within an hour an issue exists with the post link and @omarchy replied with the issue URL.

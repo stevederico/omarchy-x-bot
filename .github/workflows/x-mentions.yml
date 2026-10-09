@@ -13,7 +13,6 @@ on:
 
 permissions:
   contents: write   # commit state/
-  models: read      # GitHub Models writes the issue
 
 concurrency:
   group: x-mentions
@@ -34,7 +33,7 @@ jobs:
           X_BEARER_TOKEN: ${{ secrets.X_READ_TOKEN }}
           X_OMARCHY_USER_TOKEN: ${{ secrets.X_OMARCHY_USER_TOKEN }}
           GH_TOKEN: ${{ secrets.OMARCHY_X_BOT_TOKEN }}
-          MODELS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
           AI_MODEL: ${{ vars.AI_MODEL }}
           X_ACCOUNT_ID: ${{ vars.X_ACCOUNT_ID || '2108454467309883392' }}
           TARGET_REPO: ${{ vars.TARGET_REPO || 'stevederico/omarchy' }}

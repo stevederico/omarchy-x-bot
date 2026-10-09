@@ -6,7 +6,7 @@ const ok = body => ({ ok: true, status: 200, json: async () => body, text: async
 const fail = code => ({ ok: false, status: code, json: async () => ({}), text: async () => 'nope' })
 const answer = json => ok({ choices: [{ message: { content: JSON.stringify(json) } }] })
 
-// Fake X, GitHub Models, and GitHub. `ai` maps post text to a model response; `issues` and `replies` record writes.
+// Fake X, xAI, and GitHub. `ai` maps post text to a model response; `issues` and `replies` record writes.
 function world({ posts, ai = {}, users = {}, failIssue = new Set(), failReply = false }) {
   const calls = { issues: [], replies: [], userLookups: [] }
   const fetchImpl = async (url, init = {}) => {
@@ -16,7 +16,7 @@ function world({ posts, ai = {}, users = {}, failIssue = new Set(), failReply = 
       calls.userLookups.push(...ids)
       return ok({ data: ids.filter(id => users[id]).map(id => ({ id, ...users[id] })) })
     }
-    if (url.includes('models.github.ai')) {
+    if (url.includes('api.x.ai/v1/chat')) {
       const text = JSON.parse(init.body).messages[1].content.match(/<post>\n([\s\S]*?)\n<\/post>/)[1]
       return ai[text] ?? answer({ bug: true, title: `AI: ${text}`, whats_wrong: 'W' })
     }
@@ -42,7 +42,7 @@ function memoryState(since) {
   return s
 }
 
-const live = { DRY_RUN: 'false', TARGET_REPO: 'me/fork', X_ACCOUNT_ID: '0', MODELS_TOKEN: 'm', GH_TOKEN: 'g', X_BEARER_TOKEN: 'x' }
+const live = { DRY_RUN: 'false', TARGET_REPO: 'me/fork', X_ACCOUNT_ID: '0', XAI_API_KEY: 'k', GH_TOKEN: 'g', X_BEARER_TOKEN: 'x' }
 const post = (id, text, author = 'a') => ({ id, text, author_id: author })
 
 test('files bugs, records skipped posts, and moves since_id to the newest post', async () => {
@@ -74,9 +74,13 @@ test('a rate-limited AI stops the run before that post, without filing it', asyn
     ai: { 'two is broken': fail(429) }
   })
   const state = memoryState('0')
-  await run({ env: live, state, fetchImpl })
+  assert.deepEqual(await run({ env: live, state, fetchImpl }), { stopped: true })
   assert.deepEqual(calls.issues.map(i => i.title), ['AI: one is broken'])
   assert.equal(state.since, '1')
+})
+
+test('going live without an xAI key is refused', async () => {
+  await assert.rejects(run({ env: { ...live, XAI_API_KEY: '' }, state: memoryState(), fetchImpl: async () => { throw new Error('no calls') } }), /XAI_API_KEY/)
 })
 
 test('unusable AI output files a draft without the bug label', async () => {

@@ -1,3 +1,11 @@
+0.4.0
+
+  Switch to xAI
+  Use grok-4.20-non-reasoning
+  Fail on dead AI
+  Require key live
+  Keep stated versions
+
 0.3.0
 
   Stop GitHub pings

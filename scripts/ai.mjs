@@ -1,7 +1,7 @@
-// Ask GitHub Models to write a bug report in Omarchy's bug.yml shape from an X post. Free with the workflow's GITHUB_TOKEN.
-const URL_ = 'https://models.github.ai/inference/chat/completions'
+// Ask xAI's Grok to write a bug report in Omarchy's bug.yml shape from an X post.
+const URL_ = 'https://api.x.ai/v1/chat/completions'
 
-export const DEFAULT_MODEL = 'xai/grok-3-mini'
+export const DEFAULT_MODEL = 'grok-4.20-non-reasoning'
 export const TIMEOUT_MS = 60_000
 
 export const PROMPT = `You turn a post on X that tags @omarchy into a GitHub issue for Omarchy (an Arch Linux + Hyprland setup), following its bug template.
@@ -11,11 +11,12 @@ Write only from what the post and its parent say. Never invent versions, hardwar
 Reply with JSON only: {"bug": true|false, "title": "...", "system_details": "...", "whats_wrong": "..."}.
 bug: false unless the post describes something in Omarchy that doesn't work.
 title: short, specific, plain words, under 80 characters.
-system_details: CPU, GPU, and Omarchy version as the post states them, e.g. "AMD 9950X, NVIDIA 5090, Omarchy 2.1.0", or "Not mentioned".
+system_details: CPU, GPU, and Omarchy version exactly as the post writes them, e.g. "AMD 9950X, NVIDIA 5090, Omarchy 2.1", or "Not mentioned".
 whats_wrong: Markdown. What's broken, steps to recreate it if the post gives them, and what the reporter expected. End with: "Please run \`omarchy-debug\` and attach the output."`
 
-// A retry later may work (rate limit, outage, timeout). The caller stops the run instead of filing without a verdict.
-export class TransientAIError extends Error {}
+// The model can't answer right now (rate limit, outage, timeout, bad key, retired model or endpoint).
+// The caller stops the run and retries next time instead of filing without a verdict.
+export class AIUnavailableError extends Error {}
 
 // Cut to n characters without splitting an emoji.
 export function clip(s, n) {
@@ -38,14 +39,14 @@ function jsonStart(content) {
 
 /**
  * Draft a title and body with an AI model.
- * Returns {bug: false} to skip, {title, body} to file, or null when there's no token or the output is unusable.
- * Throws TransientAIError when a retry later may work.
+ * Returns {bug: false} to skip, {title, body} to file, or null when there's no token or the model's answer is unusable.
+ * Throws AIUnavailableError when the API itself fails.
  * @param {{text: string, parentText?: string, token: string, model?: string, fetchImpl?: typeof fetch}} opts
  */
 export async function draftIssue({ text, parentText, token, model, fetchImpl = fetch }) {
   if (!token) return null
   const user = parentText ? `${wrap('post', text)}\n\n${wrap('parent', parentText)}` : wrap('post', text)
-  let res, raw
+  let res, raw, content
   try {
     res = await fetchImpl(URL_, {
       method: 'POST',
@@ -55,12 +56,16 @@ export async function draftIssue({ text, parentText, token, model, fetchImpl = f
     })
     raw = await res.text()
   } catch (e) {
-    throw new TransientAIError(`AI request failed: ${e.message}`)
+    throw new AIUnavailableError(`AI request failed: ${e.message}`)
   }
-  if (res.status === 429 || res.status >= 500) throw new TransientAIError(`AI ${res.status}: ${raw}`)
-  if (!res.ok) { console.error(`AI ${res.status}: ${raw}`); return null }
+  if (!res.ok) throw new AIUnavailableError(`AI ${res.status}: ${raw.slice(0, 300)}`)
+  // A dead endpoint can still answer 200 with a non-JSON page (GitHub Models answered "OK" after it was retired).
   try {
-    const content = JSON.parse(raw).choices?.[0]?.message?.content ?? ''
+    content = JSON.parse(raw).choices[0].message.content ?? ''
+  } catch {
+    throw new AIUnavailableError(`AI answered without a completion: ${raw.slice(0, 300)}`)
+  }
+  try {
     const json = JSON.parse(content.slice(jsonStart(content), content.lastIndexOf('}') + 1))
     if (json.bug === false) return { bug: false }
     if (json.bug !== true || !json.title || !json.whats_wrong) return null
