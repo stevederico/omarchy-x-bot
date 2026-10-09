@@ -7,7 +7,8 @@ const GH = 'https://api.github.com'
 export const LABELS = ['bug', 'from-x', 'needs-triage']
 export const DRAFT_LABELS = ['from-x', 'needs-triage']
 
-export const KEYWORDS = ['bug', 'broken', 'fix', 'issue']
+// Regex sources, matched at the start of a word: "fix" also catches fixed, fixes, fixing.
+export const KEYWORDS = ['bug', 'broken', 'fix', 'issue', 'crash', 'error', 'not working', "doesn['’]?t work"]
 
 // File any mention (typed tag or plain reply to @omarchy) that uses a keyword.
 export function isReport(post) {

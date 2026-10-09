@@ -1,3 +1,10 @@
+0.7.0
+
+  Add crash keyword
+  Add error keyword
+  Add not working
+  Add doesn't work
+
 0.6.0
 
   Read long posts

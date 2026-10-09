@@ -45,6 +45,13 @@ test('any mention with a keyword counts as a report', () => {
   assert.equal(isReport({ text: 'love it @omarchy' }), false)
 })
 
+test('crash, error, not working, and doesn\'t work count too', () => {
+  for (const text of ['waybar crashed on login', 'Errors in the log', 'wifi not working', "audio doesn't work", 'audio doesnt work', 'audio doesn’t work']) {
+    assert.equal(isReport({ text }), true, text)
+  }
+  for (const text of ['working great', 'terror movie night', 'it does work']) assert.equal(isReport({ text }), false, text)
+})
+
 test('a matched author shows up as name and handle', () => {
   const issue = toIssue({ id: '99', author_id: '1', text: 'bug @omarchy' }, { users: { '1': { name: 'Alice Smith', username: 'alice' } } })
   assert.match(issue.body, /Reported by Alice Smith \(@\u200balice\) on X: https:\/\/x.com\/alice\/status\/99/)

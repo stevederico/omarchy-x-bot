@@ -24,7 +24,7 @@ Test mode prints each issue it would file and writes nothing to GitHub. Without 
 
 ### 🐦 **X Mentions**
 - **Hourly read** of new @omarchy mentions at :23, plus a manual run button with a test or live choice
-- **Keyword filter** files only posts that say `bug`, `broken`, `fix`, or `issue`
+- **Keyword filter** sends only posts that say `bug`, `broken`, `fix`, `issue`, `crash`, `error`, `not working`, or `doesn't work` to the AI (word starts, any case)
 - **Typed tags and plain replies** to @omarchy both count
 - **Moving window** saves the last post handled after each one, so each run only pays for new posts and a crash never files a post twice
 
