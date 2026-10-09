@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="assets/banner.svg" alt="X to GitHub" width="100%" />
+
 # omarchy-x-bot
 
 ### tag @omarchy on x, get a github issue. node 24, github actions, grok, zero deps
