@@ -35,10 +35,11 @@ export async function fetchUsers({ ids, bearer, fetchImpl = fetch }) {
 }
 
 // OAuth 1.0a user auth for posting replies from the bot's own X account (not @omarchy). Unlike OAuth 2 user tokens, these never expire,
-// so they can live in GitHub secrets. A JSON body isn't part of the signature.
-export function oauth1Header({ method, url, apiKey, apiSecret, accessToken, accessSecret, nonce = randomBytes(16).toString('hex'), timestamp = String(Math.floor(Date.now() / 1000)) }) {
+// so they can live in Worker secrets. A JSON body isn't part of the signature.
+// `extra` adds oauth_callback or oauth_verifier for the PIN flow (scripts/x-connect.mjs), which has no access token yet.
+export function oauth1Header({ method, url, apiKey, apiSecret, accessToken, accessSecret = '', extra = {}, nonce = randomBytes(16).toString('hex'), timestamp = String(Math.floor(Date.now() / 1000)) }) {
   const enc = s => encodeURIComponent(s).replace(/[!'()*]/g, c => `%${c.charCodeAt(0).toString(16).toUpperCase()}`)
-  const params = { oauth_consumer_key: apiKey, oauth_nonce: nonce, oauth_signature_method: 'HMAC-SHA1', oauth_timestamp: timestamp, oauth_token: accessToken, oauth_version: '1.0' }
+  const params = { oauth_consumer_key: apiKey, oauth_nonce: nonce, oauth_signature_method: 'HMAC-SHA1', oauth_timestamp: timestamp, ...(accessToken ? { oauth_token: accessToken } : {}), oauth_version: '1.0', ...extra }
   const u = new URL(url)
   const all = [...Object.entries(params), ...u.searchParams].map(([k, v]) => [enc(k), enc(v)]).sort(([a, x], [b, y]) => a < b ? -1 : a > b ? 1 : x < y ? -1 : 1)
   const base = [method.toUpperCase(), enc(`${u.origin}${u.pathname}`), enc(all.map(([k, v]) => `${k}=${v}`).join('&'))].join('&')

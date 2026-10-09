@@ -1,6 +1,6 @@
 {
   "name": "omarchy-x-bot",
-  "version": "0.20.0",
+  "version": "0.21.0",
   "private": true,
   "license": "MIT",
   "type": "module",
@@ -12,6 +12,7 @@
     "mentions": "node scripts/x-mentions-to-issues.mjs",
     "deploy": "npx wrangler deploy",
     "logs": "npx wrangler tail",
-    "demo": "curl -fsS -X POST -H \"authorization: Bearer $RUN_KEY\" https://omarchy-x-bot-trigger.omarchy-x-bot.workers.dev/run"
+    "demo": "curl -fsS -X POST -H \"authorization: Bearer $RUN_KEY\" https://omarchy-x-bot-trigger.omarchy-x-bot.workers.dev/run",
+    "connect": "node scripts/x-connect.mjs"
   }
 }

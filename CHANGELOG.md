@@ -1,3 +1,7 @@
+0.21.0
+
+  Add X connect helper
+
 0.20.0
 
   Run every minute

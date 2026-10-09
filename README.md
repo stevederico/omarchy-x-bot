@@ -67,6 +67,8 @@ X_REPLY_ACCESS_TOKEN   # optional, for replies: access token for the account tha
 X_REPLY_ACCESS_SECRET  # optional, for replies: that account's access token secret
 ```
 
+To turn on replies, create the bot's X account, then run `node scripts/x-connect.mjs`: it asks for your X app's API key and secret, gives you a link to authorize as the bot, takes the PIN, and saves all four reply secrets to the Worker.
+
 Variables, in `wrangler.toml`:
 
 ```bash
