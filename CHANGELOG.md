@@ -1,3 +1,11 @@
+0.9.0
+
+  Cache since_id
+  Stop state commits
+  Add duplicate guard
+  Summarize each run
+  Drop contents write
+
 0.8.0
 
   Add MIT license

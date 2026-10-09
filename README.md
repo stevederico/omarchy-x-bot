@@ -30,7 +30,7 @@ Test mode prints each issue it would file and writes nothing to GitHub. Without 
 
 ### 🤖 **AI-Written Issues**
 - **Omarchy's bug template**: Grok fills in System details and What's wrong?, and asks for `omarchy-debug` output
-- **Bugs only**: support questions, ideas, and jokes are skipped and listed in `state/skipped.txt`
+- **Bugs only**: support questions, ideas, and jokes are skipped and listed on the run's summary page
 - **No guessing**: anything the post doesn't say is marked "Not mentioned"
 - **Original post kept** under the AI summary, with the author's name, @handle, and link
 - **Retries later** if the AI API fails in any way (rate limit, outage, timeout, bad key, retired model); the run goes red and nothing is filed without a verdict
@@ -74,7 +74,7 @@ GitHub Models was retired on July 30, 2026, so the AI is xAI's API, paid per tok
 | Technology | Version | Purpose |
 |---|---|---|
 | **Node** | 24 | Runs the `.mjs` scripts, with built-in `fetch` and `node:test` |
-| **GitHub Actions** | `ubuntu-latest` | Hourly schedule, secrets, logs |
+| **GitHub Actions** | `ubuntu-latest` | 5-minute schedule, state cache, secrets, logs |
 | **xAI API** | `grok-4.20-non-reasoning` | Decides bug or not, writes the issue |
 | **X API** | v2, pay-per-use | Mentions, authors, optional reply |
 | **GitHub REST API** | 2022-11-28 | Labels and issues |
@@ -85,15 +85,14 @@ Zero npm packages: no `dependencies`, no lockfile, no `npm ci`.
 
 ## 🏗️ Architecture
 
-Each run reads mentions since `state/since_id.txt`, oldest first, and keeps the ones that match a keyword. For each match, Grok decides if it's a bug and drafts the report. The bot looks up the author only for posts it files, files them with the `bug`, `from-x`, and `needs-triage` labels, and saves `since_id` after each post. The workflow commits `state/`, even after a failed run.
+Each run restores `since_id` from the Actions cache and reads newer mentions, oldest first, and keeps the ones that match a keyword. For each match, Grok decides if it's a bug and drafts the report. The bot looks up the author only for posts it files, files them with the `bug`, `from-x`, and `needs-triage` labels, and saves `since_id` after each post. The workflow saves it back to the cache, even after a failed run, so nothing is committed. If the cache is ever lost, the bot skips any post that already has an issue.
 
 ```
 scripts/x-mentions-to-issues.mjs   # the loop
 scripts/x.mjs                      # X API: mentions, authors, reply
 scripts/ai.mjs                     # xAI: decide and write the issue
 scripts/issue.mjs                  # filter, issue body, GitHub REST
-state/since_id.txt                 # last post handled
-state/skipped.txt                  # posts the AI said aren't bugs
+state/since_id.txt                 # last post handled (Actions cache, not in git)
 ```
 
 See `SPEC.md` for the full design and later ideas.

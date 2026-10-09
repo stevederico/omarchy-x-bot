@@ -66,6 +66,18 @@ export async function fileIssue({ repo, title, body, labels, token, fetchImpl = 
   return (await res.json()).html_url
 }
 
+// X post ids that already have an issue in the repo, so a lost since_id never files a post twice.
+export async function filedPostIds({ repo, token, fetchImpl = fetch }) {
+  const ids = new Set()
+  for (let page = 1; ; page++) {
+    const res = await fetchImpl(`${GH}/repos/${repo}/issues?labels=from-x&state=all&per_page=100&page=${page}`, { headers: headers(token) })
+    if (!res.ok) throw new Error(`GitHub issues ${res.status}: ${await res.text()}`)
+    const issues = await res.json()
+    for (const i of issues) for (const m of (i.body ?? '').matchAll(/x\.com\/[^/\s]+\/status\/(\d+)/g)) ids.add(m[1])
+    if (issues.length < 100) return ids
+  }
+}
+
 // Create the labels if missing; 422 means it already exists.
 export async function ensureLabels({ repo, token, fetchImpl = fetch }) {
   const colors = { bug: 'd73a4a', 'from-x': '000000', 'needs-triage': 'fbca04' }

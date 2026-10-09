@@ -7,8 +7,8 @@ const fail = code => ({ ok: false, status: code, json: async () => ({}), text: a
 const answer = json => ok({ choices: [{ message: { content: JSON.stringify(json) } }] })
 
 // Fake X, xAI, and GitHub. `ai` maps post text to a model response; `issues` and `replies` record writes.
-function world({ posts, ai = {}, users = {}, failIssue = new Set(), failReply = false }) {
-  const calls = { issues: [], replies: [], userLookups: [] }
+function world({ posts, ai = {}, users = {}, failIssue = new Set(), failReply = false, existing = [] }) {
+  const calls = { issues: [], replies: [], userLookups: [], aiCalls: 0 }
   const fetchImpl = async (url, init = {}) => {
     if (url.includes('/mentions?')) return ok({ data: [...posts].reverse(), meta: { newest_id: posts.at(-1).id } })
     if (url.includes('api.x.com/2/users?')) {
@@ -17,10 +17,12 @@ function world({ posts, ai = {}, users = {}, failIssue = new Set(), failReply = 
       return ok({ data: ids.filter(id => users[id]).map(id => ({ id, ...users[id] })) })
     }
     if (url.includes('api.x.ai/v1/chat')) {
+      calls.aiCalls++
       const text = JSON.parse(init.body).messages[1].content.match(/<post>\n([\s\S]*?)\n<\/post>/)[1]
       return ai[text] ?? answer({ bug: true, title: `AI: ${text}`, whats_wrong: 'W' })
     }
     if (url.endsWith('/labels')) return fail(422)
+    if (url.includes('/issues?labels=from-x')) return ok(existing.map(id => ({ body: `Reported on X: https://x.com/someone/status/${id}` })))
     if (url.endsWith('/issues')) {
       const issue = JSON.parse(init.body)
       if (failIssue.has(issue.title)) return fail(502)
@@ -38,7 +40,7 @@ function world({ posts, ai = {}, users = {}, failIssue = new Set(), failReply = 
 }
 
 function memoryState(since) {
-  const s = { since, skipped: [], read: () => s.since, write: id => { s.since = id }, skip: line => s.skipped.push(line) }
+  const s = { since, notes: [], read: () => s.since, write: id => { s.since = id }, note: line => s.notes.push(line) }
   return s
 }
 
@@ -53,8 +55,17 @@ test('files bugs, records skipped posts, and moves since_id to the newest post',
   const state = memoryState()
   await run({ env: live, state, fetchImpl })
   assert.deepEqual(calls.issues.map(i => [i.title, i.labels]), [['AI: bar is broken', ['bug', 'from-x', 'needs-triage']]])
-  assert.deepEqual(state.skipped, ['https://x.com/i/status/2'])
+  assert.deepEqual(state.notes, ['filed: https://github.com/me/fork/issues/1 (https://x.com/i/status/1)', 'skipped, not a bug: https://x.com/i/status/2'])
   assert.equal(state.since, '3')
+})
+
+test('a post that already has an issue is not judged or filed again, even with since_id lost', async () => {
+  const { calls, fetchImpl } = world({ posts: [post('1', 'one is broken'), post('2', 'two is broken')], existing: ['1'] })
+  const state = memoryState()
+  await run({ env: live, state, fetchImpl })
+  assert.deepEqual(calls.issues.map(i => i.title), ['AI: two is broken'])
+  assert.equal(calls.aiCalls, 1)
+  assert.equal(state.notes[0], 'already filed: https://x.com/i/status/1')
 })
 
 test('authors are looked up only for posts being filed', async () => {
@@ -122,12 +133,12 @@ test('a failed X reply does not stop the run or refile the issue', async () => {
   assert.equal(state.since, '2')
 })
 
-test('test mode writes nothing to GitHub and records no skips', async () => {
+test('test mode writes nothing to GitHub but lists what it would do', async () => {
   const { calls, fetchImpl } = world({ posts: [post('1', 'bar is broken'), post('2', 'fix the site')], ai: { 'fix the site': answer({ bug: false }) } })
   const state = memoryState()
   await run({ env: { ...live, MODE: 'test' }, state, fetchImpl })
   assert.equal(calls.issues.length, 0)
-  assert.deepEqual(state.skipped, [])
+  assert.deepEqual(state.notes, ['would file: AI: bar is broken (https://x.com/i/status/1)', 'skipped, not a bug: https://x.com/i/status/2'])
   assert.equal(state.since, '2')
 })
 

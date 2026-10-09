@@ -13,7 +13,7 @@ on:
         default: test
 
 permissions:
-  contents: write   # commit state/
+  contents: read
 
 concurrency:
   group: x-mentions
@@ -29,6 +29,15 @@ jobs:
         with:
           node-version: 24
 
+      # since_id lives in the Actions cache, not in git. Cache keys can't be overwritten,
+      # so each run saves a new key and the next run restores the newest one by prefix.
+      - name: Restore state
+        uses: actions/cache/restore@v4
+        with:
+          path: state/
+          key: x-state-${{ github.run_id }}
+          restore-keys: x-state-
+
       - name: File tagged posts as issues and reply on X
         env:
           X_BEARER_TOKEN: ${{ secrets.X_READ_TOKEN }}
@@ -41,14 +50,10 @@ jobs:
           MODE: ${{ inputs.mode || vars.MODE || 'test' }}
         run: node scripts/x-mentions-to-issues.mjs
 
-      # Also after a failed run, so posts already handled aren't filed again.
+      # Also after a failed run, so posts already handled aren't judged again.
       - name: Save state
-        if: ${{ !cancelled() }}
-        run: |
-          [ -z "$(git status --porcelain -- state/)" ] && exit 0
-          git config user.name "omarchy-x-bot"
-          git config user.email "omarchy-x-bot@users.noreply.github.com"
-          git add state/
-          git commit -m "Remember the newest X mention"
-          git pull --rebase -q origin "$GITHUB_REF_NAME"  # main may have moved during the run
-          git push
+        if: ${{ !cancelled() && hashFiles('state/since_id.txt') != '' }}
+        uses: actions/cache/save@v4
+        with:
+          path: state/
+          key: x-state-${{ github.run_id }}-${{ github.run_attempt }}
