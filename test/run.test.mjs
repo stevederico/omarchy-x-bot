@@ -8,7 +8,7 @@ const answer = json => ok({ choices: [{ message: { content: JSON.stringify(json)
 
 // Fake X, xAI, and GitHub. `ai` maps post text to a model response; `issues` and `replies` record writes.
 function world({ posts, ai = {}, users = {}, failIssue = new Set(), failReply = false, existing = [] }) {
-  const calls = { issues: [], replies: [], userLookups: [], aiCalls: 0 }
+  const calls = { issues: [], replies: [], userLookups: [], judged: [] }
   const fetchImpl = async (url, init = {}) => {
     if (url.includes('/mentions?')) return ok({ data: [...posts].reverse(), meta: { newest_id: posts.at(-1).id } })
     if (url.includes('api.x.com/2/users?')) {
@@ -17,8 +17,9 @@ function world({ posts, ai = {}, users = {}, failIssue = new Set(), failReply = 
       return ok({ data: ids.filter(id => users[id]).map(id => ({ id, ...users[id] })) })
     }
     if (url.includes('api.x.ai/v1/chat')) {
-      calls.aiCalls++
-      const text = JSON.parse(init.body).messages[1].content.match(/<post>\n([\s\S]*?)\n<\/post>/)[1]
+      const { messages } = JSON.parse(init.body)
+      const text = messages[1].content.match(/<post>\n([\s\S]*?)\n<\/post>/)?.[1]
+      if (messages[0].content.startsWith('You turn a post')) calls.judged.push(text)
       return ai[text] ?? answer({ bug: true, title: `AI: ${text}`, whats_wrong: 'W' })
     }
     if (url.endsWith('/labels')) return fail(422)
@@ -81,7 +82,7 @@ test('a post that already has an issue is not judged or filed again, even with s
   const state = memoryState()
   await run({ env: live, state, fetchImpl })
   assert.deepEqual(calls.issues.map(i => i.title), ['AI: two is broken'])
-  assert.equal(calls.aiCalls, 1)
+  assert.deepEqual(calls.judged, ['two is broken'])
   assert.equal(state.notes[0], 'already filed: https://x.com/i/status/1')
 })
 

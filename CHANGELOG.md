@@ -1,3 +1,11 @@
+0.15.0
+
+  Add second pass
+  Read related issues
+  Read Omarchy repo
+  Cite upstream as code
+  Plan follow-up questions
+
 0.14.0
 
   Always ask version

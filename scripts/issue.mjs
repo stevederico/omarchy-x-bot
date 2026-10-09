@@ -1,7 +1,7 @@
 // Turn one X mention into a GitHub issue draft, and file it with the GitHub REST API via fetch.
 import { clip } from './ai.mjs'
 
-const GH = 'https://api.github.com'
+export const GH = 'https://api.github.com'
 
 // `bug` only goes on posts the AI called a bug; the rest stay drafts for triage.
 export const LABELS = ['bug', 'from-x', 'needs-triage']
@@ -69,7 +69,7 @@ export function stripMentions(text) {
   return text.replace(/(^|\s)@omarchy\b/gi, ' ').replace(/\s+/g, ' ').trim()
 }
 
-function headers(token) {
+export function headers(token) {
   return {
     authorization: `Bearer ${token}`,
     accept: 'application/vnd.github+json',

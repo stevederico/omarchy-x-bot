@@ -100,3 +100,27 @@ test('no version ask is added when the post gave system details or the model alr
   const asked = await draftIssue({ text: 'x', token: 't', fetchImpl: reply(JSON.stringify({ bug: true, title: 'T', whats_wrong: 'W', missing_info: ['Exact Omarchy version?'] })) })
   assert.doesNotMatch(asked.body, /CPU, and GPU/)
 })
+
+test('upstream references become code spans, never links or fork-local numbers', async () => {
+  const { codeRefs } = await import('../scripts/ai.mjs')
+  assert.equal(codeRefs('see #6475 and omacom/omarchy#14478 and `#12`'), 'see `omacom/omarchy#6475` and `omacom/omarchy#14478` and `omacom/omarchy#12`')
+  assert.equal(codeRefs('### Heading'), '### Heading')
+})
+
+test('the second pass rewrites the issue with related issues and repo context', async () => {
+  const { writeIssue } = await import('../scripts/ai.mjs')
+  let sent
+  const fetchImpl = async (url, init) => { sent = JSON.parse(init.body).messages[1].content; return reply(JSON.stringify({ title: 'Idle inhibits dropped during video', whats_wrong: 'W', same_as: '#6475: same bug.', known_workaround: 'Toggle idle off (#6475).', likely_area: 'shell/plugins/services/idle', steps_to_try: ['Run omarchy-toggle-idle'], missing_info: ['Output of `omarchy-debug`'] }))() }
+  const r = await writeIssue({ text: 'post', draft: { title: 'T', body: 'B' }, related: [{ number: 6475, title: 'D-Bus idle', body: 'details' }], context: 'bin/omarchy-toggle-idle', token: 't', fetchImpl })
+  assert.equal(r.title, 'Idle inhibits dropped during video')
+  assert.match(r.body, /### Likely the same as\n\n`omacom\/omarchy#6475`: same bug\./)
+  assert.match(r.body, /### Known workaround\n\nToggle idle off \(`omacom\/omarchy#6475`\)\./)
+  assert.match(sent, /<related>\n#6475 D-Bus idle\ndetails\n<\/related>/)
+  assert.match(sent, /<context>\nbin\/omarchy-toggle-idle\n<\/context>/)
+})
+
+test('a failed second pass returns null so the first draft is kept', async () => {
+  const { writeIssue } = await import('../scripts/ai.mjs')
+  assert.equal(await writeIssue({ text: 'p', draft: { title: 'T', body: 'B' }, token: 't', fetchImpl: status(500) }), null)
+  assert.equal(await writeIssue({ text: 'p', draft: { title: 'T', body: 'B' }, token: 't', fetchImpl: reply('{"title":""}') }), null)
+})

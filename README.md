@@ -34,6 +34,7 @@ Test mode prints each issue it would file and writes nothing to GitHub. Without 
 - **Omarchy's bug template**: Grok fills in What's wrong?, System details when the post has them, the likely area, steps to try, and a Missing info checklist
 - **Bugs only**: support questions, ideas, and jokes are skipped and listed on the run's summary page
 - **No made-up facts**: details the post doesn't give are left out and asked for in a Missing info checklist
+- **Second pass**: Grok rewrites the issue after reading the matching upstream issues and the Omarchy codebase (AGENTS.md, files matching the bug, the user manual page), so it names real files and commands, the likely root cause, and any known workaround
 - **Possibly related upstream**: a broad search of `omacom/omarchy` issues, then Grok picks up to 3 that match, listed as plain text so omacom gets no backlinks
 - **Original post kept** under the AI summary, with the author's name, @handle, and link
 - **Retries later** if the AI API fails in any way (rate limit, outage, timeout, bad key, retired model); the run goes red and nothing is filed without a verdict

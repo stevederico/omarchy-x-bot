@@ -3,7 +3,8 @@
 import { readFileSync, writeFileSync, appendFileSync, existsSync, mkdirSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { fetchMentions, fetchUsers, postReply } from './x.mjs'
-import { draftIssue, pickRelated, AIUnavailableError } from './ai.mjs'
+import { draftIssue, pickRelated, writeIssue, AIUnavailableError } from './ai.mjs'
+import { withBodies, repoContext } from './context.mjs'
 import { toIssue, fileIssue, ensureLabels, isReport, parentOf, filedPostIds, findCandidates } from './issue.mjs'
 
 const SINCE = new URL('../state/since_id.txt', import.meta.url)
@@ -81,6 +82,14 @@ export async function run({ env = process.env, state = fileState, fetchImpl = fe
           } catch (e) {
             console.error(`${e.message}; filing without related issues`)
           }
+        }
+        // Second pass: rewrite the draft with the related issues' bodies and the Omarchy codebase.
+        if (ai) {
+          const [relatedFull, context] = token
+            ? await Promise.all([withBodies({ related, token, fetchImpl }), repoContext({ terms: ai.search, token, fetchImpl })])
+            : [related, '']
+          const better = await writeIssue({ text: post.text, parentText: parentOf(post, tweets)?.text, draft: ai, related: relatedFull, context, token: env.XAI_API_KEY, model: env.AI_MODEL, fetchImpl })
+          if (better) ai = { ...ai, ...better }
         }
         const issue = toIssue(post, { users, tweets, ai, related })
         if (!live) {

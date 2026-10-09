@@ -84,3 +84,13 @@ Many reports show the bug in an image instead of describing it.
 2. **Issue:** embed each image (or a video's preview frame and link) under "What's wrong?".
 3. **AI:** send the images to a vision model so it can read error text and settings shown in the screenshot.
 4. **Guardrails:** link to X's own media URLs and don't re-host them. Never run or open anything else in the post.
+
+## Later: follow-up questions in the X reply
+
+The reply asks the reporter for what the issue is missing, so they can answer right on X.
+
+1. **Questions:** the top 1 or 2 items from the issue's Missing info list (e.g. "Which browser were you using?"), plus a pointer to `omarchy-debug`.
+2. **Safety:** the questions come from a fixed set of templates filled with plain words, never free AI text, so a crafted post can't make the bot say anything else. Fits within 280 characters with the issue link.
+3. **Answers:** the bot reads replies to its own post on later runs and adds them to the issue as a comment, quoting the reporter.
+4. **Guardrails:** one reply per post, only to the original reporter, and nothing if the issue is already closed.
+
