@@ -1,4 +1,4 @@
-# The bot, as a Cloudflare Worker that runs every 2 minutes.
+# The bot, as a Cloudflare Worker that runs every minute.
 # Secrets (npx wrangler secret put NAME): X_BEARER_TOKEN, GITHUB_TOKEN (Issues: read and write on TARGET_REPO),
 # XAI_API_KEY; optional RUN_KEY (POST /run to run now), and X_API_KEY, X_API_SECRET, X_REPLY_ACCESS_TOKEN,
 # X_REPLY_ACCESS_SECRET for replies from the bot's own X account.
@@ -8,11 +8,19 @@ compatibility_date = "2026-09-01"
 compatibility_flags = ["nodejs_compat"]
 
 [triggers]
-crons = ["*/2 * * * *"]
+crons = ["* * * * *"]
 
 [[kv_namespaces]]
 binding = "STATE"
 id = "d60c6c811aec4b0982666100c7074419"
+
+[[durable_objects.bindings]]
+name = "LOCK"
+class_name = "RunLock"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["RunLock"]
 
 [vars]
 MODE = "live"                        # anything but live only logs

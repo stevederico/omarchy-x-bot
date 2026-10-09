@@ -1,3 +1,8 @@
+0.20.0
+
+  Run every minute
+  Add run lock
+
 0.19.0
 
   Run bot in Worker

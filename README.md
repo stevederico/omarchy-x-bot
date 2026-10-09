@@ -27,7 +27,8 @@ Test mode prints each issue it would file and writes nothing to GitHub. Without 
 ## ✨ What's Included
 
 ### 🐦 **X Mentions**
-- **Every 2 minutes**, a read of new @omarchy mentions (Cloudflare cron), plus a `POST /run` endpoint for demos
+- **Every minute**, a read of new @omarchy mentions (Cloudflare cron), plus a `POST /run` endpoint for demos
+- **One run at a time**: a Durable Object lock skips a tick while a slow run is still going, so nothing is filed twice
 - **Keyword filter** sends only posts that say `bug`, `broken`, `fix`, `issue`, `crash`, `error`, `not working`, or `doesn't work` to the AI (word starts, any case)
 - **Typed tags and plain replies** to @omarchy both count
 - **Moving window** saves the last post handled after each one, so each run only pays for new posts and a crash never files a post twice
@@ -83,7 +84,7 @@ AI_MODEL=grok-4.20-non-reasoning     # optional; any xAI model id
 
 | Technology | Version | Purpose |
 |---|---|---|
-| **Cloudflare Workers** | cron, KV | Runs the bot every 2 minutes, keeps `since_id`, secrets, logs |
+| **Cloudflare Workers** | cron, KV, Durable Objects | Runs the bot every minute, keeps `since_id`, one-run lock, secrets, logs |
 | **Node** | 24 | Tests with `node:test`, and local runs |
 | **xAI API** | `grok-4.20-non-reasoning` | Decides bug or not, writes the issue |
 | **X API** | v2, pay-per-use | Mentions, authors, optional reply |

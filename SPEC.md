@@ -22,7 +22,7 @@ Out: approval queue, rate limits, vouch, close-the-loop replies.
 6. Before judging a post in live mode, skip it if an issue labeled `from-x` already links to it, so a lost cache never files duplicates.
 
 ## Runtime
-- A Cloudflare Worker (`worker/index.js`) runs the bot (`scripts/bot.mjs`) on a cron every 2 minutes. GitHub's own schedule was best-effort and never fired, so the GitHub Actions version lives on the `github-actions` branch.
+- A Cloudflare Worker (`worker/index.js`) runs the bot (`scripts/bot.mjs`) on a cron every minute, with a Durable Object lock so runs never overlap. GitHub's own schedule was best-effort and never fired, so the GitHub Actions version lives on the `github-actions` branch.
 - `since_id` stored in Workers KV, written once per run.
 - Secrets: `X_READ_TOKEN` (read mentions), `X_API_KEY`, `X_API_SECRET`, `X_REPLY_ACCESS_TOKEN`, `X_REPLY_ACCESS_SECRET` (optional, OAuth 1.0a for the replying account), `OMARCHY_X_BOT_TOKEN` (bot-account PAT with `issues: write`). `XAI_API_KEY` (Grok). GitHub Models was retired on 2026-07-30.
 

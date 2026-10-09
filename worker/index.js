@@ -1,4 +1,5 @@
-// Cloudflare Worker that runs the bot every 2 minutes. since_id lives in the STATE KV namespace.
+// Cloudflare Worker that runs the bot every minute. since_id lives in the STATE KV namespace,
+// and the RunLock Durable Object makes sure two runs never overlap and file the same post twice.
 import { run } from '../scripts/bot.mjs'
 
 const KEY = 'since_id'
@@ -15,12 +16,41 @@ export function kvState(kv) {
   }
 }
 
+// Longer than any run (cron runs stop at 15 minutes), so a crashed run's lock expires on its own.
+export const LOCK_MS = 15 * 60_000
+
+// One instance, strongly consistent: acquire either takes the lock or reports it's held.
+export class RunLock {
+  constructor(ctx) { this.ctx = ctx }
+  async fetch(request) {
+    const { pathname } = new URL(request.url)
+    const now = Date.now()
+    if (pathname === '/acquire') {
+      if (((await this.ctx.storage.get('until')) ?? 0) > now) return Response.json({ ok: false })
+      await this.ctx.storage.put('until', now + LOCK_MS)
+      return Response.json({ ok: true })
+    }
+    if (pathname === '/release') {
+      await this.ctx.storage.delete('until')
+      return Response.json({ ok: true })
+    }
+    return new Response('Not found', { status: 404 })
+  }
+}
+
+const lock = (env, action) => env.LOCK.get(env.LOCK.idFromName('run')).fetch(`https://lock/${action}`)
+
 export async function runOnce(env, fetchImpl = fetch) {
+  if (env.LOCK && !(await (await lock(env, 'acquire')).json()).ok) {
+    console.log('Previous run still going, skipping this one')
+    return { skipped: true }
+  }
   const state = kvState(env.STATE)
   try {
     return await run({ env, state, fetchImpl })
   } finally {
     await state.flush()
+    if (env.LOCK) await lock(env, 'release')
   }
 }
 
