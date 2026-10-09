@@ -38,13 +38,10 @@ test('an existing label (422) is fine', async () => {
   await ensureLabels({ repo: 'me/fork', token: 'x', fetchImpl })
 })
 
-test('only typed @omarchy plus a keyword counts as a report', () => {
+test('any mention with a keyword counts as a report', () => {
   const reply = { referenced_tweets: [{ type: 'replied_to', id: '1' }] }
   assert.equal(isReport({ ...reply, text: '@omarchy Welcome to X!' }), false)
-  assert.equal(isReport({ ...reply, text: '@omarchy please fix polkit, windows are broken' }), false)
-  assert.equal(isReport({ text: '@omarchy please fix polkit, windows are broken' }), true)
+  assert.equal(isReport({ ...reply, text: '@omarchy please fix polkit, windows are broken' }), true)
   assert.equal(isReport({ text: 'polkit is broken after update @omarchy' }), true)
-  assert.equal(isReport({ text: 'Hey @omarchy found a bug in the bar clock' }), true)
   assert.equal(isReport({ text: 'love it @omarchy' }), false)
-  assert.equal(isReport({ text: '@omarchy @dhh this is a real issue, @omarchy fix it' }), true)
 })
