@@ -44,3 +44,8 @@ test('any mention with a keyword counts as a report', () => {
   assert.equal(isReport({ text: 'polkit is broken after update @omarchy' }), true)
   assert.equal(isReport({ text: 'love it @omarchy' }), false)
 })
+
+test('a matched author shows up as name and handle', () => {
+  const issue = toIssue({ id: '99', author_id: '1', text: 'bug @omarchy' }, { users: { '1': { name: 'Alice Smith', username: 'alice' } } })
+  assert.match(issue.body, /Reported by Alice Smith \(@alice\) on X: https:\/\/x.com\/alice\/status\/99/)
+})

@@ -15,6 +15,16 @@ export async function fetchMentions({ accountId, sinceId, bearer, fetchImpl = fe
   return res.json()
 }
 
+// Look up name and handle for matched posts only, in one batch ($0.01 per user).
+export async function fetchUsers({ ids, bearer, fetchImpl = fetch }) {
+  if (!ids.length) return {}
+  const params = new URLSearchParams({ ids: [...new Set(ids)].slice(0, 100).join(',') })
+  const res = await fetchImpl(`${API}/users?${params}`, { headers: { authorization: `Bearer ${bearer}` } })
+  if (!res.ok) throw new Error(`X users ${res.status}: ${await res.text()}`)
+  const body = await res.json()
+  return Object.fromEntries((body.data ?? []).map(u => [u.id, u]))
+}
+
 export async function postReply({ text, inReplyTo, userToken, fetchImpl = fetch }) {
   const res = await fetchImpl(`${API}/tweets`, {
     method: 'POST',
