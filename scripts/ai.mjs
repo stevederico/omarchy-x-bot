@@ -108,6 +108,9 @@ export async function draftIssue({ text, parentText, token, model, fetchImpl = f
     // Leave the section out when the post gives no details; missing_info asks for them instead.
     const raw = String(json.system_details ?? '').trim()
     const details = /^(not mentioned|none|n\/a|unknown)?\.?$/i.test(raw) ? '' : keepSourceLinks(raw, source)
+    // Without System details, always ask for them.
+    if (!details && Array.isArray(json.missing_info) && !json.missing_info.some(s => /version/i.test(s))) json.missing_info.unshift('Omarchy version, CPU, and GPU')
+    if (!details && !Array.isArray(json.missing_info)) json.missing_info = ['Omarchy version, CPU, and GPU', 'Output of `omarchy-debug`']
     const list = (key, mark) => (Array.isArray(json[key]) ? json[key] : []).map(s => `${mark} ${keepSourceLinks(String(s), source)}`).join('\n')
     let body = `${details ? `### System details\n\n${details}\n\n` : ''}### What's wrong?\n\n${keepSourceLinks(String(json.whats_wrong), source)}`
     if (json.likely_area) body += `\n\n### Likely area\n\n${keepSourceLinks(String(json.likely_area), source)}`

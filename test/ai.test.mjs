@@ -8,7 +8,7 @@ const status = code => async () => ({ ok: false, status: code, text: async () =>
 test('fills in the bug template from the model JSON, even inside a code fence', async () => {
   const d = await draftIssue({ text: 'x', token: 't', fetchImpl: reply('```json\n{"bug":true,"title":"T","system_details":"","whats_wrong":"W"}\n```') })
   assert.equal(d.title, 'T')
-  assert.equal(d.body, "### What's wrong?\n\nW\n\n### Missing info\n\n- [ ] Output of `omarchy-debug`")
+  assert.equal(d.body, "### What's wrong?\n\nW\n\n### Missing info\n\n- [ ] Omarchy version, CPU, and GPU\n- [ ] Output of `omarchy-debug`")
 })
 
 test('system details show only when the post gives them', async () => {
@@ -25,7 +25,7 @@ test('adds the likely area, steps to try, and missing info, under the AI note', 
   const d = await draftIssue({ text: 'x', token: 't', fetchImpl: reply(content) })
   assert.match(d.body, /### Likely area\n\nProbably hypridle\./)
   assert.match(d.body, /### Steps to try\n\n1\. Play a video\n1\. Wait/)
-  assert.match(d.body, /### Missing info\n\n- \[ \] Which app\?\n- \[ \] Output of `omarchy-debug`$/)
+  assert.match(d.body, /### Missing info\n\n- \[ \] Omarchy version, CPU, and GPU\n- \[ \] Which app\?\n- \[ \] Output of `omarchy-debug`$/)
 })
 
 test('a stray { in reasoning before the answer does not break parsing', async () => {
@@ -92,4 +92,11 @@ test('pickRelated returns none on any failure, so filing goes on', async () => {
   assert.deepEqual(await pickRelated({ report: 'r', candidates, token: 't', fetchImpl: status(429) }), [])
   assert.deepEqual(await pickRelated({ report: 'r', candidates, token: 't', fetchImpl: reply('nope') }), [])
   assert.deepEqual(await pickRelated({ report: 'r', candidates: [], token: 't', fetchImpl: async () => { throw new Error('no call') } }), [])
+})
+
+test('no version ask is added when the post gave system details or the model already asked', async () => {
+  const withDetails = await draftIssue({ text: 'x', token: 't', fetchImpl: reply(JSON.stringify({ bug: true, title: 'T', whats_wrong: 'W', system_details: 'Omarchy 3.1', missing_info: ['Which app?'] })) })
+  assert.doesNotMatch(withDetails.body, /CPU, and GPU/)
+  const asked = await draftIssue({ text: 'x', token: 't', fetchImpl: reply(JSON.stringify({ bug: true, title: 'T', whats_wrong: 'W', missing_info: ['Exact Omarchy version?'] })) })
+  assert.doesNotMatch(asked.body, /CPU, and GPU/)
 })
