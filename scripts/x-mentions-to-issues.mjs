@@ -20,14 +20,14 @@ export const fileState = {
 export async function run({ env = process.env, state = fileState, fetchImpl = fetch } = {}) {
   const repo = env.TARGET_REPO || 'stevederico/omarchy'
   const accountId = env.X_ACCOUNT_ID || '2108454467309883392'
-  const dryRun = String(env.DRY_RUN ?? 'true') !== 'false'
+  const live = String(env.MODE ?? '').toLowerCase() === 'live' // anything else is test mode
   const replyOnX = Boolean(env.X_OMARCHY_USER_TOKEN) // no token, no reply; issues only
   const bearer = env.X_BEARER_TOKEN
   const token = env.GH_TOKEN
 
   if (repo.toLowerCase() === 'omacom/omarchy') throw new Error('Refusing to file into omacom/omarchy from the prototype. Use a fork.')
   // Without a verdict, every keyword match would be filed, and nearly all of them are chatter.
-  if (!dryRun && !env.XAI_API_KEY) throw new Error('XAI_API_KEY is required to go live.')
+  if (live && !env.XAI_API_KEY) throw new Error('XAI_API_KEY is required to go live.')
 
   const sinceId = state.read()
   const res = await fetchMentions({ accountId, sinceId, bearer, fetchImpl })
@@ -35,8 +35,8 @@ export async function run({ env = process.env, state = fileState, fetchImpl = fe
   const tweets = Object.fromEntries((res.includes?.tweets ?? []).map(t => [t.id, t]))
   const users = {}
 
-  console.log(`${posts.length} new mention(s), ${posts.filter(isReport).length} look like reports, since ${sinceId ?? 'the start'}; target ${repo}; dry run ${dryRun}; reply on X ${replyOnX}`)
-  if (!dryRun && posts.some(isReport)) await ensureLabels({ repo, token, fetchImpl })
+  console.log(`${posts.length} new mention(s), ${posts.filter(isReport).length} look like reports, since ${sinceId ?? 'the start'}; target ${repo}; mode ${live ? 'live' : 'test'}; reply on X ${replyOnX}`)
+  if (live && posts.some(isReport)) await ensureLabels({ repo, token, fetchImpl })
 
   for (const post of posts) {
     if (isReport(post)) {
@@ -50,7 +50,7 @@ export async function run({ env = process.env, state = fileState, fetchImpl = fe
       }
       if (ai?.bug === false) {
         console.log(`skip, not a bug: https://x.com/i/status/${post.id}`)
-        if (!dryRun) state.skip(`https://x.com/i/status/${post.id}`)
+        if (live) state.skip(`https://x.com/i/status/${post.id}`)
       } else {
         // Look up authors only for posts being filed ($0.01 per user).
         if (!(post.author_id in users)) {
@@ -62,7 +62,7 @@ export async function run({ env = process.env, state = fileState, fetchImpl = fe
           users[post.author_id] ??= null
         }
         const issue = toIssue(post, { users, tweets, ai })
-        if (dryRun) {
+        if (!live) {
           console.log(`would file: ${issue.title} [${issue.labels.join(', ')}]\n  from ${issue.url}\n${issue.body.replace(/^/gm, '  | ')}`)
         } else {
           const issueUrl = await fileIssue({ repo, ...issue, token, fetchImpl })

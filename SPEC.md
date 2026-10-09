@@ -13,7 +13,7 @@ Out: approval queue, rate limits, vouch, duplicate check, close-the-loop replies
 2. For each new mention with a keyword (skip @omarchy's own posts), oldest first, Grok (xAI API) reads the post and its parent as untrusted text and decides:
    - **Bug:** title (under 80 chars) and body in the bug template, marked as an AI summary, with links not in the posts removed. Labels: `bug`, `from-x`, `needs-triage`.
    - **Not a bug:** no issue. The post URL is added to `state/skipped.txt` so it can be reviewed or replayed.
-   - **No verdict** (unusable answer, or no key in a dry run): a draft issue titled `[X] ` + first 80 chars of the post (or its parent). Labels: `from-x`, `needs-triage`. No `bug` label, since nothing checked it.
+   - **No verdict** (unusable answer, or no key in test mode): a draft issue titled `[X] ` + first 80 chars of the post (or its parent). Labels: `from-x`, `needs-triage`. No `bug` label, since nothing checked it.
    - **AI API fails** (rate limit, outage, timeout, bad key, retired model, non-JSON reply): stop the run and fail the job. The next run retries from this post. A live run refuses to start without `XAI_API_KEY`.
    - Every issue body keeps the author handle, post URL, quoted post text, and the footer "Filed automatically from X (prototype)."
 3. Look up the author only for posts being filed, and create the issue with the GitHub REST API.

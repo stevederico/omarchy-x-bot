@@ -13,17 +13,17 @@
 ```bash
 git clone https://github.com/stevederico/omarchy-x-bot && cd omarchy-x-bot
 npm test
-DRY_RUN=true X_BEARER_TOKEN=... XAI_API_KEY=... node scripts/x-mentions-to-issues.mjs
+MODE=test X_BEARER_TOKEN=... XAI_API_KEY=... node scripts/x-mentions-to-issues.mjs
 ```
 
-A dry run prints each issue it would file and writes nothing to GitHub. Without `XAI_API_KEY`, a dry run prints plain draft issues and no AI draft. A live run refuses to start without it.
+Test mode prints each issue it would file and writes nothing to GitHub. Without `XAI_API_KEY`, test mode prints plain draft issues and no AI draft. Live mode refuses to start without it.
 
 <br />
 
 ## ✨ What's Included
 
 ### 🐦 **X Mentions**
-- **Hourly read** of new @omarchy mentions at :23, plus a manual run button
+- **Hourly read** of new @omarchy mentions at :23, plus a manual run button with a test or live choice
 - **Keyword filter** files only posts that say `bug`, `broken`, `fix`, or `issue`
 - **Typed tags and plain replies** to @omarchy both count
 - **Moving window** saves the last post handled after each one, so each run only pays for new posts and a crash never files a post twice
@@ -37,7 +37,7 @@ A dry run prints each issue it would file and writes nothing to GitHub. Without 
 - **Falls back** to a draft issue without the `bug` label if the model's answer is unusable
 
 ### 🛡️ **Safety**
-- **Dry run by default** on every scheduled run
+- **Test mode by default**: only `MODE=live` files issues; unset or anything else just logs
 - **Refuses `omacom/omarchy`**; files into a fork only
 - **No X reply** unless an @omarchy token is set
 - **No GitHub pings**: @handles from X are broken so they never @mention GitHub users
@@ -62,7 +62,7 @@ Variables (optional):
 TARGET_REPO=stevederico/omarchy      # where issues go
 X_ACCOUNT_ID=2108454467309883392     # @omarchy
 AI_MODEL=grok-4.20-non-reasoning     # any xAI model id; default is in scripts/ai.mjs
-DRY_RUN=true                         # set to false to go live
+MODE=test                            # test logs only; live files issues and replies
 ```
 
 GitHub Models was retired on July 30, 2026, so the AI is xAI's API, paid per token.

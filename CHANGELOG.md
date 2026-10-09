@@ -1,3 +1,10 @@
+0.5.0
+
+  Replace DRY_RUN
+  Add MODE variable
+  Default to test
+  Add mode picker
+
 0.4.0
 
   Switch to xAI

@@ -42,7 +42,7 @@ function memoryState(since) {
   return s
 }
 
-const live = { DRY_RUN: 'false', TARGET_REPO: 'me/fork', X_ACCOUNT_ID: '0', XAI_API_KEY: 'k', GH_TOKEN: 'g', X_BEARER_TOKEN: 'x' }
+const live = { MODE: 'live', TARGET_REPO: 'me/fork', X_ACCOUNT_ID: '0', XAI_API_KEY: 'k', GH_TOKEN: 'g', X_BEARER_TOKEN: 'x' }
 const post = (id, text, author = 'a') => ({ id, text, author_id: author })
 
 test('files bugs, records skipped posts, and moves since_id to the newest post', async () => {
@@ -79,6 +79,17 @@ test('a rate-limited AI stops the run before that post, without filing it', asyn
   assert.equal(state.since, '1')
 })
 
+test('only MODE=live files; unset, test, or anything else is test mode', async () => {
+  for (const MODE of [undefined, '', 'test', 'TEST', 'false', 'dry']) {
+    const { calls, fetchImpl } = world({ posts: [post('1', 'bar is broken')] })
+    await run({ env: { ...live, MODE }, state: memoryState(), fetchImpl })
+    assert.equal(calls.issues.length, 0, `MODE=${MODE}`)
+  }
+  const { calls, fetchImpl } = world({ posts: [post('1', 'bar is broken')] })
+  await run({ env: { ...live, MODE: 'LIVE' }, state: memoryState(), fetchImpl })
+  assert.equal(calls.issues.length, 1)
+})
+
 test('going live without an xAI key is refused', async () => {
   await assert.rejects(run({ env: { ...live, XAI_API_KEY: '' }, state: memoryState(), fetchImpl: async () => { throw new Error('no calls') } }), /XAI_API_KEY/)
 })
@@ -111,10 +122,10 @@ test('a failed X reply does not stop the run or refile the issue', async () => {
   assert.equal(state.since, '2')
 })
 
-test('a dry run writes nothing to GitHub and records no skips', async () => {
+test('test mode writes nothing to GitHub and records no skips', async () => {
   const { calls, fetchImpl } = world({ posts: [post('1', 'bar is broken'), post('2', 'fix the site')], ai: { 'fix the site': answer({ bug: false }) } })
   const state = memoryState()
-  await run({ env: { ...live, DRY_RUN: 'true' }, state, fetchImpl })
+  await run({ env: { ...live, MODE: 'test' }, state, fetchImpl })
   assert.equal(calls.issues.length, 0)
   assert.deepEqual(state.skipped, [])
   assert.equal(state.since, '2')

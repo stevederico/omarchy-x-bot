@@ -6,10 +6,11 @@ on:
     - cron: '23 * * * *'
   workflow_dispatch:
     inputs:
-      dry_run:
-        description: 'Log what would be filed and replied, without writing'
-        type: boolean
-        default: true
+      mode:
+        description: 'test logs what would be filed and replied; live files and replies'
+        type: choice
+        options: [test, live]
+        default: test
 
 permissions:
   contents: write   # commit state/
@@ -37,8 +38,7 @@ jobs:
           AI_MODEL: ${{ vars.AI_MODEL }}
           X_ACCOUNT_ID: ${{ vars.X_ACCOUNT_ID || '2108454467309883392' }}
           TARGET_REPO: ${{ vars.TARGET_REPO || 'stevederico/omarchy' }}
-          # format() turns a false input into the string 'false', so it isn't skipped.
-          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && format('{0}', inputs.dry_run) || vars.DRY_RUN || 'true' }}
+          MODE: ${{ inputs.mode || vars.MODE || 'test' }}
         run: node scripts/x-mentions-to-issues.mjs
 
       # Also after a failed run, so posts already handled aren't filed again.
