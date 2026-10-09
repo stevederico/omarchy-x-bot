@@ -39,4 +39,4 @@ for (const post of reports) {
 }
 
 const newest = res.meta?.newest_id
-if (newest && !dryRun) writeFileSync(STATE, `${newest}\n`)
+if (newest) writeFileSync(STATE, `${newest}\n`)
