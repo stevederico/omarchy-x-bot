@@ -49,3 +49,25 @@ Risks to solve first:
 - Privacy. Commands are public posts, so keep the action set non-sensitive.
 
 Relationship to the plan: this builds on `plans/remote.md` and reuses the same mention-polling loop. Phase: after the issue bot is proven (Phase 3+).
+
+## Later: turn a tag into a pull request
+
+When a filed bug is small and clear, the bot also opens a draft PR with a proposed fix.
+
+1. **Trigger:** a maintainer adds a label (e.g. `x-try-fix`) to the issue. Nothing opens on its own.
+2. **Agent:** a coding agent reads the issue, the repo's `AGENTS.md`, and `agents/skills/`, then writes the fix on a branch in a fork.
+3. **PR:** a draft that links the issue and the X post, follows Omarchy's PR standards, and runs the acceptance tests.
+4. **Guardrails:** draft only, never merged by the bot, a cap on PRs per day, and a human review every time.
+5. **X reply (optional):** "Proposed fix: <PR link>".
+
+## Later: recommend plugins from the plugin marketplace
+
+Some reports are already solved by a community plugin. The bot points people there.
+
+1. **Source:** the catalog in [omacom/omarchy-plugin-marketplace](https://github.com/omacom/omarchy-plugin-marketplace), refreshed each run.
+2. **Match:** the AI compares the post with each plugin's name and description and picks at most 3 that clearly fit, or none.
+3. **Where it shows up:**
+   - a "Plugins that might help" section in the issue or PR
+   - the X reply, when there's an @omarchy token
+   - posts that aren't bugs (support or feature ideas), which can get a plugin suggestion instead of an issue
+4. **Guardrails:** recommend only plugins listed in the marketplace, link to each one's page, and never install anything.
