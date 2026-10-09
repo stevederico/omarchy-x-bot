@@ -8,7 +8,7 @@ test('a tagged post becomes an issue with link and labels', () => {
   assert.equal(issue.title, '[X] wifi drops after resume')
   assert.match(issue.body, /Reported on X: https:\/\/x.com\/i\/status\/99/)
   assert.match(issue.body, /> @omarchy wifi drops after resume/)
-  assert.deepEqual(issue.labels, ['from-x', 'needs-triage'])
+  assert.deepEqual(issue.labels, ['bug', 'from-x', 'needs-triage'])
 })
 
 test('a bare tag under a post takes its title from the parent', () => {
@@ -26,10 +26,10 @@ test('mentions are stripped from the title only', () => {
 test('the issue is POSTed to the target repo with both labels', async () => {
   let call
   const fetchImpl = async (url, init) => { call = { url, init }; return { ok: true, json: async () => ({ html_url: 'https://github.com/me/fork/issues/1' }) } }
-  const url = await fileIssue({ repo: 'me/fork', title: 't', body: 'b', labels: ['from-x', 'needs-triage'], token: 'x', fetchImpl })
+  const url = await fileIssue({ repo: 'me/fork', title: 't', body: 'b', labels: ['bug', 'from-x', 'needs-triage'], token: 'x', fetchImpl })
   assert.equal(url, 'https://github.com/me/fork/issues/1')
   assert.equal(call.url, 'https://api.github.com/repos/me/fork/issues')
-  assert.deepEqual(JSON.parse(call.init.body), { title: 't', body: 'b', labels: ['from-x', 'needs-triage'] })
+  assert.deepEqual(JSON.parse(call.init.body), { title: 't', body: 'b', labels: ['bug', 'from-x', 'needs-triage'] })
 })
 
 test('an existing label (422) is fine', async () => {

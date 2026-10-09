@@ -4,9 +4,10 @@ import { draftIssue } from '../scripts/ai.mjs'
 
 const reply = content => async () => ({ ok: true, json: async () => ({ choices: [{ message: { content } }] }) })
 
-test('parses the JSON the model returns, even inside a code fence', async () => {
-  const d = await draftIssue({ text: 'x', token: 't', fetchImpl: reply('```json\n{"title":"T","body":"B"}\n```') })
-  assert.deepEqual(d, { title: 'T', body: 'B' })
+test('fills in the bug template from the model JSON, even inside a code fence', async () => {
+  const d = await draftIssue({ text: 'x', token: 't', fetchImpl: reply('```json\n{"bug":true,"title":"T","system_details":"","whats_wrong":"W"}\n```') })
+  assert.equal(d.title, 'T')
+  assert.equal(d.body, "### System details\n\nNot mentioned\n\n### What's wrong?\n\nW")
 })
 
 test('returns null on bad output or no token, so the plain issue is used', async () => {
