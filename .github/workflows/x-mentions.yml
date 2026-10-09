@@ -30,7 +30,7 @@ jobs:
 
       - name: File tagged posts as issues and reply on X
         env:
-          X_BEARER_TOKEN: ${{ secrets.X_BEARER_TOKEN }}
+          X_BEARER_TOKEN: ${{ secrets.X_READ_TOKEN }}
           X_OMARCHY_USER_TOKEN: ${{ secrets.X_OMARCHY_USER_TOKEN }}
           GH_TOKEN: ${{ secrets.OMARCHY_X_BOT_TOKEN }}
           X_ACCOUNT_ID: ${{ vars.X_ACCOUNT_ID || '2108454467309883392' }}
