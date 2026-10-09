@@ -74,3 +74,12 @@ Some reports are already solved by a community plugin. The bot points people the
    - the X reply, when there's an @omarchy token
    - posts that aren't bugs (support or feature ideas), which can get a plugin suggestion instead of an issue
 4. **Guardrails:** recommend only plugins listed in the marketplace, link to each one's page, and never install anything.
+
+## Later: screenshots and video from the post
+
+Many reports show the bug in an image instead of describing it.
+
+1. **Read:** request `attachments.media_keys` with `media.fields=url,preview_image_url,type,alt_text`. Media comes in the same mentions call, so there are no extra reads.
+2. **Issue:** embed each image (or a video's preview frame and link) under "What's wrong?".
+3. **AI:** send the images to a vision model so it can read error text and settings shown in the screenshot.
+4. **Guardrails:** link to X's own media URLs and don't re-host them. Never run or open anything else in the post.
