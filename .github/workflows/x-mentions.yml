@@ -1,0 +1,48 @@
+name: X mentions to issues
+
+on:
+  schedule:
+    # Hourly, off the hour, like the org's other scheduled jobs.
+    - cron: '23 * * * *'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Log what would be filed and replied, without writing'
+        type: boolean
+        default: true
+
+permissions:
+  contents: write   # commit state/since_id.txt
+
+concurrency:
+  group: x-mentions
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: File tagged posts as issues and reply on X
+        env:
+          X_BEARER_TOKEN: ${{ secrets.X_BEARER_TOKEN }}
+          X_OMARCHY_USER_TOKEN: ${{ secrets.X_OMARCHY_USER_TOKEN }}
+          GH_TOKEN: ${{ secrets.OMARCHY_X_BOT_TOKEN }}
+          X_ACCOUNT_ID: ${{ vars.X_ACCOUNT_ID || '2108454467309883392' }}
+          TARGET_REPO: ${{ vars.TARGET_REPO || 'stevederico/omarchy' }}
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || vars.DRY_RUN || 'true' }}
+        run: node scripts/x-mentions-to-issues.mjs
+
+      - name: Save since_id
+        run: |
+          git diff --quiet -- state/since_id.txt && exit 0
+          git config user.name "omarchy-x-bot"
+          git config user.email "omarchy-x-bot@users.noreply.github.com"
+          git add state/since_id.txt
+          git commit -m "Remember the newest X mention"
+          git push

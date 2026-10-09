@@ -1,0 +1,11 @@
+{
+  "name": "omarchy-x-bot",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=24" },
+  "scripts": {
+    "mentions": "node scripts/x-mentions-to-issues.mjs",
+    "test": "node --test test/"
+  }
+}
