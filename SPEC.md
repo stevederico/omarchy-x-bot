@@ -94,3 +94,11 @@ The reply asks the reporter for what the issue is missing, so they can answer ri
 3. **Answers:** the bot reads replies to its own post on later runs and adds them to the issue as a comment, quoting the reporter.
 4. **Guardrails:** one reply per post, only to the original reporter, and nothing if the issue is already closed.
 
+## Later: replies when people tag the bot
+
+X's API (since 2026-02-23) and automation rules only allow a reply when the post mentions or quotes the replying account. A bot can't reply to posts that tag only @omarchy, so replies are off.
+
+1. **Summoned only:** watch mentions of the bot account (e.g. @OmarchyBot), and reply only to posts that tag it.
+2. **Same pipeline:** those posts are judged and filed like @omarchy mentions; the reply is the fixed "Tracked: <issue>" message.
+3. **Or @omarchy itself:** if omacom adopts the bot and authorizes it with the @omarchy account, it can reply to its own mentions.
+
