@@ -1,22 +1,40 @@
-// Cloudflare Worker: start the X-mentions workflow on a reliable cron. GitHub's own schedule is best-effort
-// and can be hours late or skipped; Cloudflare cron triggers fire on time, and the workflow does the rest.
-export async function dispatch(env, fetchImpl = fetch) {
-  const res = await fetchImpl(`https://api.github.com/repos/${env.REPO}/actions/workflows/${env.WORKFLOW}/dispatches`, {
-    method: 'POST',
-    headers: {
-      authorization: `Bearer ${env.GITHUB_TOKEN}`,
-      accept: 'application/vnd.github+json',
-      'x-github-api-version': '2022-11-28',
-      'user-agent': 'omarchy-x-bot-trigger'
-    },
-    // auto: the workflow follows its MODE variable, so going live or back to test is one GitHub setting.
-    body: JSON.stringify({ ref: env.REF, inputs: { mode: 'auto' } })
-  })
-  if (res.status !== 204) throw new Error(`GitHub dispatch ${res.status}: ${await res.text()}`)
+// Cloudflare Worker that runs the bot every 2 minutes. since_id lives in the STATE KV namespace.
+import { run } from '../scripts/bot.mjs'
+
+const KEY = 'since_id'
+
+// Reads come from KV; the newest handled post is written back once per run, even if the run fails midway,
+// so a crash never files a post twice and the run stays well under KV's free write limit.
+export function kvState(kv) {
+  let start, latest
+  return {
+    read: async () => (start = latest = (await kv.get(KEY)) ?? undefined),
+    write: id => { latest = id },
+    note: line => console.log(line),
+    flush: async () => { if (latest && latest !== start) await kv.put(KEY, latest) }
+  }
+}
+
+export async function runOnce(env, fetchImpl = fetch) {
+  const state = kvState(env.STATE)
+  try {
+    return await run({ env, state, fetchImpl })
+  } finally {
+    await state.flush()
+  }
 }
 
 export default {
   async scheduled(event, env, ctx) {
-    ctx.waitUntil(dispatch(env))
+    ctx.waitUntil(runOnce(env))
+  },
+
+  // POST /run with the RUN_KEY secret runs the bot now, for demos. Without RUN_KEY set, there's no endpoint.
+  async fetch(request, env) {
+    const url = new URL(request.url)
+    if (!env.RUN_KEY || request.method !== 'POST' || url.pathname !== '/run') return new Response('Not found', { status: 404 })
+    if (request.headers.get('authorization') !== `Bearer ${env.RUN_KEY}`) return new Response('Unauthorized', { status: 401 })
+    const result = await runOnce(env)
+    return Response.json(result)
   }
 }

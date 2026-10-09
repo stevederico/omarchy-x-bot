@@ -1,3 +1,10 @@
+0.19.0
+
+  Run bot in Worker
+  Store state in KV
+  Add run endpoint
+  Remove GitHub workflow
+
 0.18.0
 
   Follow MODE from cron

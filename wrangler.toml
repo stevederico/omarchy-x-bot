@@ -1,14 +1,23 @@
-# Cloudflare Worker that triggers .github/workflows/x-mentions.yml every 2 minutes.
-# Deploy: npx wrangler deploy, then npx wrangler secret put GITHUB_TOKEN
-# (a fine-grained token with Actions: read and write on REPO only).
+# The bot, as a Cloudflare Worker that runs every 2 minutes.
+# Secrets (npx wrangler secret put NAME): X_BEARER_TOKEN, GITHUB_TOKEN (Issues: read and write on TARGET_REPO),
+# XAI_API_KEY; optional RUN_KEY (POST /run to run now), and X_API_KEY, X_API_SECRET, X_REPLY_ACCESS_TOKEN,
+# X_REPLY_ACCESS_SECRET for replies from the bot's own X account.
 name = "omarchy-x-bot-trigger"
 main = "worker/index.js"
 compatibility_date = "2026-09-01"
+compatibility_flags = ["nodejs_compat"]
 
 [triggers]
 crons = ["*/2 * * * *"]
 
+[[kv_namespaces]]
+binding = "STATE"
+id = "d60c6c811aec4b0982666100c7074419"
+
 [vars]
-REPO = "stevederico/omarchy-x-bot"
-WORKFLOW = "x-mentions.yml"
-REF = "main"
+MODE = "live"                        # anything but live only logs
+TARGET_REPO = "stevederico/omarchy"  # never omacom/omarchy
+X_ACCOUNT_ID = "2108454467309883392" # @omarchy
+
+[observability]
+enabled = true

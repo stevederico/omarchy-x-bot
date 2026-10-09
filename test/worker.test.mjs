@@ -1,30 +1,39 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import worker, { dispatch } from '../worker/index.js'
+import worker, { kvState, runOnce } from '../worker/index.js'
 
-const env = { REPO: 'me/bot', WORKFLOW: 'x-mentions.yml', REF: 'main', GITHUB_TOKEN: 'tok' }
+const kv = (init = {}) => {
+  const m = new Map(Object.entries(init)); const puts = []
+  return { get: async k => m.get(k) ?? null, put: async (k, v) => { puts.push([k, v]); m.set(k, v) }, puts }
+}
 
-test('the cron dispatches the workflow on main with the token', async () => {
-  let call
-  await dispatch(env, async (url, init) => { call = { url, init }; return { status: 204 } })
-  assert.equal(call.url, 'https://api.github.com/repos/me/bot/actions/workflows/x-mentions.yml/dispatches')
-  assert.equal(call.init.headers.authorization, 'Bearer tok')
-  assert.deepEqual(JSON.parse(call.init.body), { ref: 'main', inputs: { mode: 'auto' } })
+test('KV state writes the newest id once, and only when it moved', async () => {
+  const store = kv({ since_id: '5' })
+  const s = kvState(store)
+  assert.equal(await s.read(), '5')
+  s.write('6'); s.write('7')
+  await s.flush()
+  assert.deepEqual(store.puts, [['since_id', '7']])
+  const same = kvState(store); await same.read(); await same.flush()
+  assert.equal(store.puts.length, 1)
 })
 
-test('a failed dispatch throws so it shows in the Worker logs', async () => {
-  await assert.rejects(dispatch(env, async () => ({ status: 403, text: async () => 'no' })), /GitHub dispatch 403: no/)
-})
-
-test('the scheduled handler hands the dispatch to waitUntil', async () => {
-  const waited = []
-  const real = globalThis.fetch
-  globalThis.fetch = async () => ({ status: 204 })
-  try {
-    await worker.scheduled({}, env, { waitUntil: p => waited.push(p) })
-    await Promise.all(waited)
-    assert.equal(waited.length, 1)
-  } finally {
-    globalThis.fetch = real
+test('a run that throws still saves the posts it handled', async () => {
+  const store = kv({ since_id: '1' })
+  const fetchImpl = async url => {
+    if (url.includes('/mentions?')) return { ok: true, json: async () => ({ data: [{ id: '3', text: 'hello', author_id: 'a' }, { id: '2', text: 'hi', author_id: 'a' }], meta: { newest_id: '3' } }) }
+    throw new Error(`unexpected ${url}`)
   }
+  await runOnce({ STATE: store, MODE: 'test', X_ACCOUNT_ID: '0' }, fetchImpl)
+  assert.deepEqual(store.puts, [['since_id', '3']])
+  const failing = async url => { if (url.includes('/mentions?')) throw new Error('X down'); throw new Error(url) }
+  await assert.rejects(runOnce({ STATE: store, MODE: 'test', X_ACCOUNT_ID: '0' }, failing), /X down/)
+  assert.equal(store.puts.length, 1)
+})
+
+test('the run endpoint needs RUN_KEY and a POST to /run', async () => {
+  const req = (path, init) => new Request(`https://w.dev${path}`, init)
+  assert.equal((await worker.fetch(req('/run', { method: 'POST' }), {})).status, 404)
+  assert.equal((await worker.fetch(req('/run', { method: 'GET' }), { RUN_KEY: 'k' })).status, 404)
+  assert.equal((await worker.fetch(req('/run', { method: 'POST', headers: { authorization: 'Bearer nope' } }), { RUN_KEY: 'k' })).status, 401)
 })

@@ -9,7 +9,8 @@ async function get(url, token, fetchImpl) {
   return res.json()
 }
 
-const decode = file => Buffer.from(file.content ?? '', 'base64').toString('utf8')
+// atob + TextDecoder, not Buffer, so this also runs in the Worker.
+const decode = file => new TextDecoder().decode(Uint8Array.from(atob((file.content ?? '').replace(/\s/g, '')), c => c.charCodeAt(0)))
 
 // The full bodies of the related upstream issues. Any one that fails is left as title only.
 export async function withBodies({ related, token, repo = UPSTREAM, fetchImpl = fetch }) {

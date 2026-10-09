@@ -1,6 +1,6 @@
 {
   "name": "omarchy-x-bot",
-  "version": "0.18.0",
+  "version": "0.19.0",
   "private": true,
   "license": "MIT",
   "type": "module",
@@ -8,10 +8,10 @@
     "node": ">=24"
   },
   "scripts": {
-    "mentions": "node scripts/x-mentions-to-issues.mjs",
     "test": "node --test test/",
-    "demo": "gh workflow run x-mentions.yml -f mode=live && sleep 5 && gh run watch $(gh run list -w x-mentions.yml -L 1 --json databaseId -q '.[0].databaseId') --exit-status",
-    "demo:test": "gh workflow run x-mentions.yml -f mode=test && sleep 5 && gh run watch $(gh run list -w x-mentions.yml -L 1 --json databaseId -q '.[0].databaseId') --exit-status",
-    "deploy": "npx wrangler deploy"
+    "mentions": "node scripts/x-mentions-to-issues.mjs",
+    "deploy": "npx wrangler deploy",
+    "logs": "npx wrangler tail",
+    "demo": "curl -fsS -X POST -H \"authorization: Bearer $RUN_KEY\" https://omarchy-x-bot-trigger.omarchy-x-bot.workers.dev/run"
   }
 }
