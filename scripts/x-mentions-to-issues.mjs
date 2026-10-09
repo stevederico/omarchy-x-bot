@@ -22,7 +22,8 @@ const users = Object.fromEntries((res.includes?.users ?? []).map(u => [u.id, u])
 const tweets = Object.fromEntries((res.includes?.tweets ?? []).map(t => [t.id, t]))
 
 console.log(`${posts.length} new mention(s) since ${sinceId ?? 'the start'}; target ${repo}; dry run ${dryRun}`)
-if (!dryRun && posts.length) ensureLabels(repo)
+const token = env.GH_TOKEN
+if (!dryRun && posts.length) await ensureLabels({ repo, token })
 
 for (const post of posts) {
   const issue = toIssue(post, { users, tweets })
@@ -30,7 +31,7 @@ for (const post of posts) {
     console.log(`would file: ${issue.title}\n  from ${issue.url}`)
     continue
   }
-  const issueUrl = fileIssue({ repo, ...issue })
+  const issueUrl = await fileIssue({ repo, ...issue, token })
   console.log(`filed ${issueUrl} for ${issue.url}`)
   await postReply({ text: `Tracked: ${issueUrl}`, inReplyTo: post.id, userToken: env.X_OMARCHY_USER_TOKEN })
 }

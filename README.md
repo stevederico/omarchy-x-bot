@@ -8,7 +8,7 @@ Prototype only: no approval, rate limits, vouch, or duplicate check. See `SPEC.m
 .github/workflows/x-mentions.yml   # hourly at :23 + manual run (dry run by default)
 scripts/x-mentions-to-issues.mjs   # the loop
 scripts/x.mjs                      # X API: mentions, reply
-scripts/issue.mjs                  # post -> issue, gh issue create
+scripts/issue.mjs                  # post -> issue, GitHub REST via fetch
 state/since_id.txt                 # newest mention handled
 test/issue.test.mjs                # node --test
 ```
@@ -29,3 +29,17 @@ Variables (optional):
 npm test
 DRY_RUN=true X_BEARER_TOKEN=... node scripts/x-mentions-to-issues.mjs
 ```
+
+## Dependencies
+**Zero npm packages.** `package.json` has no `dependencies` or `devDependencies`, and there is no lockfile or `npm ci` step.
+
+| What | Where it comes from | Why |
+|---|---|---|
+| Node 24 | `actions/setup-node` | Runs the `.mjs` scripts |
+| `fetch` | Node 24 built-in | X API (read mentions, post reply) and GitHub REST API (create labels, create issue) |
+| `node:fs` | Node built-in | Read and write `state/since_id.txt` |
+| `node:test`, `node:assert` | Node built-in | Tests |
+| `git` | GitHub-hosted runner | Commit the updated `since_id` |
+| `actions/checkout`, `actions/setup-node` | GitHub Actions | Standard workflow steps, not npm packages |
+
+Not used: `twitter-api-sdk`, `@octokit/*`, or any other library. The `gh` CLI and `jq` aren't needed either, since everything goes through `fetch`.

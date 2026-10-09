@@ -1,5 +1,5 @@
-// Turn one X mention into a GitHub issue draft, and file it with gh.
-import { execFileSync } from 'node:child_process'
+// Turn one X mention into a GitHub issue draft, and file it with the GitHub REST API via fetch.
+const GH = 'https://api.github.com'
 
 export const LABELS = ['from-x', 'needs-triage']
 
@@ -23,14 +23,31 @@ export function stripMentions(text) {
   return text.replace(/(^|\s)@omarchy\b/gi, ' ').replace(/\s+/g, ' ').trim()
 }
 
-export function fileIssue({ repo, title, body, labels }, run = execFileSync) {
-  const args = ['issue', 'create', '--repo', repo, '--title', title, '--body', body]
-  for (const l of labels) args.push('--label', l)
-  return run('gh', args, { encoding: 'utf8' }).trim() // gh prints the issue URL
+function headers(token) {
+  return {
+    authorization: `Bearer ${token}`,
+    accept: 'application/vnd.github+json',
+    'x-github-api-version': '2022-11-28',
+    'content-type': 'application/json',
+    'user-agent': 'omarchy-x-bot'
+  }
 }
 
-export function ensureLabels(repo, run = execFileSync) {
-  for (const l of LABELS) {
-    try { run('gh', ['label', 'create', l, '--repo', repo, '--force'], { stdio: 'ignore' }) } catch {}
+export async function fileIssue({ repo, title, body, labels, token, fetchImpl = fetch }) {
+  const res = await fetchImpl(`${GH}/repos/${repo}/issues`, {
+    method: 'POST', headers: headers(token), body: JSON.stringify({ title, body, labels })
+  })
+  if (!res.ok) throw new Error(`GitHub issue ${res.status}: ${await res.text()}`)
+  return (await res.json()).html_url
+}
+
+// Create the labels if missing; 422 means it already exists.
+export async function ensureLabels({ repo, token, fetchImpl = fetch }) {
+  const colors = { 'from-x': '000000', 'needs-triage': 'fbca04' }
+  for (const name of LABELS) {
+    const res = await fetchImpl(`${GH}/repos/${repo}/labels`, {
+      method: 'POST', headers: headers(token), body: JSON.stringify({ name, color: colors[name] })
+    })
+    if (!res.ok && res.status !== 422) throw new Error(`GitHub label ${res.status}: ${await res.text()}`)
   }
 }

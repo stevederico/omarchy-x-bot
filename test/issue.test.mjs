@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { toIssue, stripMentions, fileIssue } from '../scripts/issue.mjs'
+import { toIssue, stripMentions, fileIssue, ensureLabels } from '../scripts/issue.mjs'
 
 const users = { '1': { id: '1', username: 'alice' } }
 
@@ -24,10 +24,16 @@ test('mentions are stripped from the title only', () => {
   assert.equal(stripMentions('@omarchy  hi @Omarchy there'), 'hi there')
 })
 
-test('gh is called with repo, title, body and both labels', () => {
-  let args
-  const url = fileIssue({ repo: 'me/fork', title: 't', body: 'b', labels: ['from-x', 'needs-triage'] },
-    (_cmd, a) => { args = a; return 'https://github.com/me/fork/issues/1\n' })
+test('the issue is POSTed to the target repo with both labels', async () => {
+  let call
+  const fetchImpl = async (url, init) => { call = { url, init }; return { ok: true, json: async () => ({ html_url: 'https://github.com/me/fork/issues/1' }) } }
+  const url = await fileIssue({ repo: 'me/fork', title: 't', body: 'b', labels: ['from-x', 'needs-triage'], token: 'x', fetchImpl })
   assert.equal(url, 'https://github.com/me/fork/issues/1')
-  assert.deepEqual(args, ['issue', 'create', '--repo', 'me/fork', '--title', 't', '--body', 'b', '--label', 'from-x', '--label', 'needs-triage'])
+  assert.equal(call.url, 'https://api.github.com/repos/me/fork/issues')
+  assert.deepEqual(JSON.parse(call.init.body), { title: 't', body: 'b', labels: ['from-x', 'needs-triage'] })
+})
+
+test('an existing label (422) is fine', async () => {
+  const fetchImpl = async () => ({ ok: false, status: 422, text: async () => 'exists' })
+  await ensureLabels({ repo: 'me/fork', token: 'x', fetchImpl })
 })
