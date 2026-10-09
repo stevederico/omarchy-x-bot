@@ -28,16 +28,17 @@ export function noPing(s) {
 
 export const UPSTREAM = 'omacom/omarchy'
 
-// Up to 3 upstream issues that may be the same bug. GitHub search needs every word to match,
-// so drop words from the end until something matches, down to two.
-export async function findRelated({ terms, token, repo = UPSTREAM, fetchImpl = fetch }) {
-  const words = String(terms ?? '').replace(/[^\p{L}\p{N}\s-]/gu, ' ').split(/\s+/).filter(Boolean).slice(0, 5)
-  for (let n = words.length; n >= Math.min(2, words.length) && n > 0; n--) {
-    const q = new URLSearchParams({ q: `repo:${repo} is:issue ${words.slice(0, n).join(' ')}`, per_page: '3' })
+// Up to 15 upstream issues worth showing the AI. A broad search on the first two keywords, so the right issue
+// is in the list even when the reporter's words differ from the maintainers' ("movie" vs "video").
+export async function findCandidates({ terms, token, repo = UPSTREAM, fetchImpl = fetch }) {
+  const words = String(terms ?? '').replace(/[^\p{L}\p{N}\s-]/gu, ' ').split(/\s+/).filter(Boolean)
+  for (const n of [2, 1]) {
+    if (words.length < n) continue
+    const q = new URLSearchParams({ q: `repo:${repo} is:issue ${words.slice(0, n).join(' ')}`, per_page: '15' })
     const res = await fetchImpl(`${GH}/search/issues?${q}`, { headers: headers(token) })
     if (!res.ok) throw new Error(`GitHub search ${res.status}: ${await res.text()}`)
     const items = (await res.json()).items ?? []
-    if (items.length) return items.slice(0, 3).map(i => ({ number: i.number, title: i.title, state: i.state }))
+    if (items.length) return items.map(i => ({ number: i.number, title: i.title, state: i.state }))
   }
   return []
 }
@@ -55,7 +56,7 @@ export function toIssue(post, { users = {}, tweets = {}, ai = null, related = []
   // Code spans, not links: a link would add a "mentioned this" backlink on the upstream issue.
   const relatedList = related.map(r => `- \`${UPSTREAM}#${r.number}\` (${r.state}) ${noPing(r.title.replace(/`/g, "'"))}`).join('\n')
   let body = ai ? `_AI summary of the X post below. Check it against the post._\n\n${noPing(ai.body)}\n\n` : ''
-  if (relatedList) body += `### Possibly related upstream (search match, not verified)\n\n${relatedList}\n\n`
+  if (relatedList) body += `### Possibly related upstream (AI match, not verified)\n\n${relatedList}\n\n`
   if (body) body += '---\n\n'
   body += `Reported ${by}on X: ${url}\n\n${quote(post.text)}\n`
   if (parent) body += `\nIn reply to:\n\n${quote(parent.text)}\n`

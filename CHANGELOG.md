@@ -1,3 +1,10 @@
+0.13.0
+
+  Pick related with Grok
+  Broaden upstream search
+  Drop guess wording
+  Hide empty details
+
 0.12.0
 
   Search upstream issues

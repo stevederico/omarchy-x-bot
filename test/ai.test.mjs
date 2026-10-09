@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { draftIssue, clip, keepSourceLinks, AIUnavailableError } from '../scripts/ai.mjs'
+import { draftIssue, pickRelated, clip, keepSourceLinks, AIUnavailableError } from '../scripts/ai.mjs'
 
 const reply = content => async () => ({ ok: true, status: 200, text: async () => JSON.stringify({ choices: [{ message: { content } }] }) })
 const status = code => async () => ({ ok: false, status: code, text: async () => 'nope' })
@@ -8,14 +8,23 @@ const status = code => async () => ({ ok: false, status: code, text: async () =>
 test('fills in the bug template from the model JSON, even inside a code fence', async () => {
   const d = await draftIssue({ text: 'x', token: 't', fetchImpl: reply('```json\n{"bug":true,"title":"T","system_details":"","whats_wrong":"W"}\n```') })
   assert.equal(d.title, 'T')
-  assert.equal(d.body, "### System details\n\nNot mentioned\n\n### What's wrong?\n\nW\n\n### Missing info\n\n- [ ] Output of `omarchy-debug`")
+  assert.equal(d.body, "### What's wrong?\n\nW\n\n### Missing info\n\n- [ ] Output of `omarchy-debug`")
 })
 
-test('adds the likely area, steps to try, and missing info, each marked as AI', async () => {
+test('system details show only when the post gives them', async () => {
+  for (const system_details of ['', 'Not mentioned', 'not mentioned.', 'None', 'Unknown']) {
+    const d = await draftIssue({ text: 'x', token: 't', fetchImpl: reply(JSON.stringify({ bug: true, title: 'T', whats_wrong: 'W', system_details })) })
+    assert.doesNotMatch(d.body, /System details/, system_details)
+  }
+  const d = await draftIssue({ text: 'x', token: 't', fetchImpl: reply(JSON.stringify({ bug: true, title: 'T', whats_wrong: 'W', system_details: 'AMD 7840U, Omarchy 3.1' })) })
+  assert.match(d.body, /^### System details\n\nAMD 7840U, Omarchy 3\.1\n\n### What's wrong\?/)
+})
+
+test('adds the likely area, steps to try, and missing info, under the AI note', async () => {
   const content = JSON.stringify({ bug: true, title: 'T', whats_wrong: 'W', likely_area: 'Probably hypridle.', steps_to_try: ['Play a video', 'Wait'], missing_info: ['Which app?', 'Output of `omarchy-debug`'] })
   const d = await draftIssue({ text: 'x', token: 't', fetchImpl: reply(content) })
-  assert.match(d.body, /### Likely area \(AI guess\)\n\nProbably hypridle\./)
-  assert.match(d.body, /### Steps to try \(suggested, not from the reporter\)\n\n1\. Play a video\n1\. Wait/)
+  assert.match(d.body, /### Likely area\n\nProbably hypridle\./)
+  assert.match(d.body, /### Steps to try\n\n1\. Play a video\n1\. Wait/)
   assert.match(d.body, /### Missing info\n\n- \[ \] Which app\?\n- \[ \] Output of `omarchy-debug`$/)
 })
 
@@ -69,4 +78,18 @@ test('titles are cut at 80 characters without splitting an emoji', async () => {
   assert.equal(clip('ab🐛cd', 3), 'ab🐛')
   const d = await draftIssue({ text: 'x', token: 't', fetchImpl: reply(JSON.stringify({ bug: true, title: 'a'.repeat(100), whats_wrong: 'W' })) })
   assert.equal(d.title.length, 80)
+})
+
+test('pickRelated keeps only candidates the model names, at most 3, best first', async () => {
+  const candidates = [1, 2, 3, 4, 5].map(n => ({ number: n, title: `t${n}`, state: 'open' }))
+  const picked = await pickRelated({ report: 'r', candidates, token: 't', fetchImpl: reply('{"related":[4,"2",99,4,1,3]}') })
+  assert.deepEqual(picked.map(c => c.number), [4, 2, 1])
+  assert.deepEqual(await pickRelated({ report: 'r', candidates, token: 't', fetchImpl: reply('{"related":[]}') }), [])
+})
+
+test('pickRelated returns none on any failure, so filing goes on', async () => {
+  const candidates = [{ number: 1, title: 't', state: 'open' }]
+  assert.deepEqual(await pickRelated({ report: 'r', candidates, token: 't', fetchImpl: status(429) }), [])
+  assert.deepEqual(await pickRelated({ report: 'r', candidates, token: 't', fetchImpl: reply('nope') }), [])
+  assert.deepEqual(await pickRelated({ report: 'r', candidates: [], token: 't', fetchImpl: async () => { throw new Error('no call') } }), [])
 })

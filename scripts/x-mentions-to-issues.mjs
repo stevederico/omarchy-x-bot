@@ -3,8 +3,8 @@
 import { readFileSync, writeFileSync, appendFileSync, existsSync, mkdirSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { fetchMentions, fetchUsers, postReply } from './x.mjs'
-import { draftIssue, AIUnavailableError } from './ai.mjs'
-import { toIssue, fileIssue, ensureLabels, isReport, parentOf, filedPostIds, findRelated } from './issue.mjs'
+import { draftIssue, pickRelated, AIUnavailableError } from './ai.mjs'
+import { toIssue, fileIssue, ensureLabels, isReport, parentOf, filedPostIds, findCandidates } from './issue.mjs'
 
 const SINCE = new URL('../state/since_id.txt', import.meta.url)
 
@@ -76,7 +76,8 @@ export async function run({ env = process.env, state = fileState, fetchImpl = fe
         let related = []
         if (ai?.search && token) {
           try {
-            related = await findRelated({ terms: ai.search, token, fetchImpl })
+            const candidates = await findCandidates({ terms: ai.search, token, fetchImpl })
+            related = await pickRelated({ report: `${ai.title}\n\n${post.text}`, candidates, token: env.XAI_API_KEY, model: env.AI_MODEL, fetchImpl })
           } catch (e) {
             console.error(`${e.message}; filing without related issues`)
           }

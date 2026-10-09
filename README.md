@@ -31,10 +31,10 @@ Test mode prints each issue it would file and writes nothing to GitHub. Without 
 - **Moving window** saves the last post handled after each one, so each run only pays for new posts and a crash never files a post twice
 
 ### 🤖 **AI-Written Issues**
-- **Omarchy's bug template**: Grok fills in System details and What's wrong?, and asks for `omarchy-debug` output
+- **Omarchy's bug template**: Grok fills in What's wrong?, System details when the post has them, the likely area, steps to try, and a Missing info checklist
 - **Bugs only**: support questions, ideas, and jokes are skipped and listed on the run's summary page
-- **No guessing**: anything the post doesn't say is marked "Not mentioned"
-- **Possibly related upstream**: searches `omacom/omarchy` issues with Grok's keywords and lists up to 3 matches as plain text, so omacom gets no backlinks
+- **No made-up facts**: details the post doesn't give are left out and asked for in a Missing info checklist
+- **Possibly related upstream**: a broad search of `omacom/omarchy` issues, then Grok picks up to 3 that match, listed as plain text so omacom gets no backlinks
 - **Original post kept** under the AI summary, with the author's name, @handle, and link
 - **Retries later** if the AI API fails in any way (rate limit, outage, timeout, bad key, retired model); the run goes red and nothing is filed without a verdict
 - **Falls back** to a draft issue without the `bug` label if the model's answer is unusable
