@@ -8,10 +8,13 @@ export const LABELS = ['bug', 'from-x', 'needs-triage']
 export const DRAFT_LABELS = ['from-x', 'needs-triage']
 
 // Regex sources, matched at the start of a word: "fix" also catches fixed, fixes, fixing.
-export const KEYWORDS = ['bug', 'broken', 'fix', 'issue', 'crash', 'error', 'not working', "doesn['’]?t work"]
+export const KEYWORDS = ['bug', 'broken', 'fix', 'issue', 'crash', 'error', 'not working', "doesn['’]?t work", 'fail', 'glitch', 'borked',
+  'freez', 'frozen', 'hang', 'stuck', 'lag', 'stopped working', "won['’]?t (start|boot)", "can['’]?t boot", 'black screen', 'no sound']
 
 // The keywords as an X search, so X only returns (and bills) matching posts. Search matches whole words, so word forms are spelled out.
-export const SEARCH_TERMS = ['bug', 'bugs', 'buggy', 'broken', 'fix', 'fixed', 'fixes', 'fixing', 'issue', 'issues', 'crash', 'crashes', 'crashed', 'crashing', 'error', 'errors', 'errored', 'bugged', '"not working"', '"doesn\'t work"', '"doesnt work"', '"doesn’t work"']
+export const SEARCH_TERMS = ['bug', 'bugs', 'buggy', 'broken', 'fix', 'fixed', 'fixes', 'fixing', 'issue', 'issues', 'crash', 'crashes', 'crashed', 'crashing', 'error', 'errors', 'bugged', '"not working"', '"doesn\'t work"', '"doesnt work"', '"doesn’t work"',
+  'fail', 'fails', 'failed', 'failing', 'glitch', 'glitchy', 'borked', 'freeze', 'freezes', 'frozen', 'hang', 'hangs', 'stuck', 'lag', 'laggy',
+  '"stopped working"', '"won\'t start"', '"won\'t boot"', '"can\'t boot"', '"black screen"', '"no sound"']
 
 export function mentionQuery(handle) {
   return `@${handle} (${SEARCH_TERMS.join(' OR ')}) -from:${handle} -is:retweet`

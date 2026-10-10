@@ -1,3 +1,7 @@
+0.26.0
+
+  Expand keywords
+
 0.25.0
 
   Search by keyword

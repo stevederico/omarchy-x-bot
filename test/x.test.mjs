@@ -1,7 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { searchMentions, oauth1Header, idTime } from '../scripts/x.mjs'
-import { mentionQuery } from '../scripts/issue.mjs'
+import { mentionQuery, SEARCH_TERMS, isReport } from '../scripts/issue.mjs'
 
 test('long posts and their parents come back whole, not cut at 280 characters', async () => {
   const long = `bug: ${'a'.repeat(400)}`
@@ -54,7 +54,8 @@ test('mentions are searched with the keywords and without expansions, so X bills
   await searchMentions({ query: mentionQuery('omarchy'), sinceId: '1976000000000000000', bearer: 'b', now: idTime('1976000000000000000') + 60_000, fetchImpl: async u => { url = u; return { ok: true, json: async () => ({}) } } })
   const params = new URL(url).searchParams
   assert.match(url, /\/2\/tweets\/search\/recent\?/)
-  assert.equal(params.get('query'), `@omarchy (bug OR bugs OR buggy OR broken OR fix OR fixed OR fixes OR fixing OR issue OR issues OR crash OR crashes OR crashed OR crashing OR error OR errors OR errored OR bugged OR "not working" OR "doesn't work" OR "doesnt work" OR "doesn’t work") -from:omarchy -is:retweet`)
+  assert.match(params.get('query'), /^@omarchy \(bug OR .+ OR "no sound"\) -from:omarchy -is:retweet$/)
+  assert.ok(params.get('query').length <= 512, 'X caps search queries at 512 characters')
   assert.equal(params.get('since_id'), '1976000000000000000')
   assert.equal(params.has('expansions'), false)
 })
@@ -66,4 +67,8 @@ test('a since_id older than search allows becomes a 6-day start_time, since noth
   const params = new URL(url).searchParams
   assert.equal(params.has('since_id'), false)
   assert.equal(params.get('start_time'), new Date(now - 6 * 86_400_000).toISOString())
+})
+
+test('every search term also passes the keyword filter, so nothing X returns is dropped', () => {
+  for (const term of SEARCH_TERMS) assert.ok(isReport({ text: `@omarchy ${term.replaceAll('"', '')} here` }), term)
 })

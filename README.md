@@ -43,7 +43,7 @@ Watch it with `npm run logs`. Set a `RUN_KEY` secret to run it on demand with `R
 - **Every minute**, an X search for new @omarchy mentions with a keyword (Cloudflare cron), plus a `POST /run` endpoint for demos
 - **Pay only for matches**: X filters by keyword and skips reposts, so it never bills the rest of the mentions
 - **One run at a time**: a Durable Object lock skips a tick while a slow run is still going, so nothing is filed twice
-- **Keyword filter** keeps only posts that say `bug`, `broken`, `fix`, `issue`, `crash`, `error`, `not working`, or `doesn't work`, plus common forms like `fixed` or `crashes`
+- **Keyword filter** keeps only posts that say `bug`, `broken`, `fix`, `issue`, `crash`, `error`, `fail`, `glitch`, `borked`, `freeze`, `hang`, `stuck`, `lag`, `not working`, `doesn't work`, `stopped working`, `won't start`, `won't boot`, `can't boot`, `black screen`, or `no sound`, plus common forms like `fixed` or `crashes` (the search query is capped at 512 characters)
 - **Typed tags and plain replies** to @omarchy both count
 - **Moving window**: each run reads only posts newer than the last one handled, so old posts are never paid for twice, and the position is saved even when a run fails
 
