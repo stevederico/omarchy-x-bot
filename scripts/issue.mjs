@@ -10,6 +10,13 @@ export const DRAFT_LABELS = ['from-x', 'needs-triage']
 // Regex sources, matched at the start of a word: "fix" also catches fixed, fixes, fixing.
 export const KEYWORDS = ['bug', 'broken', 'fix', 'issue', 'crash', 'error', 'not working', "doesn['’]?t work"]
 
+// The keywords as an X search, so X only returns (and bills) matching posts. Search matches whole words, so word forms are spelled out.
+export const SEARCH_TERMS = ['bug', 'bugs', 'buggy', 'broken', 'fix', 'fixed', 'fixes', 'fixing', 'issue', 'issues', 'crash', 'crashes', 'crashed', 'crashing', 'error', 'errors', '"not working"', '"doesn\'t work"', '"doesnt work"']
+
+export function mentionQuery(handle) {
+  return `@${handle} (${SEARCH_TERMS.join(' OR ')}) -from:${handle} -is:retweet`
+}
+
 // File any mention (typed tag or plain reply to @omarchy) that uses a keyword.
 export function isReport(post) {
   return KEYWORDS.some(k => new RegExp(`\\b${k}`, 'i').test(post.text))

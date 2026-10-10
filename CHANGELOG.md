@@ -1,3 +1,8 @@
+0.25.0
+
+  Search by keyword
+  Skip reposts
+
 0.24.0
 
   Stop fetching parent posts

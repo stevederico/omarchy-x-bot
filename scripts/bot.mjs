@@ -1,10 +1,10 @@
 // The bot: X mentions of @omarchy -> one issue each -> optional reply with the link from the bot's own account.
 // Runs anywhere with fetch: the Cloudflare Worker (worker/index.js) or Node (scripts/x-mentions-to-issues.mjs).
 // No approval, rate limits, or vouch. Never point TARGET_REPO at omacom/omarchy.
-import { fetchMentions, fetchUsers, postReply } from './x.mjs'
+import { searchMentions, fetchUsers, postReply } from './x.mjs'
 import { draftIssue, pickRelated, writeIssue, AIUnavailableError } from './ai.mjs'
 import { withBodies, repoContext } from './context.mjs'
-import { toIssue, fileIssue, ensureLabels, isReport, parentOf, filedPostIds, findCandidates } from './issue.mjs'
+import { toIssue, fileIssue, ensureLabels, isReport, parentOf, filedPostIds, findCandidates, mentionQuery } from './issue.mjs'
 
 // A fixed reply, never AI text, so a crafted post can't make the bot say anything else.
 export function replyText(issueUrl) {
@@ -15,6 +15,7 @@ export function replyText(issueUrl) {
 export async function run({ env, state, fetchImpl = fetch }) {
   const repo = env.TARGET_REPO || 'stevederico/omarchy'
   const accountId = env.X_ACCOUNT_ID || '2108454467309883392'
+  const handle = env.X_HANDLE || 'omarchy' // the account people tag; X search needs the handle
   const live = String(env.MODE ?? '').toLowerCase() === 'live' // anything else is test mode
   // OAuth 1.0a keys for the X app and the account that replies (one you control, not @omarchy); without all four, issues only.
   const auth = { apiKey: env.X_API_KEY, apiSecret: env.X_API_SECRET, accessToken: env.X_REPLY_ACCESS_TOKEN, accessSecret: env.X_REPLY_ACCESS_SECRET }
@@ -27,13 +28,13 @@ export async function run({ env, state, fetchImpl = fetch }) {
   if (live && !env.XAI_API_KEY) throw new Error('XAI_API_KEY is required to go live.')
 
   const sinceId = await state.read()
-  const res = await fetchMentions({ accountId, sinceId, bearer, fetchImpl })
+  const res = await searchMentions({ query: mentionQuery(handle), sinceId, bearer, fetchImpl })
   const posts = (res.data ?? []).filter(p => p.author_id !== accountId).reverse() // oldest first
   const tweets = Object.fromEntries((res.includes?.tweets ?? []).map(t => [t.id, t]))
   const users = {}
   let filed // post ids that already have an issue, loaded on first need
 
-  console.log(`${posts.length} new mention(s), ${posts.filter(isReport).length} look like reports, since ${sinceId ?? 'the start'}; target ${repo}; mode ${live ? 'live' : 'test'}; reply on X ${replyOnX}`)
+  console.log(`${posts.length} new matching mention(s), ${posts.filter(isReport).length} look like reports, since ${sinceId ?? 'the start'}; target ${repo}; mode ${live ? 'live' : 'test'}; reply on X ${replyOnX}`)
   if (live && posts.some(isReport)) await ensureLabels({ repo, token, fetchImpl })
 
   for (const post of posts) {

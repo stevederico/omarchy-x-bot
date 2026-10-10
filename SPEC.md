@@ -9,8 +9,8 @@ In: AI drafting in Omarchy's bug template, and skipping posts the AI says aren't
 Out: approval queue, rate limits, vouch, close-the-loop replies.
 
 ## Flow
-1. Poll X for new mentions of `@omarchy` (`GET /2/users/2108454467309883392/mentions?since_id=…`).
-2. For each new mention with a keyword (skip @omarchy's own posts), oldest first, Grok (xAI API) reads the post as untrusted text and decides (the post it replies to isn't fetched, since X bills it as a second read):
+1. Search X for new mentions of `@omarchy` with a keyword (`GET /2/tweets/search/recent?query=@omarchy (bug OR fix OR …) -from:omarchy -is:retweet&since_id=…`). X bills each returned post, so filtering in the query means non-matching mentions cost nothing. Search reaches back 7 days, so a `since_id` older than 6 days becomes `start_time` 6 days back.
+2. For each match (skip @omarchy's own posts), oldest first, Grok (xAI API) reads the post as untrusted text and decides (the post it replies to isn't fetched, since X bills it as a second read):
    - **Bug:** title (under 80 chars) and body in the bug template, marked as an AI summary, with links not in the posts removed. Labels: `bug`, `from-x`, `needs-triage`.
    - **Not a bug:** no issue. The post URL is listed in the Worker logs so it can be reviewed or replayed.
    - **No verdict** (unusable answer, or no key in test mode): a draft issue titled `[X] ` + first 80 chars of the post. Labels: `from-x`, `needs-triage`. No `bug` label, since nothing checked it.

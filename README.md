@@ -40,9 +40,10 @@ Watch it with `npm run logs`. Set a `RUN_KEY` secret to run it on demand with `R
 ## ✨ What's Included
 
 ### 🐦 **X Mentions**
-- **Every minute**, a read of new @omarchy mentions (Cloudflare cron), plus a `POST /run` endpoint for demos
+- **Every minute**, an X search for new @omarchy mentions with a keyword (Cloudflare cron), plus a `POST /run` endpoint for demos
+- **Pay only for matches**: X filters by keyword and skips reposts, so it never bills the rest of the mentions
 - **One run at a time**: a Durable Object lock skips a tick while a slow run is still going, so nothing is filed twice
-- **Keyword filter** sends only posts that say `bug`, `broken`, `fix`, `issue`, `crash`, `error`, `not working`, or `doesn't work` to the AI (word starts, any case)
+- **Keyword filter** keeps only posts that say `bug`, `broken`, `fix`, `issue`, `crash`, `error`, `not working`, or `doesn't work`, plus common forms like `fixed` or `crashes`
 - **Typed tags and plain replies** to @omarchy both count
 - **Moving window**: each run reads only posts newer than the last one handled, so old posts are never paid for twice, and the position is saved even when a run fails
 
@@ -70,7 +71,7 @@ Watch it with `npm run logs`. Set a `RUN_KEY` secret to run it on demand with `R
 Secrets, set with `npx wrangler secret put NAME`:
 
 ```bash
-X_BEARER_TOKEN         # X app bearer token; reads @omarchy mentions
+X_BEARER_TOKEN         # X app bearer token; searches @omarchy mentions
 GITHUB_TOKEN           # fine-grained GitHub token: Issues read and write on TARGET_REPO
 XAI_API_KEY            # xAI API key; Grok decides if a post is a bug and writes the issue
 RUN_KEY                # optional: any random string; enables POST /run for demos
@@ -87,7 +88,7 @@ Reply support is built in and off by default. With the four reply secrets set, t
 Since February 2026, X's API only accepts a reply when the post tags the replying account, and its automation rules only allow replies people asked for. So replies work in two setups:
 
 - **@omarchy replies:** the Omarchy team connects the @omarchy account, so posts that tag @omarchy get answers from it
-- **A bot account replies:** people tag the bot (e.g. @OmarchyBot), and the bot watches that account's mentions (set `X_ACCOUNT_ID` to its id)
+- **A bot account replies:** people tag the bot (e.g. @OmarchyBot), and the bot watches that account's mentions (set `X_HANDLE` and `X_ACCOUNT_ID` to it)
 
 To connect an account, run `npm run connect`: it asks for your X app's API key and secret, gives you a link to authorize as that account, takes the PIN, and saves all four reply secrets to the Worker.
 
@@ -96,7 +97,8 @@ Variables, in `wrangler.toml`:
 ```bash
 MODE=live                            # anything but live only logs
 TARGET_REPO=stevederico/omarchy      # where issues go
-X_ACCOUNT_ID=2108454467309883392     # @omarchy
+X_HANDLE=omarchy                     # the account people tag
+X_ACCOUNT_ID=2108454467309883392     # its id
 AI_MODEL=grok-4.20-non-reasoning     # optional; any xAI model id
 ```
 
@@ -120,14 +122,14 @@ Zero npm packages: no `dependencies`, no lockfile, no `npm ci`.
 
 ## 🏗️ Architecture
 
-Each run reads `since_id` from KV and reads newer mentions, oldest first, and keeps the ones that match a keyword. For each match, Grok decides if it's a bug and drafts the report. The bot looks up the author only for posts it files, files them with the `bug`, `from-x`, and `needs-triage` labels, and tracks `since_id` after each post. The Worker writes it back to KV once per run, even after a failed run. If KV is ever lost, the bot skips any post that already has an issue.
+Each run reads `since_id` from KV and searches X for newer @omarchy posts with a keyword, oldest first. Search only reaches back 7 days, so after 6 days with no match it starts 6 days back instead. For each match, Grok decides if it's a bug and drafts the report. The bot looks up the author only for posts it files, files them with the `bug`, `from-x`, and `needs-triage` labels, and tracks `since_id` after each post. The Worker writes it back to KV once per run, even after a failed run. If KV is ever lost, the bot skips any post that already has an issue.
 
 ```
 worker/index.js                    # Cloudflare Worker: cron, KV state, POST /run
 scripts/bot.mjs                    # the loop
 scripts/x-mentions-to-issues.mjs   # run once from Node (state in state/since_id.txt)
 scripts/x-connect.mjs              # link the bot's own X account for replies
-scripts/x.mjs                      # X API: mentions, authors, reply
+scripts/x.mjs                      # X API: search mentions, authors, reply
 scripts/ai.mjs                     # xAI: decide and write the issue
 scripts/issue.mjs                  # filter, issue body, GitHub REST
 scripts/context.mjs                # related issue bodies and Omarchy repo context
@@ -141,7 +143,7 @@ See `SPEC.md` for the full design and later ideas.
 
 | What | Cost |
 |---|---|
-| **X post read** | $0.005 per new mention |
+| **X post read** | $0.005 per new mention with a keyword (others aren't returned or billed) |
 | **X author lookup** | $0.01 per filed post's author only |
 | **Cloudflare Workers** | Free plan: cron every minute, KV (one write per run with new posts), Durable Object lock |
 | **xAI API** | About $0.001 per skipped match, about $0.005 per filed issue (three Grok calls) |

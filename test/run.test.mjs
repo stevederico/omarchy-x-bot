@@ -10,7 +10,7 @@ const answer = json => ok({ choices: [{ message: { content: JSON.stringify(json)
 function world({ posts, ai = {}, users = {}, failIssue = new Set(), failReply = false, existing = [] }) {
   const calls = { issues: [], replies: [], userLookups: [], judged: [] }
   const fetchImpl = async (url, init = {}) => {
-    if (url.includes('/mentions?')) return ok({ data: [...posts].reverse(), meta: { newest_id: posts.at(-1).id } })
+    if (url.includes('/search/recent?')) return ok({ data: [...posts].reverse(), meta: { newest_id: posts.at(-1).id } })
     if (url.includes('api.x.com/2/users?')) {
       const ids = new URL(url).searchParams.get('ids').split(',')
       calls.userLookups.push(...ids)

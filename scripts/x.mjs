@@ -1,20 +1,28 @@
-// Minimal X API v2 client: read mentions, post a reply.
+// Minimal X API v2 client: search mentions, post a reply.
 import { createHmac, randomBytes } from 'node:crypto'
 
 const API = 'https://api.x.com/2'
 
-export async function fetchMentions({ accountId, sinceId, bearer, fetchImpl = fetch }) {
+const DAY = 86_400_000
+// X ids carry the time they were made (ms since X's epoch, shifted left 22 bits).
+export const idTime = id => Number((BigInt(id) >> 22n) + 1288834974657n)
+
+// Recent search, so X only returns (and bills) posts that match the query, not every mention.
+export async function searchMentions({ query, sinceId, bearer, fetchImpl = fetch, now = Date.now() }) {
   const params = new URLSearchParams({
+    query,
     max_results: '100',
     'tweet.fields': 'author_id,created_at,referenced_tweets,conversation_id,note_tweet'
     // No expansions: each included post (like the one a mention replies to) is billed as another read,
-    // which doubled the cost, and authors are looked up only for filed bugs ($0.01 each).
+    // and authors are looked up only for filed bugs ($0.01 each).
   })
-  if (sinceId) params.set('since_id', sinceId)
-  const res = await fetchImpl(`${API}/users/${accountId}/mentions?${params}`, {
+  // Search only takes a since_id from the last 7 days. An older one means nothing has matched since, so start 6 days back.
+  if (sinceId && now - idTime(sinceId) < 6 * DAY) params.set('since_id', sinceId)
+  else if (sinceId) params.set('start_time', new Date(now - 6 * DAY).toISOString())
+  const res = await fetchImpl(`${API}/tweets/search/recent?${params}`, {
     headers: { authorization: `Bearer ${bearer}` }
   })
-  if (!res.ok) throw new Error(`X mentions ${res.status}: ${await res.text()}`)
+  if (!res.ok) throw new Error(`X search ${res.status}: ${await res.text()}`)
   const body = await res.json()
   for (const t of [...(body.data ?? []), ...(body.includes?.tweets ?? [])]) t.text = fullText(t)
   return body

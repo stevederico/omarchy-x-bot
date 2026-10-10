@@ -1,6 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { fetchMentions, oauth1Header } from '../scripts/x.mjs'
+import { searchMentions, oauth1Header, idTime } from '../scripts/x.mjs'
+import { mentionQuery } from '../scripts/issue.mjs'
 
 test('long posts and their parents come back whole, not cut at 280 characters', async () => {
   const long = `bug: ${'a'.repeat(400)}`
@@ -12,7 +13,7 @@ test('long posts and their parents come back whole, not cut at 280 characters', 
       includes: { tweets: [{ id: '1', text: 'cut…', note_tweet: { text: 'whole parent' } }] }
     }) }
   }
-  const res = await fetchMentions({ accountId: '0', bearer: 'b', fetchImpl })
+  const res = await searchMentions({ query: 'q', bearer: 'b', fetchImpl })
   assert.match(new URL(url).searchParams.get('tweet.fields'), /note_tweet/)
   assert.deepEqual(res.data.map(t => t.text), [long, 'short'])
   assert.equal(res.includes.tweets[0].text, 'whole parent')
@@ -48,8 +49,21 @@ test('the PIN flow asks for an oob request token, then trades the PIN for the bo
   assert.match(calls[1].auth, /oauth_token="rt".*oauth_verifier="1234567"/)
 })
 
-test('mentions are fetched without expansions, so replied-to posts are not billed as extra reads', async () => {
+test('mentions are searched with the keywords and without expansions, so X bills only matching posts', async () => {
   let url
-  await fetchMentions({ accountId: '0', bearer: 'b', fetchImpl: async u => { url = u; return { ok: true, json: async () => ({}) } } })
-  assert.equal(new URL(url).searchParams.has('expansions'), false)
+  await searchMentions({ query: mentionQuery('omarchy'), sinceId: '1976000000000000000', bearer: 'b', now: idTime('1976000000000000000') + 60_000, fetchImpl: async u => { url = u; return { ok: true, json: async () => ({}) } } })
+  const params = new URL(url).searchParams
+  assert.match(url, /\/2\/tweets\/search\/recent\?/)
+  assert.equal(params.get('query'), `@omarchy (bug OR bugs OR buggy OR broken OR fix OR fixed OR fixes OR fixing OR issue OR issues OR crash OR crashes OR crashed OR crashing OR error OR errors OR "not working" OR "doesn't work" OR "doesnt work") -from:omarchy -is:retweet`)
+  assert.equal(params.get('since_id'), '1976000000000000000')
+  assert.equal(params.has('expansions'), false)
+})
+
+test('a since_id older than search allows becomes a 6-day start_time, since nothing has matched since', async () => {
+  let url
+  const now = idTime('1976000000000000000') + 8 * 86_400_000
+  await searchMentions({ query: 'q', sinceId: '1976000000000000000', bearer: 'b', now, fetchImpl: async u => { url = u; return { ok: true, json: async () => ({}) } } })
+  const params = new URL(url).searchParams
+  assert.equal(params.has('since_id'), false)
+  assert.equal(params.get('start_time'), new Date(now - 6 * 86_400_000).toISOString())
 })

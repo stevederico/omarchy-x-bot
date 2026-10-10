@@ -21,12 +21,12 @@ test('KV state writes the newest id once, and only when it moved', async () => {
 test('a run that throws still saves the posts it handled', async () => {
   const store = kv({ since_id: '1' })
   const fetchImpl = async url => {
-    if (url.includes('/mentions?')) return { ok: true, json: async () => ({ data: [{ id: '3', text: 'hello', author_id: 'a' }, { id: '2', text: 'hi', author_id: 'a' }], meta: { newest_id: '3' } }) }
+    if (url.includes('/search/recent?')) return { ok: true, json: async () => ({ data: [{ id: '3', text: 'hello', author_id: 'a' }, { id: '2', text: 'hi', author_id: 'a' }], meta: { newest_id: '3' } }) }
     throw new Error(`unexpected ${url}`)
   }
   await runOnce({ STATE: store, MODE: 'test', X_ACCOUNT_ID: '0' }, fetchImpl)
   assert.deepEqual(store.puts, [['since_id', '3']])
-  const failing = async url => { if (url.includes('/mentions?')) throw new Error('X down'); throw new Error(url) }
+  const failing = async url => { if (url.includes('/search/recent?')) throw new Error('X down'); throw new Error(url) }
   await assert.rejects(runOnce({ STATE: store, MODE: 'test', X_ACCOUNT_ID: '0' }, failing), /X down/)
   assert.equal(store.puts.length, 1)
 })
@@ -58,7 +58,7 @@ test('a run is skipped while another holds the lock, and releases it when done',
   const LOCK = lockBinding()
   const store = kv({ since_id: '1' })
   const fetchImpl = async url => {
-    if (url.includes('/mentions?')) return { ok: true, json: async () => ({ data: [], meta: {} }) }
+    if (url.includes('/search/recent?')) return { ok: true, json: async () => ({ data: [], meta: {} }) }
     throw new Error(url)
   }
   await LOCK.get().fetch('https://lock/acquire')

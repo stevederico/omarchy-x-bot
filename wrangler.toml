@@ -25,7 +25,8 @@ new_sqlite_classes = ["RunLock"]
 [vars]
 MODE = "live"                        # anything but live only logs
 TARGET_REPO = "stevederico/omarchy"  # never omacom/omarchy
-X_ACCOUNT_ID = "2108454467309883392" # @omarchy
+X_HANDLE = "omarchy"                 # the account people tag
+X_ACCOUNT_ID = "2108454467309883392" # its id
 
 [observability]
 enabled = true
