@@ -128,7 +128,7 @@ test('a failed second pass returns null so the first draft is kept', async () =>
 test('the verdict can be a bug, a feature request, or neither', async () => {
   const reply = json => async () => ({ ok: true, text: async () => JSON.stringify({ choices: [{ message: { content: JSON.stringify(json) } }] }) })
   assert.deepEqual(await draftIssue({ text: 'great work', token: 'k', fetchImpl: reply({ kind: 'none' }) }), { bug: false })
-  const feature = await draftIssue({ text: 'add tabs', token: 'k', fetchImpl: reply({ kind: 'feature', title: 'Tabs', whats_wrong: 'Wants tabs.', search_terms: 'tabs' }) })
+  const feature = await draftIssue({ text: 'add tabs', token: 'k', fetchImpl: reply({ kind: 'feature', title: 'Tabs', whats_wrong: 'Wants tabs.', search_terms: 'tabs', missing_info: ['Output of `omarchy-debug`'] }) })
   assert.equal(feature.kind, 'feature')
   assert.match(feature.body, /^### What's requested\?/)
   assert.doesNotMatch(feature.body, /Missing info/)

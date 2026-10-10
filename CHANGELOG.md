@@ -1,3 +1,7 @@
+0.29.1
+
+  Drop debug ask
+
 0.29.0
 
   File feature requests

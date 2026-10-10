@@ -129,6 +129,8 @@ export function renderBody(json, source, kind = 'bug') {
   const raw = String(json.system_details ?? '').trim()
   const details = /^(not mentioned|none|n\/a|unknown)?\.?$/i.test(raw) ? '' : clean(raw)
   let missing = Array.isArray(json.missing_info) ? [...json.missing_info] : feature ? [] : ['Output of `omarchy-debug`']
+  // The model sometimes asks for omarchy-debug on a feature request anyway; it's for bugs.
+  if (feature) missing = missing.filter(s => !/omarchy-debug/i.test(s))
   // Without System details, a bug always asks for them. A feature request doesn't need them.
   if (!feature && !details && !missing.some(s => /version/i.test(s))) missing.unshift('Omarchy version, CPU, and GPU')
   const list = (items, mark) => (Array.isArray(items) ? items : []).map(s => `${mark} ${clean(s)}`).join('\n')
