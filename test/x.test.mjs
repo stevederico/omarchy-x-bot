@@ -54,7 +54,7 @@ test('mentions are searched with the keywords and without expansions, so X bills
   await searchMentions({ query: mentionQuery('omarchy'), sinceId: '1976000000000000000', bearer: 'b', now: idTime('1976000000000000000') + 60_000, fetchImpl: async u => { url = u; return { ok: true, json: async () => ({}) } } })
   const params = new URL(url).searchParams
   assert.match(url, /\/2\/tweets\/search\/recent\?/)
-  assert.equal(params.get('query'), `@omarchy (bug OR bugs OR buggy OR broken OR fix OR fixed OR fixes OR fixing OR issue OR issues OR crash OR crashes OR crashed OR crashing OR error OR errors OR "not working" OR "doesn't work" OR "doesnt work") -from:omarchy -is:retweet`)
+  assert.equal(params.get('query'), `@omarchy (bug OR bugs OR buggy OR broken OR fix OR fixed OR fixes OR fixing OR issue OR issues OR crash OR crashes OR crashed OR crashing OR error OR errors OR errored OR bugged OR "not working" OR "doesn't work" OR "doesnt work" OR "doesn’t work") -from:omarchy -is:retweet`)
   assert.equal(params.get('since_id'), '1976000000000000000')
   assert.equal(params.has('expansions'), false)
 })
