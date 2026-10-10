@@ -2,19 +2,29 @@
 // and the RunLock Durable Object makes sure two runs never overlap and file the same post twice.
 import { run } from '../scripts/bot.mjs'
 
-const KEY = 'since_id'
+// One cursor per watched handle, so switching X_HANDLE never reuses another account's since_id.
+// @omarchy keeps the original key.
+export const keyFor = (handle = 'omarchy') => handle.toLowerCase() === 'omarchy' ? 'since_id' : `since_id:${handle.toLowerCase()}`
 
 // Reads come from KV; the newest handled post is written back once per run, even if the run fails midway,
 // so a crash never files a post twice and the run stays well under KV's free write limit.
-export function kvState(kv) {
+// Opt-outs (authors who asked the bot to stop replying) are rare, so each is written right away.
+export function kvState(kv, key = keyFor()) {
   let start, latest
+  const stopsKey = `opted_out:${key}`
+  const readStops = async () => JSON.parse((await kv.get(stopsKey)) ?? '[]')
   return {
-    read: async () => (start = latest = (await kv.get(KEY)) ?? undefined),
+    read: async () => (start = latest = (await kv.get(key)) ?? undefined),
     write: id => { latest = id },
     note: line => console.log(line),
-    flush: async () => { if (latest && latest !== start) await kv.put(KEY, latest) }
+    readStops,
+    addStop: async id => { const ids = await readStops(); if (!ids.includes(id)) await kv.put(stopsKey, JSON.stringify([...ids, id])) },
+    flush: async () => { if (latest && latest !== start) await kv.put(key, latest) }
   }
 }
+
+// Cloudflare's free plan allows 50 outside calls per run (1,000 on paid; set MAX_REQUESTS to match).
+export const MAX_REQUESTS = 50
 
 // Longer than any run (cron runs stop at 15 minutes), so a crashed run's lock expires on its own.
 export const LOCK_MS = 15 * 60_000
@@ -45,12 +55,16 @@ export async function runOnce(env, fetchImpl = fetch) {
     console.log('Previous run still going, skipping this one')
     return { skipped: true }
   }
-  const state = kvState(env.STATE)
+  const state = kvState(env.STATE, keyFor(env.X_HANDLE))
   try {
-    return await run({ env, state, fetchImpl })
+    return await run({ env, state, fetchImpl, maxRequests: Number(env.MAX_REQUESTS) || MAX_REQUESTS })
   } finally {
-    await state.flush()
-    if (env.LOCK) await lock(env, 'release')
+    // Release even if saving fails, so a KV error never holds the lock for 15 minutes.
+    try {
+      await state.flush()
+    } finally {
+      if (env.LOCK) await lock(env, 'release')
+    }
   }
 }
 

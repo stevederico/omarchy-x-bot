@@ -1,7 +1,7 @@
 # @omarchy X → GitHub Issue Bot
 
 **Goal:** prove the loop works once, end to end, with the least code.
-Tag `@omarchy` on X → one draft issue appears in `omacom/omarchy` → the bot's own X account replies with the issue link.
+Tag `@omarchy` on X → one draft issue appears in `omacom/omarchy` → optionally, the tagged account replies with the issue link.
 
 ## Scope
 In: tag detection, one issue per tagged post, one reply.
@@ -9,7 +9,7 @@ In: AI drafting in Omarchy's bug template, and skipping posts the AI says aren't
 Out: approval queue, rate limits, vouch, close-the-loop replies.
 
 ## Flow
-1. Search X for new mentions of `@omarchy` with a keyword (`GET /2/tweets/search/recent?query=@omarchy (bug OR fix OR …) -from:omarchy -is:retweet&since_id=…`). X bills each returned post, so filtering in the query means non-matching mentions cost nothing. Search reaches back 7 days, so a `since_id` older than 6 days becomes `start_time` 6 days back.
+1. Search X for new mentions of `@omarchy` with a keyword (`GET /2/tweets/search/recent?query=@omarchy (bug OR fix OR …) -from:omarchy -is:retweet&since_id=…&end_time=<30s ago>`). X bills each returned post, so filtering in the query means non-matching mentions cost nothing. One keyword list (`KEYWORDS` in `scripts/issue.mjs`) feeds both the search and the local filter, split into as many queries as X's 512-character cap needs, and the results are merged. `end_time` 30 seconds back means a post indexed late is read next run, never passed over. Search reaches back 7 days, so a `since_id` older than 6 days becomes `start_time` 6 days back; with no `since_id` at all, it starts an hour back.
 2. For each match (skip @omarchy's own posts), oldest first, Grok (xAI API) reads the post as untrusted text and decides (the post it replies to isn't fetched, since X bills it as a second read):
    - **Bug:** title (under 80 chars) and body in the bug template, marked as an AI summary, with links not in the posts removed. Labels: `bug`, `from-x`, `needs-triage`.
    - **Not a bug:** no issue. The post URL is listed in the Worker logs so it can be reviewed or replayed.
@@ -17,14 +17,15 @@ Out: approval queue, rate limits, vouch, close-the-loop replies.
    - **AI API fails** (rate limit, outage, timeout, bad key, retired model, non-JSON reply): stop the run and fail the job. The next run retries from this post. A live run refuses to start without `XAI_API_KEY`.
    - Every issue body keeps the author handle, post URL, quoted post text, and the footer "Filed automatically from X."
 3. Look up the author only for posts being filed, and create the issue with the GitHub REST API.
-4. Reply from the bot's own X account (we don't control `@omarchy`): "Tracked: <issue url>" plus a fixed ask for the Omarchy version, the app, and `omarchy-debug` output. Never AI text. Signed with OAuth 1.0a, whose tokens don't expire. A failed reply is logged and doesn't stop the run.
+4. Optionally reply from the watched account (only when `X_REPLY_USER_ID` equals `X_ACCOUNT_ID`, since X rejects replies from any other account): "Tracked: <issue url>" plus a fixed ask for the Omarchy version, the app, and `omarchy-debug` output. Never AI text. Signed with OAuth 1.0a, whose tokens don't expire. A failed reply is logged and doesn't stop the run. The reply id goes on the issue as `Replied on X: <url>`, so answers to it are not filed again. No reply for drafts, or to anyone who said `stop`, `unsubscribe`, or `opt out` (kept in KV).
 5. Save `since_id` after each post, so a crash midway never files a post twice. The Worker writes it to KV once per run, even when the run fails.
 6. Before judging a post in live mode, skip it if an issue labeled `from-x` already links to it, so a lost cache never files duplicates.
+7. Count outside calls, and stop before the next report when fewer than 20 of the run's budget (`MAX_REQUESTS`, 50 on Cloudflare's free plan) are left. `since_id` stays at the last handled post, so the next run picks up the rest.
 
 ## Runtime
 - A Cloudflare Worker (`worker/index.js`) runs the bot (`scripts/bot.mjs`) on a cron every minute, with a Durable Object lock so runs never overlap. GitHub's own schedule was best-effort and never fired, so the GitHub Actions version lives on the `github-actions` branch.
-- `since_id` stored in Workers KV, written once per run.
-- Worker secrets: `X_BEARER_TOKEN` (read mentions), `GITHUB_TOKEN` (Issues: read and write on the target repo), `XAI_API_KEY` (Grok), optional `RUN_KEY` (POST /run), and optional `X_API_KEY`, `X_API_SECRET`, `X_REPLY_ACCESS_TOKEN`, `X_REPLY_ACCESS_SECRET` (OAuth 1.0a for the replying account). GitHub Models was retired on 2026-07-30, so the AI is xAI's API.
+- `since_id` stored in Workers KV, one key per watched handle, written once per run. The KV write and the lock release are separate, so a failed write never holds the lock.
+- Worker secrets: `X_BEARER_TOKEN` (read mentions), `GITHUB_TOKEN` (Issues: read and write on the target repo), `XAI_API_KEY` (Grok), optional `RUN_KEY` (POST /run), and optional `X_API_KEY`, `X_API_SECRET`, `X_REPLY_ACCESS_TOKEN`, `X_REPLY_ACCESS_SECRET`, `X_REPLY_USER_ID` (OAuth 1.0a for the watched account, saved in one step by `npm run connect`). GitHub Models was retired on 2026-07-30, so the AI is xAI's API.
 
 ## Proving it works
 - Tag @omarchy from a test account → within an hour an issue exists with the post link and @omarchy replied with the issue URL.
@@ -94,11 +95,11 @@ The reply asks the reporter for what the issue is missing, so they can answer ri
 3. **Answers:** the bot reads replies to its own post on later runs and adds them to the issue as a comment, quoting the reporter.
 4. **Guardrails:** one reply per post, only to the original reporter, and nothing if the issue is already closed.
 
-## Later: replies when people tag the bot
+## Replies and X's rules
 
-X's API (since 2026-02-23) and automation rules only allow a reply when the post mentions or quotes the replying account. A bot can't reply to posts that tag only @omarchy, so replies are off.
+X's API (since 2026-02-23) and automation rules only allow a reply when the post mentions or quotes the replying account, so the bot replies only from the account it watches. Replies are off on the running bot.
 
-1. **Summoned only:** watch mentions of the bot account (e.g. @OmarchyBot), and reply only to posts that tag it.
-2. **Same pipeline:** those posts are judged and filed like @omarchy mentions; the reply is the fixed "Tracked: <issue>" message.
-3. **Or @omarchy itself:** if omacom adopts the bot and authorizes it with the @omarchy account, it can reply to its own mentions.
+1. **@omarchy itself:** if omacom adopts the bot and connects the @omarchy account, it replies to its own mentions.
+2. **Or a bot account:** set `X_HANDLE` and `X_ACCOUNT_ID` to the bot (e.g. @OmarchyBot); people tag it instead, and posts that tag only @omarchy aren't read.
+3. **Rules:** mark the account Automated, honor opt-outs (`stop`, `unsubscribe`, `opt out`), and reply once per report.
 

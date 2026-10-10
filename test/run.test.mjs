@@ -7,9 +7,10 @@ const fail = code => ({ ok: false, status: code, json: async () => ({}), text: a
 const answer = json => ok({ choices: [{ message: { content: JSON.stringify(json) } }] })
 
 // Fake X, xAI, and GitHub. `ai` maps post text to a model response; `issues` and `replies` record writes.
-function world({ posts, ai = {}, users = {}, failIssue = new Set(), failReply = false, existing = [] }) {
-  const calls = { issues: [], replies: [], userLookups: [], judged: [] }
+function world({ posts, ai = {}, users = {}, failIssue = new Set(), failReply = false, existing = [], botReplies = [] }) {
+  const calls = { issues: [], replies: [], userLookups: [], judged: [], patches: [], all: 0 }
   const fetchImpl = async (url, init = {}) => {
+    calls.all++
     if (url.includes('/search/recent?')) return ok({ data: [...posts].reverse(), meta: { newest_id: posts.at(-1).id } })
     if (url.includes('api.x.com/2/users?')) {
       const ids = new URL(url).searchParams.get('ids').split(',')
@@ -23,7 +24,8 @@ function world({ posts, ai = {}, users = {}, failIssue = new Set(), failReply = 
       return ai[text] ?? answer({ bug: true, title: `AI: ${text}`, whats_wrong: 'W' })
     }
     if (url.endsWith('/labels')) return fail(422)
-    if (url.includes('/issues?labels=from-x')) return ok(existing.map(id => ({ body: `Reported on X: https://x.com/someone/status/${id}` })))
+    if (url.includes('/issues?labels=from-x')) return ok([...existing.map(id => ({ body: `Reported on X: https://x.com/someone/status/${id}` })), ...botReplies.map(id => ({ body: `Reported on X: https://x.com/i/status/9${id}\nReplied on X: https://x.com/i/status/${id}` }))])
+    if (init.method === 'PATCH') { calls.patches.push(JSON.parse(init.body).body); return ok({}) }
     if (url.endsWith('/issues')) {
       const issue = JSON.parse(init.body)
       if (failIssue.has(issue.title)) return fail(502)
@@ -33,7 +35,7 @@ function world({ posts, ai = {}, users = {}, failIssue = new Set(), failReply = 
     if (url.endsWith('/tweets')) {
       if (failReply) return fail(429)
       calls.replies.push(JSON.parse(init.body))
-      return ok({})
+      return ok({ data: { id: `90${calls.replies.length}` } })
     }
     throw new Error(`unexpected ${url}`)
   }
@@ -47,7 +49,7 @@ function memoryState(since) {
 
 const live = { MODE: 'live', TARGET_REPO: 'me/fork', X_ACCOUNT_ID: '0', XAI_API_KEY: 'k', GH_TOKEN: 'g', X_BEARER_TOKEN: 'x' }
 const post = (id, text, author = 'a') => ({ id, text, author_id: author })
-const replyKeys = { X_API_KEY: 'k', X_API_SECRET: 's', X_REPLY_ACCESS_TOKEN: 't', X_REPLY_ACCESS_SECRET: 'ts' }
+const replyKeys = { X_API_KEY: 'k', X_API_SECRET: 's', X_REPLY_ACCESS_TOKEN: 't', X_REPLY_ACCESS_SECRET: 'ts', X_REPLY_USER_ID: '0' }
 
 test('with all four reply keys, the bot account replies with the issue link and a fixed ask, signed with OAuth 1.0a', async () => {
   let auth
@@ -56,6 +58,56 @@ test('with all four reply keys, the bot account replies with the issue link and 
   await run({ env: { ...live, ...replyKeys }, state: memoryState(), fetchImpl: spy })
   assert.deepEqual(calls.replies, [{ text: 'Tracked: https://github.com/me/fork/issues/1\n\nTo help fix it, add your Omarchy version, the app involved, and the output of omarchy-debug to the issue.', reply: { in_reply_to_tweet_id: '1' } }])
   assert.match(auth, /^OAuth oauth_consumer_key="k", .*oauth_signature="[^"]+"/)
+  assert.match(calls.patches[0], /\nReplied on X: https:\/\/x\.com\/i\/status\/901\n$/)
+})
+
+test('reply keys for a different account than the one watched mean no reply', async () => {
+  const { calls, fetchImpl } = world({ posts: [post('1', 'one is broken')] })
+  await run({ env: { ...live, ...replyKeys, X_REPLY_USER_ID: '42' }, state: memoryState(), fetchImpl })
+  assert.equal(calls.issues.length, 1)
+  assert.equal(calls.replies.length, 0)
+})
+
+test('an answer to a bot reply is not filed as a new report', async () => {
+  const answer = { ...post('5', 'still broken, version 3.1'), referenced_tweets: [{ type: 'replied_to', id: '99' }] }
+  const { calls, fetchImpl } = world({ posts: [answer], botReplies: ['99'] })
+  const state = memoryState()
+  await run({ env: { ...live, ...replyKeys }, state, fetchImpl })
+  assert.equal(calls.issues.length, 0)
+  assert.deepEqual(state.notes, ['answer to a bot reply, not filed: https://x.com/i/status/5'])
+})
+
+test('someone who says stop gets no more replies, but their bugs are still filed', async () => {
+  const stops = []
+  const { calls, fetchImpl } = world({ posts: [post('1', 'stop replying to me', 'u'), post('2', 'wifi is broken', 'u'), post('3', 'audio is broken', 'v')] })
+  const state = { ...memoryState(), readStops: () => stops, addStop: id => { stops.push(id) } }
+  await run({ env: { ...live, ...replyKeys }, state, fetchImpl })
+  assert.deepEqual(stops, ['u'])
+  assert.equal(calls.issues.length, 2)
+  assert.deepEqual(calls.replies.map(r => r.reply.in_reply_to_tweet_id), ['3'])
+})
+
+test('a draft issue (no AI verdict) gets no reply', async () => {
+  const { calls, fetchImpl } = world({ posts: [post('1', 'one is broken')], ai: { 'one is broken': ok({ choices: [{ message: { content: '{}' } }] }) } })
+  await run({ env: { ...live, ...replyKeys }, state: memoryState(), fetchImpl })
+  assert.equal(calls.issues.length, 1)
+  assert.equal(calls.replies.length, 0)
+})
+
+test('a run stops before the request cap and the next runs pick up the rest', async () => {
+  const posts = [post('1', 'one is broken'), post('2', 'two is broken'), post('3', 'three is broken')]
+  const state = memoryState()
+  let filed = 0, runs = 0
+  while (filed < 3 && runs < 5) {
+    const w = world({ posts: posts.slice(filed) })
+    await run({ env: live, state, fetchImpl: w.fetchImpl, maxRequests: 30 })
+    assert.ok(w.calls.all <= 30, `${w.calls.all} calls`)
+    filed += w.calls.issues.length
+    runs++
+    assert.equal(state.since, String(filed))
+  }
+  assert.equal(filed, 3)
+  assert.ok(runs > 1)
 })
 
 test('missing any reply key means no reply', async () => {

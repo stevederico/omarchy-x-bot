@@ -1,7 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { searchMentions, oauth1Header, idTime } from '../scripts/x.mjs'
-import { mentionQuery } from '../scripts/issue.mjs'
+import { mentionQueries } from '../scripts/issue.mjs'
 
 test('long posts and their parents come back whole, not cut at 280 characters', async () => {
   const long = `bug: ${'a'.repeat(400)}`
@@ -9,14 +9,12 @@ test('long posts and their parents come back whole, not cut at 280 characters', 
   const fetchImpl = async u => {
     url = u
     return { ok: true, json: async () => ({
-      data: [{ id: '2', text: `${long.slice(0, 275)}…`, note_tweet: { text: long } }, { id: '3', text: 'short' }],
-      includes: { tweets: [{ id: '1', text: 'cut…', note_tweet: { text: 'whole parent' } }] }
+      data: [{ id: '3', text: 'short' }, { id: '2', text: `${long.slice(0, 275)}…`, note_tweet: { text: long } }]
     }) }
   }
-  const res = await searchMentions({ query: 'q', bearer: 'b', fetchImpl })
+  const res = await searchMentions({ queries: ['q'], bearer: 'b', fetchImpl })
   assert.match(new URL(url).searchParams.get('tweet.fields'), /note_tweet/)
-  assert.deepEqual(res.data.map(t => t.text), [long, 'short'])
-  assert.equal(res.includes.tweets[0].text, 'whole parent')
+  assert.deepEqual(res.data.map(t => t.text), ['short', long])
 })
 
 // X's own worked example: https://docs.x.com/resources/fundamentals/authentication/oauth-1-0a/creating-a-signature
@@ -50,21 +48,52 @@ test('the PIN flow asks for an oob request token, then trades the PIN for the bo
 })
 
 test('mentions are searched with the keywords and without expansions, so X bills only matching posts', async () => {
-  let url
-  await searchMentions({ query: mentionQuery('omarchy'), sinceId: '1976000000000000000', bearer: 'b', now: idTime('1976000000000000000') + 60_000, fetchImpl: async u => { url = u; return { ok: true, json: async () => ({}) } } })
-  const params = new URL(url).searchParams
-  assert.match(url, /\/2\/tweets\/search\/recent\?/)
-  assert.match(params.get('query'), /^@omarchy \(bug OR .+ OR "no sound"\) -from:omarchy -is:retweet$/)
-  assert.ok(params.get('query').length <= 512, 'X caps search queries at 512 characters')
-  assert.equal(params.get('since_id'), '1976000000000000000')
-  assert.equal(params.has('expansions'), false)
+  const urls = []
+  const now = idTime('1976000000000000000') + 60_000
+  await searchMentions({ queries: mentionQueries('omarchy'), sinceId: '1976000000000000000', bearer: 'b', now, fetchImpl: async u => { urls.push(u); return { ok: true, json: async () => ({}) } } })
+  assert.equal(urls.length, mentionQueries('omarchy').length)
+  for (const url of urls) {
+    const params = new URL(url).searchParams
+    assert.match(url, /\/2\/tweets\/search\/recent\?/)
+    assert.match(params.get('query'), /^@omarchy \(.+\) -from:omarchy -is:retweet$/)
+    assert.ok(params.get('query').length <= 512, 'X caps search queries at 512 characters')
+    assert.equal(params.get('since_id'), '1976000000000000000')
+    assert.equal(idTime(params.get('until_id')), now - 30_000, 'posts under 30 seconds old wait for the next run')
+    assert.equal(params.has('end_time') || params.has('start_time'), false, "X rejects ids mixed with times")
+    assert.equal(params.has('expansions'), false)
+  }
+})
+
+test('several searches merge into one newest-first list, each post once, with the newest id across all', async () => {
+  const pages = [
+    { data: [{ id: '10', text: 'a' }, { id: '8', text: 'b' }], meta: { newest_id: '10' } },
+    { data: [{ id: '11', text: 'c' }, { id: '8', text: 'b' }], meta: { newest_id: '11' } }
+  ]
+  const res = await searchMentions({ queries: ['q1', 'q2'], bearer: 'b', fetchImpl: async () => ({ ok: true, json: async () => pages.shift() }) })
+  assert.deepEqual(res.data.map(t => t.id), ['11', '10', '8'])
+  assert.equal(res.meta.newest_id, '11')
 })
 
 test('a since_id older than search allows becomes a 6-day start_time, since nothing has matched since', async () => {
   let url
   const now = idTime('1976000000000000000') + 8 * 86_400_000
-  await searchMentions({ query: 'q', sinceId: '1976000000000000000', bearer: 'b', now, fetchImpl: async u => { url = u; return { ok: true, json: async () => ({}) } } })
+  await searchMentions({ queries: ['q'], sinceId: '1976000000000000000', bearer: 'b', now, fetchImpl: async u => { url = u; return { ok: true, json: async () => ({}) } } })
   const params = new URL(url).searchParams
   assert.equal(params.has('since_id'), false)
   assert.equal(params.get('start_time'), new Date(now - 6 * 86_400_000).toISOString())
+  assert.equal(params.get('end_time'), new Date(now - 30_000).toISOString())
+  assert.equal(params.has('until_id'), false)
+})
+
+test('with no since_id, search starts an hour back instead of filing a week of posts', async () => {
+  let url
+  const now = Date.UTC(2026, 9, 9)
+  await searchMentions({ queries: ['q'], bearer: 'b', now, fetchImpl: async u => { url = u; return { ok: true, json: async () => ({}) } } })
+  assert.equal(new URL(url).searchParams.get('start_time'), new Date(now - 3_600_000).toISOString())
+})
+
+test('connect reads the watched account from wrangler.toml', async () => {
+  const { watched } = await import('../scripts/x-connect.mjs')
+  assert.deepEqual(watched('[vars]\nX_HANDLE = "omarchybot"       # tag\nX_ACCOUNT_ID = "42" # id\n'), { handle: 'omarchybot', id: '42' })
+  assert.deepEqual(watched('X_ACCOUNT_ID = "7"'), { handle: 'omarchy', id: '7' })
 })

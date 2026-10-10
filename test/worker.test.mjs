@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import worker, { kvState, runOnce, RunLock } from '../worker/index.js'
+import worker, { kvState, runOnce, RunLock, keyFor } from '../worker/index.js'
 
 const kv = (init = {}) => {
   const m = new Map(Object.entries(init)); const puts = []
@@ -66,4 +66,22 @@ test('a run is skipped while another holds the lock, and releases it when done',
   await LOCK.get().fetch('https://lock/release')
   assert.deepEqual(await runOnce({ STATE: store, LOCK, MODE: 'test', X_ACCOUNT_ID: '0' }, fetchImpl), { stopped: false })
   assert.equal(LOCK.store.size, 0)
+})
+
+test('a failed KV save still releases the lock', async () => {
+  const LOCK = lockBinding()
+  const store = { get: async () => '1', put: async () => { throw new Error('KV down') } }
+  const fetchImpl = async () => ({ ok: true, json: async () => ({ data: [{ id: '2', text: 'hi', author_id: 'a' }], meta: { newest_id: '2' } }) })
+  await assert.rejects(runOnce({ STATE: store, LOCK, MODE: 'test', X_ACCOUNT_ID: '0' }, fetchImpl), /KV down/)
+  assert.equal(LOCK.store.size, 0)
+})
+
+test('each handle keeps its own since_id and opt-outs', async () => {
+  assert.equal(keyFor(), 'since_id')
+  assert.equal(keyFor('OmarchyBot'), 'since_id:omarchybot')
+  const store = kv()
+  const s = kvState(store, keyFor('OmarchyBot'))
+  await s.addStop('u'); await s.addStop('u')
+  assert.deepEqual(await s.readStops(), ['u'])
+  assert.deepEqual(store.puts, [['opted_out:since_id:omarchybot', '["u"]']])
 })

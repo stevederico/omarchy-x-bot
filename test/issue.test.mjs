@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { toIssue, stripMentions, fileIssue, ensureLabels, isReport, parentOf, findCandidates } from '../scripts/issue.mjs'
+import { toIssue, stripMentions, fileIssue, ensureLabels, isReport, isStop, parentOf, findCandidates, mentionQueries, KEYWORDS, filedPostIds } from '../scripts/issue.mjs'
 
 
 test('a tagged post without an AI verdict becomes a draft issue, no bug label', () => {
@@ -107,4 +107,35 @@ test('findCandidates searches upstream broadly on the first two cleaned keywords
   assert.deepEqual(await findCandidates({ terms: 'idle repo:evil/x video', token: 't', fetchImpl }), [{ number: 1, title: 't', state: 'open' }])
   assert.deepEqual(queries, ['repo:omacom/omarchy is:issue idle repo', 'repo:omacom/omarchy is:issue idle'])
   assert.deepEqual(await findCandidates({ terms: '', token: 't', fetchImpl: async () => { throw new Error('no call') } }), [])
+})
+
+test('the searches cover every keyword, in both apostrophe styles, each under 512 characters', () => {
+  const queries = mentionQueries('omarchy')
+  assert.ok(queries.length > 1)
+  for (const q of queries) assert.ok(q.length <= 512, `${q.length}`)
+  const all = queries.join(' ')
+  for (const k of KEYWORDS) assert.ok(all.includes(k.includes(' ') ? `"${k}"` : ` ${k} `) || all.includes(`(${k} `) || all.includes(` ${k})`), k)
+  assert.ok(all.includes('"won’t open"'))
+})
+
+test('every keyword passes the local filter, so nothing X returns is dropped', () => {
+  for (const k of KEYWORDS) assert.equal(isReport({ text: `@omarchy ${k} here` }), true, k)
+  for (const text of ['chrome won’t open', 'audio isn’t working', 'having a problem with waybar', 'screen flickers']) assert.equal(isReport({ text }), true, text)
+})
+
+test('stop words are whole words', () => {
+  assert.equal(isStop({ text: '@omarchy stop replying' }), true)
+  assert.equal(isStop({ text: 'please unsubscribe me' }), true)
+  assert.equal(isStop({ text: 'nonstop updates' }), false)
+})
+
+test('handles other than @omarchy are stripped from draft titles', () => {
+  assert.equal(stripMentions('@OmarchyBot wifi is broken', 'omarchybot'), 'wifi is broken')
+  assert.equal(stripMentions('@omarchybot hi'), '@omarchybot hi')
+})
+
+test('the bot reply link on an issue is not counted as a filed post', async () => {
+  const fetchImpl = async () => ({ ok: true, json: async () => [{ body: 'Reported on X: https://x.com/a/status/1\nReplied on X: https://x.com/i/status/2\n' }] })
+  const { posts, replies } = await filedPostIds({ repo: 'me/fork', token: 't', fetchImpl })
+  assert.deepEqual([[...posts], [...replies]], [['1'], ['2']])
 })

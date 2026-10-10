@@ -1,7 +1,7 @@
 # The bot, as a Cloudflare Worker that runs every minute.
 # Secrets (npx wrangler secret put NAME): X_BEARER_TOKEN, GITHUB_TOKEN (Issues: read and write on TARGET_REPO),
 # XAI_API_KEY; optional RUN_KEY (POST /run to run now), and X_API_KEY, X_API_SECRET, X_REPLY_ACCESS_TOKEN,
-# X_REPLY_ACCESS_SECRET for replies from the bot's own X account.
+# X_REPLY_ACCESS_SECRET, X_REPLY_USER_ID for replies from the watched account (npm run connect sets them).
 name = "omarchy-x-bot-trigger"
 main = "worker/index.js"
 compatibility_date = "2026-09-01"

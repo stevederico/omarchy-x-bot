@@ -1,3 +1,16 @@
+0.28.0
+
+  Add missing keywords
+  Split long searches
+  Add 30s lag guard
+  Add request budget
+  Fix stuck lock
+  Hide connect input
+  Check reply account
+  Honor reply opt-outs
+  Skip reply answers
+  Fix README layout
+
 0.27.0
 
   Merge keyword lists

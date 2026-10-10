@@ -43,9 +43,12 @@ Watch it with `npm run logs`. Set a `RUN_KEY` secret to run it on demand with `R
 - **Every minute**, an X search for new @omarchy mentions with a keyword (Cloudflare cron), plus a `POST /run` endpoint for demos
 - **Pay only for matches**: X filters by keyword and skips reposts, so it never bills the rest of the mentions
 - **One run at a time**: a Durable Object lock skips a tick while a slow run is still going, so nothing is filed twice
-- **Keyword filter** keeps only posts that say `bug`, `broken`, `fix`, `issue`, `crash`, `error`, `fail`, `glitch`, `borked`, `freeze`, `hang`, `stuck`, `lag`, `not working`, `doesn't work`, `stopped working`, `won't start`, `won't boot`, `can't boot`, `black screen`, or `no sound`, plus common forms like `fixed` or `crashes` (the search query is capped at 512 characters)
+- **Keyword filter** keeps only posts that say `bug`, `broken`, `fix`, `issue`, `problem`, `crash`, `error`, `fail`, `glitch`, `borked`, `busted`, `wrong`, `freeze`, `hang`, `stuck`, `lag`, `flicker`, `drops`, `not working`, `isn't working`, `doesn't work`, `stopped working`, `won't start`, `won't boot`, `won't open`, `won't load`, `won't work`, `can't boot`, `can't connect`, `not loading`, `not responding`, `black screen`, or `no sound`, plus common forms like `fixed` or `crashes`, with straight or curly apostrophes. One list in `scripts/issue.mjs`, split into as many searches as X's 512-character cap needs
 - **Typed tags and plain replies** to @omarchy both count
 - **Moving window**: each run reads only posts newer than the last one handled, so old posts are never paid for twice, and the position is saved even when a run fails
+- **No skipped posts**: search can index a post a few seconds late, so a run reads only posts at least 30 seconds old; the next run gets the rest
+- **Fresh start**: with no saved position (first run, lost KV, new handle), it starts an hour back instead of filing a week of posts
+- **Request budget**: a run stops before Cloudflare's 50-call cap (about 2 filed bugs) and the next minute picks up the rest, so no issue is cut off halfway
 
 ### 🤖 **AI-Written Issues**
 - **Omarchy's bug template**: Grok fills in What's wrong?, System details when the post has them, the likely area, steps to try, and a Missing info checklist
@@ -60,7 +63,7 @@ Watch it with `npm run logs`. Set a `RUN_KEY` secret to run it on demand with `R
 ### 🛡️ **Safety**
 - **Test mode by default**: only `MODE=live` files issues; unset or anything else just logs
 - **Refuses `omacom/omarchy`**; files into a fork only
-- **No X replies**: X only allows them to posts that tag the replying account, so they're off (see below); when on, the reply is a fixed message, never AI text
+- **Replies off by default**: X only takes them from the account people tagged (see Replies on X); the reply text is fixed, never AI text
 - **No GitHub pings**: @handles from X are broken so they never @mention GitHub users
 - **Posts are untrusted**: the model is told never to follow them, and links it adds that aren't in the posts are removed
 
@@ -77,20 +80,10 @@ XAI_API_KEY            # xAI API key; Grok decides if a post is a bug and writes
 RUN_KEY                # optional: any random string; enables POST /run for demos
 X_API_KEY              # optional, for replies: X app API key (OAuth 1.0a consumer key)
 X_API_SECRET           # optional, for replies: X app API secret
-X_REPLY_ACCESS_TOKEN   # optional, for replies: access token for the account that replies (a bot's, not @omarchy)
+X_REPLY_ACCESS_TOKEN   # optional, for replies: access token for the watched account (X_HANDLE)
 X_REPLY_ACCESS_SECRET  # optional, for replies: that account's access token secret
+X_REPLY_USER_ID        # optional, for replies: that account's id; replies stay off unless it equals X_ACCOUNT_ID
 ```
-
-### 💬 Replies on X
-
-Reply support is built in and off by default. With the four reply secrets set, the bot answers each filed post with a fixed message: the issue link and an ask for the Omarchy version, the app, and `omarchy-debug` output. It's never AI text.
-
-Since February 2026, X's API only accepts a reply when the post tags the replying account, and its automation rules only allow replies people asked for. So replies work in two setups:
-
-- **@omarchy replies:** the Omarchy team connects the @omarchy account, so posts that tag @omarchy get answers from it
-- **A bot account replies:** people tag the bot (e.g. @OmarchyBot), and the bot watches that account's mentions (set `X_HANDLE` and `X_ACCOUNT_ID` to it)
-
-To connect an account, run `npm run connect`: it asks for your X app's API key and secret, gives you a link to authorize as that account, takes the PIN, and saves all four reply secrets to the Worker.
 
 Variables, in `wrangler.toml`:
 
@@ -100,9 +93,25 @@ TARGET_REPO=stevederico/omarchy      # where issues go
 X_HANDLE=omarchy                     # the account people tag
 X_ACCOUNT_ID=2108454467309883392     # its id
 AI_MODEL=grok-4.20-non-reasoning     # optional; any xAI model id
+MAX_REQUESTS=50                      # optional; outside calls per run, 1000 on Workers Paid
 ```
 
-`since_id` lives in the `STATE` KV namespace and the one-run lock in the `RunLock` Durable Object. The AI is xAI's API, paid per token.
+`since_id` lives in the `STATE` KV namespace, one per handle, and the one-run lock in the `RunLock` Durable Object. The AI is xAI's API, paid per token.
+
+### 💬 Replies on X
+
+Reply support is built in and off by default. With the reply secrets set, the bot answers each filed bug with a fixed message: the issue link and an ask for the Omarchy version, the app, and `omarchy-debug` output. The text is never AI-written, though X's link preview shows the issue title, which Grok writes.
+
+Since February 2026, X's API only accepts a reply when the post tags the replying account, and its automation rules only allow replies people asked for. So the bot only replies from the account it watches (`X_HANDLE`), in one of two setups:
+
+- **@omarchy replies:** the Omarchy team connects the @omarchy account, so posts that tag @omarchy get answers from it
+- **A bot account replies:** set `X_HANDLE` and `X_ACCOUNT_ID` to the bot (e.g. @OmarchyBot) and deploy; people tag the bot instead. Posts that tag only @omarchy are then not read at all
+
+To connect, run `npm run connect`. It checks wrangler first, asks for your X app's API key and secret without showing them, gives you a link to authorize as the watched account, takes the PIN, and saves the reply secrets to the Worker in one step. If you authorized a different account than `X_ACCOUNT_ID`, it says so and replies stay off.
+
+- **Mark the account Automated** in X's settings, as X's automation rules require
+- **Stop means stop**: anyone who tags it with `stop`, `unsubscribe`, or `opt out` gets no more replies; their bugs are still filed
+- **One reply per report**: drafts (no AI verdict) get none, and an answer to the bot's reply isn't filed as a new issue; the issue notes the reply with a `Replied on X:` line
 
 <br />
 
@@ -128,7 +137,7 @@ Each run reads `since_id` from KV and searches X for newer @omarchy posts with a
 worker/index.js                    # Cloudflare Worker: cron, KV state, POST /run
 scripts/bot.mjs                    # the loop
 scripts/x-mentions-to-issues.mjs   # run once from Node (state in state/since_id.txt)
-scripts/x-connect.mjs              # link the bot's own X account for replies
+scripts/x-connect.mjs              # connect the watched X account for replies
 scripts/x.mjs                      # X API: search mentions, authors, reply
 scripts/ai.mjs                     # xAI: decide and write the issue
 scripts/issue.mjs                  # filter, issue body, GitHub REST
@@ -143,7 +152,7 @@ See `SPEC.md` for the full design and later ideas.
 
 | What | Cost |
 |---|---|
-| **X post read** | $0.005 per new mention with a keyword (others aren't returned or billed) |
+| **X post read** | $0.005 per new mention with a keyword (others aren't returned or billed; searches with no new posts cost nothing) |
 | **X author lookup** | $0.01 per filed post's author only |
 | **Cloudflare Workers** | Free plan: cron every minute, KV (one write per run with new posts), Durable Object lock |
 | **xAI API** | About $0.001 per skipped match, about $0.005 per filed issue (three Grok calls) |
