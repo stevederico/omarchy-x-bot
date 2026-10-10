@@ -47,3 +47,9 @@ test('the PIN flow asks for an oob request token, then trades the PIN for the bo
   assert.deepEqual([acc.oauth_token, acc.oauth_token_secret, acc.screen_name], ['at', 'ats', 'omarchybot'])
   assert.match(calls[1].auth, /oauth_token="rt".*oauth_verifier="1234567"/)
 })
+
+test('mentions are fetched without expansions, so replied-to posts are not billed as extra reads', async () => {
+  let url
+  await fetchMentions({ accountId: '0', bearer: 'b', fetchImpl: async u => { url = u; return { ok: true, json: async () => ({}) } } })
+  assert.equal(new URL(url).searchParams.has('expansions'), false)
+})

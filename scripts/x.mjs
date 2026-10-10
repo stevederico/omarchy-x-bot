@@ -6,8 +6,9 @@ const API = 'https://api.x.com/2'
 export async function fetchMentions({ accountId, sinceId, bearer, fetchImpl = fetch }) {
   const params = new URLSearchParams({
     max_results: '100',
-    'tweet.fields': 'author_id,created_at,referenced_tweets,conversation_id,note_tweet',
-    expansions: 'referenced_tweets.id' // no author_id: user lookups cost $0.01 each
+    'tweet.fields': 'author_id,created_at,referenced_tweets,conversation_id,note_tweet'
+    // No expansions: each included post (like the one a mention replies to) is billed as another read,
+    // which doubled the cost, and authors are looked up only for filed bugs ($0.01 each).
   })
   if (sinceId) params.set('since_id', sinceId)
   const res = await fetchImpl(`${API}/users/${accountId}/mentions?${params}`, {

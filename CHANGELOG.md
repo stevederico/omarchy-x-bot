@@ -1,3 +1,7 @@
+0.24.0
+
+  Stop fetching parent posts
+
 0.23.0
 
   Document reply setups
