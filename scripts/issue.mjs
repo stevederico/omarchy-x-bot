@@ -7,22 +7,23 @@ export const GH = 'https://api.github.com'
 export const LABELS = ['bug', 'from-x', 'needs-triage']
 export const DRAFT_LABELS = ['from-x', 'needs-triage']
 
-// Regex sources, matched at the start of a word: "fix" also catches fixed, fixes, fixing.
-export const KEYWORDS = ['bug', 'broken', 'fix', 'issue', 'crash', 'error', 'not working', "doesn['’]?t work", 'fail', 'glitch', 'borked',
-  'freez', 'frozen', 'hang', 'stuck', 'lag', 'stopped working', "won['’]?t (start|boot)", "can['’]?t boot", 'black screen', 'no sound']
-
-// The keywords as an X search, so X only returns (and bills) matching posts. Search matches whole words, so word forms are spelled out.
-export const SEARCH_TERMS = ['bug', 'bugs', 'buggy', 'broken', 'fix', 'fixed', 'fixes', 'fixing', 'issue', 'issues', 'crash', 'crashes', 'crashed', 'crashing', 'error', 'errors', 'bugged', '"not working"', '"doesn\'t work"', '"doesnt work"', '"doesn’t work"',
+// One keyword list for both gates: the X search (so X only returns, and bills, matching posts) and isReport.
+// Search matches whole words, so word forms are spelled out. Capped by X's 512-character query limit.
+export const KEYWORDS = ['bug', 'bugs', 'buggy', 'broken', 'fix', 'fixed', 'fixes', 'fixing', 'issue', 'issues', 'crash', 'crashes', 'crashed', 'crashing', 'error', 'errors', 'bugged', 'not working', "doesn't work", 'doesnt work', 'doesn’t work',
   'fail', 'fails', 'failed', 'failing', 'glitch', 'glitchy', 'borked', 'freeze', 'freezes', 'frozen', 'hang', 'hangs', 'stuck', 'lag', 'laggy',
-  '"stopped working"', '"won\'t start"', '"won\'t boot"', '"can\'t boot"', '"black screen"', '"no sound"']
+  'stopped working', "won't start", "won't boot", "can't boot", 'black screen', 'no sound']
 
 export function mentionQuery(handle) {
-  return `@${handle} (${SEARCH_TERMS.join(' OR ')}) -from:${handle} -is:retweet`
+  return `@${handle} (${KEYWORDS.map(k => k.includes(' ') ? `"${k}"` : k).join(' OR ')}) -from:${handle} -is:retweet`
 }
+
+// The same whole-word match locally, any case, with curly apostrophes read as straight ones.
+const straight = s => s.toLowerCase().replaceAll('’', "'")
+const KEYWORD_RE = new RegExp(`(?<![\\p{L}\\p{N}'])(${[...new Set(KEYWORDS.map(straight))].join('|')})(?![\\p{L}\\p{N}'])`, 'u')
 
 // File any mention (typed tag or plain reply to @omarchy) that uses a keyword.
 export function isReport(post) {
-  return KEYWORDS.some(k => new RegExp(`\\b${k}`, 'i').test(post.text))
+  return KEYWORD_RE.test(straight(post.text))
 }
 
 // The post this one replies to, when X included it.

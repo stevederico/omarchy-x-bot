@@ -1,3 +1,7 @@
+0.27.0
+
+  Merge keyword lists
+
 0.26.0
 
   Expand keywords

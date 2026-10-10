@@ -1,7 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { searchMentions, oauth1Header, idTime } from '../scripts/x.mjs'
-import { mentionQuery, SEARCH_TERMS, isReport } from '../scripts/issue.mjs'
+import { mentionQuery } from '../scripts/issue.mjs'
 
 test('long posts and their parents come back whole, not cut at 280 characters', async () => {
   const long = `bug: ${'a'.repeat(400)}`
@@ -67,8 +67,4 @@ test('a since_id older than search allows becomes a 6-day start_time, since noth
   const params = new URL(url).searchParams
   assert.equal(params.has('since_id'), false)
   assert.equal(params.get('start_time'), new Date(now - 6 * 86_400_000).toISOString())
-})
-
-test('every search term also passes the keyword filter, so nothing X returns is dropped', () => {
-  for (const term of SEARCH_TERMS) assert.ok(isReport({ text: `@omarchy ${term.replaceAll('"', '')} here` }), term)
 })
