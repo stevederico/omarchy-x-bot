@@ -1,3 +1,9 @@
+0.22.0
+
+  Update README for Workers
+  Add deploy steps
+  Fix SPEC secret names
+
 0.21.0
 
   Add X connect helper

@@ -4,7 +4,7 @@
 
 # omarchy-x-bot
 
-### tag @omarchy on x, get a github issue. node 24, github actions, grok, zero deps
+### tag @omarchy on x, get a github issue. cloudflare workers, grok, zero deps
 
 </div>
 
@@ -15,12 +15,25 @@
 ```bash
 git clone https://github.com/stevederico/omarchy-x-bot && cd omarchy-x-bot
 npm test
-MODE=test X_BEARER_TOKEN=... XAI_API_KEY=... node scripts/x-mentions-to-issues.mjs
+MODE=test X_BEARER_TOKEN=... XAI_API_KEY=... GH_TOKEN=... npm run mentions
 ```
 
-Deploy with `npm run deploy`, watch live logs with `npm run logs`, and run it now with `RUN_KEY=... npm run demo`.
+A local test run prints each issue it would file and writes nothing to GitHub. Without `XAI_API_KEY` it prints plain draft issues, and live mode refuses to start. Without `GH_TOKEN` it skips the upstream search and repo context.
 
-Test mode prints each issue it would file and writes nothing to GitHub. Without `XAI_API_KEY`, test mode prints plain draft issues and no AI draft. Live mode refuses to start without it.
+<br />
+
+## ☁️ Deploy
+
+```bash
+npx wrangler login
+npx wrangler kv namespace create STATE     # put the id in wrangler.toml
+npx wrangler secret put X_BEARER_TOKEN
+npx wrangler secret put GITHUB_TOKEN
+npx wrangler secret put XAI_API_KEY
+npm run deploy
+```
+
+Watch it with `npm run logs`. Set a `RUN_KEY` secret to run it on demand with `RUN_KEY=... npm run demo`.
 
 <br />
 
@@ -31,7 +44,7 @@ Test mode prints each issue it would file and writes nothing to GitHub. Without 
 - **One run at a time**: a Durable Object lock skips a tick while a slow run is still going, so nothing is filed twice
 - **Keyword filter** sends only posts that say `bug`, `broken`, `fix`, `issue`, `crash`, `error`, `not working`, or `doesn't work` to the AI (word starts, any case)
 - **Typed tags and plain replies** to @omarchy both count
-- **Moving window** saves the last post handled after each one, so each run only pays for new posts and a crash never files a post twice
+- **Moving window**: each run reads only posts newer than the last one handled, so old posts are never paid for twice, and the position is saved even when a run fails
 
 ### 🤖 **AI-Written Issues**
 - **Omarchy's bug template**: Grok fills in What's wrong?, System details when the post has them, the likely area, steps to try, and a Missing info checklist
@@ -46,7 +59,7 @@ Test mode prints each issue it would file and writes nothing to GitHub. Without 
 ### 🛡️ **Safety**
 - **Test mode by default**: only `MODE=live` files issues; unset or anything else just logs
 - **Refuses `omacom/omarchy`**; files into a fork only
-- **No X reply** unless the bot's own X account keys are set; the reply is a fixed message, never AI text
+- **No X replies**: X only allows them to posts that tag the replying account, so they're off (see below); when on, the reply is a fixed message, never AI text
 - **No GitHub pings**: @handles from X are broken so they never @mention GitHub users
 - **Posts are untrusted**: the model is told never to follow them, and links it adds that aren't in the posts are removed
 
@@ -78,7 +91,7 @@ X_ACCOUNT_ID=2108454467309883392     # @omarchy
 AI_MODEL=grok-4.20-non-reasoning     # optional; any xAI model id
 ```
 
-`since_id` lives in the `STATE` KV namespace. GitHub Models was retired on July 30, 2026, so the AI is xAI's API, paid per token.
+`since_id` lives in the `STATE` KV namespace and the one-run lock in the `RunLock` Durable Object. The AI is xAI's API, paid per token.
 
 <br />
 
@@ -104,6 +117,7 @@ Each run reads `since_id` from KV and reads newer mentions, oldest first, and ke
 worker/index.js                    # Cloudflare Worker: cron, KV state, POST /run
 scripts/bot.mjs                    # the loop
 scripts/x-mentions-to-issues.mjs   # run once from Node (state in state/since_id.txt)
+scripts/x-connect.mjs              # link the bot's own X account for replies
 scripts/x.mjs                      # X API: mentions, authors, reply
 scripts/ai.mjs                     # xAI: decide and write the issue
 scripts/issue.mjs                  # filter, issue body, GitHub REST
@@ -120,8 +134,8 @@ See `SPEC.md` for the full design and later ideas.
 |---|---|
 | **X post read** | $0.005 per new mention |
 | **X author lookup** | $0.01 per filed post's author only |
-| **Cloudflare Workers** | Free plan: cron, KV (one write per run with new posts) |
-| **xAI API** | About $0.001 per matched post ($1.25/M in, $2.50/M out) |
+| **Cloudflare Workers** | Free plan: cron every minute, KV (one write per run with new posts), Durable Object lock |
+| **xAI API** | About $0.001 per skipped match, about $0.005 per filed issue (three Grok calls) |
 
 <br />
 
@@ -142,6 +156,6 @@ MIT. See `LICENSE`.
 
 <div align="center">
 
-Built with Node, GitHub Actions, and Grok · [@stevederico](https://x.com/stevederico)
+Built with Cloudflare Workers and Grok · [@stevederico](https://x.com/stevederico)
 
 </div>
