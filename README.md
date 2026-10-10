@@ -80,7 +80,16 @@ X_REPLY_ACCESS_TOKEN   # optional, for replies: access token for the account tha
 X_REPLY_ACCESS_SECRET  # optional, for replies: that account's access token secret
 ```
 
-Replies are off. Since February 2026, X's API only accepts a reply when the post mentions the replying account, and its automation rules only allow replies people asked for, so a bot can't reply to posts that tag only @omarchy. To reply when people tag the bot itself, create the bot's X account, then run `node scripts/x-connect.mjs`: it asks for your X app's API key and secret, gives you a link to authorize as the bot, takes the PIN, and saves all four reply secrets to the Worker.
+### 💬 Replies on X
+
+Reply support is built in and off by default. With the four reply secrets set, the bot answers each filed post with a fixed message: the issue link and an ask for the Omarchy version, the app, and `omarchy-debug` output. It's never AI text.
+
+Since February 2026, X's API only accepts a reply when the post tags the replying account, and its automation rules only allow replies people asked for. So replies work in two setups:
+
+- **@omarchy replies:** the Omarchy team connects the @omarchy account, so posts that tag @omarchy get answers from it
+- **A bot account replies:** people tag the bot (e.g. @OmarchyBot), and the bot watches that account's mentions (set `X_ACCOUNT_ID` to its id)
+
+To connect an account, run `npm run connect`: it asks for your X app's API key and secret, gives you a link to authorize as that account, takes the PIN, and saves all four reply secrets to the Worker.
 
 Variables, in `wrangler.toml`:
 

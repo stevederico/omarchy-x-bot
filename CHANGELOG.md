@@ -1,3 +1,7 @@
+0.23.0
+
+  Document reply setups
+
 0.22.0
 
   Update README for Workers
