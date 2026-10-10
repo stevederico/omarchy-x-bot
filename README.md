@@ -4,7 +4,7 @@
 
 # omarchy-x-bot
 
-### tag @omarchy on x, get a github issue. cloudflare workers, grok, zero deps
+### tag @omarchy on x, get a github issue for a bug or feature request. cloudflare workers, grok, zero deps
 
 </div>
 
@@ -43,7 +43,7 @@ Watch it with `npm run logs`. Set a `RUN_KEY` secret to run it on demand with `R
 - **Every minute**, an X search for new @omarchy mentions with a keyword (Cloudflare cron), plus a `POST /run` endpoint for demos
 - **Pay only for matches**: X filters by keyword and skips reposts, so it never bills the rest of the mentions
 - **One run at a time**: a Durable Object lock skips a tick while a slow run is still going, so nothing is filed twice
-- **Keyword filter** keeps only posts that say `bug`, `broken`, `fix`, `issue`, `problem`, `crash`, `error`, `fail`, `glitch`, `borked`, `busted`, `wrong`, `freeze`, `hang`, `stuck`, `lag`, `flicker`, `drops`, `not working`, `isn't working`, `doesn't work`, `stopped working`, `won't start`, `won't boot`, `won't open`, `won't load`, `won't work`, `can't boot`, `can't connect`, `not loading`, `not responding`, `black screen`, or `no sound`, plus common forms like `fixed` or `crashes`, with straight or curly apostrophes. One list in `scripts/issue.mjs`, split into as many searches as X's 512-character cap needs
+- **Keyword filter** keeps only posts that say `bug`, `broken`, `fix`, `issue`, `problem`, `crash`, `error`, `fail`, `glitch`, `borked`, `busted`, `wrong`, `freeze`, `hang`, `stuck`, `lag`, `flicker`, `drops`, `not working`, `isn't working`, `doesn't work`, `stopped working`, `won't start`, `won't boot`, `won't open`, `won't load`, `won't work`, `can't boot`, `can't connect`, `not loading`, `not responding`, `black screen`, or `no sound`, and feature words like `add`, `support`, `feature`, `request`, `suggest`, `wish`, `would be nice`, or `would love`, plus common forms like `fixed` or `crashes`, with straight or curly apostrophes. One list in `scripts/issue.mjs`, split into as many searches as X's 512-character cap needs
 - **Typed tags and plain replies** to @omarchy both count
 - **Moving window**: each run reads only posts newer than the last one handled, so old posts are never paid for twice, and the position is saved even when a run fails
 - **No skipped posts**: search can index a post a few seconds late, so a run reads only posts at least 30 seconds old; the next run gets the rest
@@ -52,7 +52,7 @@ Watch it with `npm run logs`. Set a `RUN_KEY` secret to run it on demand with `R
 
 ### 🤖 **AI-Written Issues**
 - **Omarchy's bug template**: Grok fills in What's wrong?, System details when the post has them, the likely area, steps to try, and a Missing info checklist
-- **Bugs only**: support questions, ideas, and jokes are skipped and listed in the Worker logs
+- **Bugs and feature requests**: bugs get the `bug` label, requests get `enhancement` and a request-shaped body (What's requested?, Possible today); support questions, praise, and jokes are skipped and listed in the Worker logs
 - **No made-up facts**: details the post doesn't give are left out and asked for in a Missing info checklist
 - **Second pass**: Grok rewrites the issue after reading the matching upstream issues and the Omarchy codebase (AGENTS.md, files matching the bug, the user manual page), so it names real files and commands, the likely root cause, and any known workaround
 - **Possibly related upstream**: a broad search of `omacom/omarchy` issues, then Grok picks up to 3 that match, listed as plain text so omacom gets no backlinks

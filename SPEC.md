@@ -1,18 +1,19 @@
 # @omarchy X → GitHub Issue Bot
 
 **Goal:** prove the loop works once, end to end, with the least code.
-Tag `@omarchy` on X → one draft issue appears in `omacom/omarchy` → optionally, the tagged account replies with the issue link.
+Tag `@omarchy` on X with a bug or feature request → one issue appears in `omacom/omarchy` → optionally, the tagged account replies with the issue link.
 
 ## Scope
 In: tag detection, one issue per tagged post, one reply.
-In: AI drafting in Omarchy's bug template, and skipping posts the AI says aren't bugs.
+In: AI drafting in Omarchy's bug template, feature requests labeled `enhancement`, and skipping posts the AI says are neither.
 Out: approval queue, rate limits, vouch, close-the-loop replies.
 
 ## Flow
 1. Search X for new mentions of `@omarchy` with a keyword (`GET /2/tweets/search/recent?query=@omarchy (bug OR fix OR …) -from:omarchy -is:retweet&since_id=…&end_time=<30s ago>`). X bills each returned post, so filtering in the query means non-matching mentions cost nothing. One keyword list (`KEYWORDS` in `scripts/issue.mjs`) feeds both the search and the local filter, split into as many queries as X's 512-character cap needs, and the results are merged. `end_time` 30 seconds back means a post indexed late is read next run, never passed over. Search reaches back 7 days, so a `since_id` older than 6 days becomes `start_time` 6 days back; with no `since_id` at all, it starts an hour back.
 2. For each match (skip @omarchy's own posts), oldest first, Grok (xAI API) reads the post as untrusted text and decides (the post it replies to isn't fetched, since X bills it as a second read):
    - **Bug:** title (under 80 chars) and body in the bug template, marked as an AI summary, with links not in the posts removed. Labels: `bug`, `from-x`, `needs-triage`.
-   - **Not a bug:** no issue. The post URL is listed in the Worker logs so it can be reviewed or replayed.
+   - **Feature request:** title and body with What's requested?, Likely area, Possible today, and use-case questions. Labels: `enhancement`, `from-x`, `needs-triage`.
+   - **Neither:** no issue. The post URL is listed in the Worker logs so it can be reviewed or replayed.
    - **No verdict** (unusable answer, or no key in test mode): a draft issue titled `[X] ` + first 80 chars of the post. Labels: `from-x`, `needs-triage`. No `bug` label, since nothing checked it.
    - **AI API fails** (rate limit, outage, timeout, bad key, retired model, non-JSON reply): stop the run and fail the job. The next run retries from this post. A live run refuses to start without `XAI_API_KEY`.
    - Every issue body keeps the author handle, post URL, quoted post text, and the footer "Filed automatically from X."

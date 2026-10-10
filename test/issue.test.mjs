@@ -139,3 +139,7 @@ test('the bot reply link on an issue is not counted as a filed post', async () =
   const { posts, replies } = await filedPostIds({ repo: 'me/fork', token: 't', fetchImpl })
   assert.deepEqual([[...posts], [...replies]], [['1'], ['2']])
 })
+
+test('feature request words count as reports', () => {
+  for (const text of ['@omarchy add support for smartphone hardware', 'it would be nice to have a dock', 'feature request: tabs']) assert.equal(isReport({ text }), true, text)
+})

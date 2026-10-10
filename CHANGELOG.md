@@ -1,3 +1,9 @@
+0.29.0
+
+  File feature requests
+  Add feature keywords
+  Keep steps safe
+
 0.28.0
 
   Add missing keywords

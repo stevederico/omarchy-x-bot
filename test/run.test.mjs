@@ -125,7 +125,7 @@ test('files bugs, records skipped posts, and moves since_id to the newest post',
   const state = memoryState()
   await run({ env: live, state, fetchImpl })
   assert.deepEqual(calls.issues.map(i => [i.title, i.labels]), [['AI: bar is broken', ['bug', 'from-x', 'needs-triage']]])
-  assert.deepEqual(state.notes, ['filed: https://github.com/me/fork/issues/1 (https://x.com/i/status/1)', 'skipped, not a bug: https://x.com/i/status/2'])
+  assert.deepEqual(state.notes, ['filed: https://github.com/me/fork/issues/1 (https://x.com/i/status/1)', 'skipped, not a bug or feature request: https://x.com/i/status/2'])
   assert.equal(state.since, '3')
 })
 
@@ -208,10 +208,20 @@ test('test mode writes nothing to GitHub but lists what it would do', async () =
   const state = memoryState()
   await run({ env: { ...live, MODE: 'test' }, state, fetchImpl })
   assert.equal(calls.issues.length, 0)
-  assert.deepEqual(state.notes, ['would file: AI: bar is broken (https://x.com/i/status/1)', 'skipped, not a bug: https://x.com/i/status/2'])
+  assert.deepEqual(state.notes, ['would file: AI: bar is broken (https://x.com/i/status/1)', 'skipped, not a bug or feature request: https://x.com/i/status/2'])
   assert.equal(state.since, '2')
 })
 
 test('refuses omacom/omarchy', async () => {
   await assert.rejects(run({ env: { ...live, TARGET_REPO: 'Omacom/Omarchy' }, state: memoryState(), fetchImpl: async () => { throw new Error('no calls') } }), /Refusing/)
+})
+
+test('a feature request is filed with the enhancement label and a feature reply', async () => {
+  const text = 'add support for smartphone hardware'
+  const { calls, fetchImpl } = world({ posts: [post('1', text)], ai: { [text]: answer({ kind: 'feature', title: 'Support smartphone hardware', whats_wrong: 'Run Omarchy on phones.', missing_info: ['Which phone?'] }) } })
+  await run({ env: { ...live, ...replyKeys }, state: memoryState(), fetchImpl })
+  assert.deepEqual(calls.issues[0].labels, ['enhancement', 'from-x', 'needs-triage'])
+  assert.match(calls.issues[0].body, /### What's requested\?\n\nRun Omarchy on phones\./)
+  assert.doesNotMatch(calls.issues[0].body, /omarchy-debug|CPU, and GPU|Steps to try/)
+  assert.equal(calls.replies[0].text, "Tracked: https://github.com/me/fork/issues/1\n\nTo help, add how you'd use it to the issue.")
 })

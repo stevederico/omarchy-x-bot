@@ -124,3 +124,15 @@ test('a failed second pass returns null so the first draft is kept', async () =>
   assert.equal(await writeIssue({ text: 'p', draft: { title: 'T', body: 'B' }, token: 't', fetchImpl: status(500) }), null)
   assert.equal(await writeIssue({ text: 'p', draft: { title: 'T', body: 'B' }, token: 't', fetchImpl: reply('{"title":""}') }), null)
 })
+
+test('the verdict can be a bug, a feature request, or neither', async () => {
+  const reply = json => async () => ({ ok: true, text: async () => JSON.stringify({ choices: [{ message: { content: JSON.stringify(json) } }] }) })
+  assert.deepEqual(await draftIssue({ text: 'great work', token: 'k', fetchImpl: reply({ kind: 'none' }) }), { bug: false })
+  const feature = await draftIssue({ text: 'add tabs', token: 'k', fetchImpl: reply({ kind: 'feature', title: 'Tabs', whats_wrong: 'Wants tabs.', search_terms: 'tabs' }) })
+  assert.equal(feature.kind, 'feature')
+  assert.match(feature.body, /^### What's requested\?/)
+  assert.doesNotMatch(feature.body, /Missing info/)
+  const bug = await draftIssue({ text: 'wifi broken', token: 'k', fetchImpl: reply({ bug: true, title: 'Wifi', whats_wrong: 'Drops.' }) })
+  assert.equal(bug.kind, 'bug')
+  assert.match(bug.body, /Omarchy version, CPU, and GPU/)
+})

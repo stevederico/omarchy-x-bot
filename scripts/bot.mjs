@@ -7,7 +7,8 @@ import { withBodies, repoContext } from './context.mjs'
 import { toIssue, fileIssue, ensureLabels, isReport, isStop, parentOf, filedPostIds, noteReply, findCandidates, mentionQueries, STOP_WORDS } from './issue.mjs'
 
 // A fixed reply, never AI text, so a crafted post can't make the bot say anything else.
-export function replyText(issueUrl) {
+export function replyText(issueUrl, kind = 'bug') {
+  if (kind === 'feature') return `Tracked: ${issueUrl}\n\nTo help, add how you'd use it to the issue.`
   return `Tracked: ${issueUrl}\n\nTo help fix it, add your Omarchy version, the app involved, and the output of omarchy-debug to the issue.`
 }
 
@@ -79,8 +80,8 @@ export async function run({ env, state, fetchImpl = fetch, maxRequests = Infinit
         return { stopped: true }
       }
       if (ai?.bug === false) {
-        console.log(`skip, not a bug: https://x.com/i/status/${post.id}`)
-        state.note(`skipped, not a bug: https://x.com/i/status/${post.id}`)
+        console.log(`skip, not a bug or feature request: https://x.com/i/status/${post.id}`)
+        state.note(`skipped, not a bug or feature request: https://x.com/i/status/${post.id}`)
       } else {
         // Look up authors only for posts being filed ($0.01 per user).
         if (!(post.author_id in users)) {
@@ -119,7 +120,7 @@ export async function run({ env, state, fetchImpl = fetch, maxRequests = Infinit
           // No reply for a draft (no AI verdict), or to someone who asked the bot to stop.
           if (replyOnX && ai && !stops.has(post.author_id)) {
             try {
-              const reply = await postReply({ text: replyText(issueUrl), inReplyTo: post.id, auth, fetchImpl: f })
+              const reply = await postReply({ text: replyText(issueUrl, ai.kind), inReplyTo: post.id, auth, fetchImpl: f })
               filed?.replies.add(reply.data.id)
               await noteReply({ issueUrl, body: issue.body, replyId: reply.data.id, token, fetchImpl: f })
             } catch (e) {

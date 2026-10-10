@@ -3,8 +3,9 @@ import { clip } from './ai.mjs'
 
 export const GH = 'https://api.github.com'
 
-// `bug` only goes on posts the AI called a bug; the rest stay drafts for triage.
+// `bug` only goes on posts the AI called a bug, `enhancement` on feature requests; the rest stay drafts for triage.
 export const LABELS = ['bug', 'from-x', 'needs-triage']
+export const FEATURE_LABELS = ['enhancement', 'from-x', 'needs-triage']
 export const DRAFT_LABELS = ['from-x', 'needs-triage']
 
 // One keyword list for both gates: the X search (so X only returns, and bills, matching posts) and isReport.
@@ -15,7 +16,10 @@ export const KEYWORDS = ['bug', 'bugs', 'buggy', 'bugged', 'broken', 'fix', 'fix
   'freeze', 'freezes', 'frozen', 'hang', 'hangs', 'stuck', 'lag', 'laggy', 'flicker', 'flickers', 'flickering', 'drops', 'dropping',
   'not working', "isn't working", 'isnt working', "doesn't work", 'doesnt work', 'stopped working',
   "won't start", "won't boot", "won't open", "won't load", "won't work", "can't boot", "can't connect", 'not loading', 'not responding',
-  'black screen', 'no sound']
+  'black screen', 'no sound',
+  // Feature requests
+  'add', 'adding', 'feature', 'features', 'request', 'support', 'suggestion', 'suggest', 'wish',
+  'would be nice', 'would be great', 'would be cool', 'would love', "it'd be nice"]
 
 export const QUERY_MAX = 512
 
@@ -38,7 +42,7 @@ export const isStop = post => new RegExp(`(?<![\\p{L}\\p{N}'])(${STOP_WORDS.join
 const straight = s => s.toLowerCase().replaceAll('’', "'")
 const KEYWORD_RE = new RegExp(`(?<![\\p{L}\\p{N}'])(${[...new Set(KEYWORDS.map(straight))].join('|')})(?![\\p{L}\\p{N}'])`, 'u')
 
-// File any mention (typed tag or plain reply to @omarchy) that uses a keyword.
+// File any mention (typed tag or plain reply to @omarchy) that uses a keyword: a possible bug or feature request.
 export function isReport(post) {
   return KEYWORD_RE.test(straight(post.text))
 }
@@ -90,7 +94,7 @@ export function toIssue(post, { users = {}, tweets = {}, ai = null, related = []
   if (parent) body += `\nIn reply to:\n\n${quote(parent.text)}\n`
   body += '\n_Filed automatically from X._\n'
 
-  return { title: ai?.title || `[X] ${firstLine}`, body, labels: ai ? LABELS : DRAFT_LABELS, url }
+  return { title: ai?.title || `[X] ${firstLine}`, body, labels: !ai ? DRAFT_LABELS : ai.kind === 'feature' ? FEATURE_LABELS : LABELS, url }
 }
 
 export function stripMentions(text, handle = 'omarchy') {
@@ -143,8 +147,8 @@ export async function noteReply({ issueUrl, body, replyId, token, fetchImpl = fe
 
 // Create the labels if missing; 422 means it already exists.
 export async function ensureLabels({ repo, token, fetchImpl = fetch }) {
-  const colors = { bug: 'd73a4a', 'from-x': '000000', 'needs-triage': 'fbca04' }
-  for (const name of LABELS) {
+  const colors = { bug: 'd73a4a', enhancement: 'a2eeef', 'from-x': '000000', 'needs-triage': 'fbca04' }
+  for (const name of new Set([...LABELS, ...FEATURE_LABELS])) {
     const res = await fetchImpl(`${GH}/repos/${repo}/labels`, {
       method: 'POST', headers: headers(token), body: JSON.stringify({ name, color: colors[name] })
     })
