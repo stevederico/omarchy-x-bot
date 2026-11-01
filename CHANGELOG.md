@@ -1,3 +1,9 @@
+0.30.0
+
+  Add reply queue
+  Add queue tests
+  Document npm queue
+
 0.29.1
 
   Drop debug ask

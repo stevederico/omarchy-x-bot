@@ -1,6 +1,6 @@
 {
   "name": "omarchy-x-bot",
-  "version": "0.29.1",
+  "version": "0.30.0",
   "private": true,
   "license": "MIT",
   "type": "module",
@@ -13,6 +13,7 @@
     "deploy": "npx wrangler deploy",
     "logs": "npx wrangler tail",
     "demo": "curl -fsS -X POST -H \"authorization: Bearer $RUN_KEY\" https://omarchy-x-bot-trigger.omarchy-x-bot.workers.dev/run",
-    "connect": "node scripts/x-connect.mjs"
+    "connect": "node scripts/x-connect.mjs",
+    "queue": "node scripts/reply-queue.mjs"
   }
 }
