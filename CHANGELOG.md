@@ -1,3 +1,13 @@
+0.37.0
+
+  Merge v1 funnel
+
+0.36.0
+
+  Vertical funnel chart
+  Merge issue steps
+  Add funnel tooltip
+
 0.35.0
 
   Merge v1 dashboard

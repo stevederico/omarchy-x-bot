@@ -41,6 +41,6 @@ test('funnel counts bugs and features filed inside the window', () => {
     issue(2, ['enhancement'], body, '2026-10-27T00:00:00Z'),
     issue(3, ['bug'], body, '2026-11-02T00:00:00Z')
   ])
-  assert.deepEqual(f.stages.map(s => s.value), [100, 10, 2, 2, null])
+  assert.deepEqual(f.stages.map(s => s.value), [100, 10, 2, null])
   assert.equal(f.stages[2].sub, '1 bugs · 1 features')
 })
