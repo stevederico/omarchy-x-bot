@@ -1,3 +1,13 @@
+0.35.0
+
+  Merge v1 dashboard
+
+0.34.0
+
+  Merge into dashboard
+  Add funnel data
+  Rename queue script
+
 0.33.0
 
   Merge v1 pages

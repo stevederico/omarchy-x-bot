@@ -35,7 +35,7 @@ npm run deploy
 
 Watch it with `npm run logs`. Set a `RUN_KEY` secret to run it on demand with `RUN_KEY=... npm run demo`.
 
-Reply by hand with `npm run queue`: it opens a page of open `from-x` issues, each with a Reply button that fills in an X reply to the post. You press Send; nothing is posted for you.
+Run `npm run dashboard` for the funnel and the reply queue on one page (`pages/dashboard.html`). Each open `from-x` issue has a Reply button that fills in an X reply to the post; you press Send, nothing is posted for you. Funnel X counts come from `pages/funnel.json`.
 
 <br />
 

@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { toQueue, queueHtml } from '../scripts/reply-queue.mjs'
+import { toQueue, toFunnel, dashboardHtml } from '../scripts/dashboard.mjs'
 
 const issue = (n, labels, body, createdAt = '2026-11-01T00:00:00Z') => ({
   number: n, title: `Title <${n}>`, url: `https://github.com/me/omarchy/issues/${n}`, labels: labels.map(name => ({ name })), body, createdAt
@@ -25,8 +25,22 @@ test('features get the feature reply and newest come first', () => {
 })
 
 test('escapes post text and titles in the page', () => {
-  const html = queueHtml(toQueue([issue(1, ['bug'], body)]), 'me/omarchy')
+  const html = dashboardHtml({ items: toQueue([issue(1, ['bug'], body)]), funnel: toFunnel({ start: 'a', end: 'b', mentions: 1, keywordMatches: 1 }, []), repo: 'me/omarchy' })
   assert.ok(html.includes('wifi &lt;broken&gt;'))
   assert.ok(html.includes('Title &lt;1&gt;'))
   assert.ok(!html.includes('<broken>'))
+})
+
+test('closed issues stay out of the queue', () => {
+  assert.equal(toQueue([{ ...issue(1, ['bug'], body), state: 'CLOSED' }]).length, 0)
+})
+
+test('funnel counts bugs and features filed inside the window', () => {
+  const f = toFunnel({ start: '2026-10-25T00:00:00Z', end: '2026-11-01T00:00:00Z', mentions: 100, keywordMatches: 10 }, [
+    issue(1, ['bug'], body, '2026-10-26T00:00:00Z'),
+    issue(2, ['enhancement'], body, '2026-10-27T00:00:00Z'),
+    issue(3, ['bug'], body, '2026-11-02T00:00:00Z')
+  ])
+  assert.deepEqual(f.stages.map(s => s.value), [100, 10, 2, 2, null])
+  assert.equal(f.stages[2].sub, '1 bugs · 1 features')
 })
