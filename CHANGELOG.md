@@ -1,3 +1,8 @@
+0.32.0
+
+  Add funnel page
+  Add queue snapshot
+
 0.30.0
 
   Add reply queue
