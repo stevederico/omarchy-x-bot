@@ -1,3 +1,7 @@
+0.31.0
+
+  Add v2 spec
+
 0.30.0
 
   Add reply queue
