@@ -1,3 +1,9 @@
+0.34.0
+
+  Merge into dashboard
+  Add funnel data
+  Rename queue script
+
 0.32.0
 
   Add funnel page
