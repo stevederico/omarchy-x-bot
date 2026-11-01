@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>omarchy-x-bot</title>
 <style>
-:root { --bg:#fafafa; --fg:#111; --muted:#777; --card:#fff; --line:#e4e4e4; --accent:#2f6fed; --track:#e9e9e9; --bug:#d6453d; --feature:#2f9e5b; }
-@media (prefers-color-scheme: dark) { :root { --bg:#111; --fg:#eee; --muted:#888; --card:#1a1a1a; --line:#2a2a2a; --accent:#5b8cff; --track:#242424; --bug:#ff6b61; --feature:#4cc27c; } }
+:root { --bg:#fafafa; --fg:#111; --muted:#777; --card:#fff; --line:#e4e4e4; --accent:#2a78d6; --track:#e9e9e9; --bug:#d6453d; --feature:#2f9e5b; }
+@media (prefers-color-scheme: dark) { :root { --bg:#111; --fg:#eee; --muted:#888; --card:#1a1a1a; --line:#2a2a2a; --accent:#3987e5; --track:#242424; --bug:#ff6b61; --feature:#4cc27c; } }
 body { margin:0; background:var(--bg); color:var(--fg); font:15px/1.45 system-ui, sans-serif; }
 main { max-width:760px; margin:40px auto; padding:0 16px; }
 h1 { font-size:22px; margin:0 0 24px; }
@@ -15,12 +15,18 @@ section { margin-bottom:40px; }
 .head { display:flex; align-items:baseline; gap:12px; margin-bottom:14px; }
 .muted { color:var(--muted); }
 .head label { margin-left:auto; color:var(--muted); font-size:14px; }
-.row { display:grid; grid-template-columns:150px 1fr 70px; gap:12px; align-items:center; margin:12px 0; }
-.label { font-weight:600; }
-.label small, .num small { display:block; font-weight:400; color:var(--muted); }
-.track { background:var(--track); border-radius:6px; height:30px; display:flex; }
-.bar { background:var(--accent); border-radius:6px; height:100%; min-width:4px; }
-.num { text-align:right; font-variant-numeric:tabular-nums; font-weight:600; }
+.funnel { display:grid; grid-template-columns:repeat(var(--n), 1fr); gap:8px; }
+.step { display:flex; flex-direction:column; min-width:0; }
+.plot { position:relative; height:240px; display:flex; flex-direction:column; justify-content:flex-end; border-bottom:1px solid var(--line); }
+.plot .val { font-weight:600; font-variant-numeric:tabular-nums; text-align:center; margin-bottom:4px; }
+.ghost { background:var(--accent); opacity:.14; border-radius:4px 4px 0 0; }
+.ghost + .bar { border-radius:0; }
+.bar { background:var(--accent); border-radius:4px 4px 0 0; min-height:2px; }
+.step .name { font-weight:600; font-size:13px; margin-top:8px; }
+.step small { display:block; color:var(--muted); font-size:12px; font-variant-numeric:tabular-nums; }
+.step:hover .bar { filter:brightness(1.12); }
+#tip { position:fixed; pointer-events:none; background:var(--card); border:1px solid var(--line); border-radius:8px; padding:8px 10px; font-size:13px; box-shadow:0 4px 16px rgba(0,0,0,.12); display:none; z-index:9; }
+#tip b { font-variant-numeric:tabular-nums; }
 article { display:grid; grid-template-columns:28px 1fr auto; gap:12px; align-items:start; background:var(--card); border:1px solid var(--line); border-radius:10px; padding:14px; margin:10px 0; }
 article.is-done { opacity:.45; }
 body.hide-done article.is-done { display:none; }
@@ -32,7 +38,7 @@ body.hide-done article.is-done { display:none; }
 h3 { font-size:16px; margin:4px 0 6px; }
 blockquote { margin:0; color:var(--muted); white-space:pre-wrap; word-break:break-word; font-size:14px; }
 .reply { background:var(--accent); color:#fff; text-decoration:none; padding:7px 14px; border-radius:8px; font-weight:600; }
-@media (max-width:520px) { .row { grid-template-columns:110px 1fr 56px; } }
+@media (max-width:520px) { .funnel { gap:4px; } .step .name { font-size:11px; } .plot { height:200px; } }
 </style>
 </head>
 <body>
@@ -40,11 +46,301 @@ blockquote { margin:0; color:var(--muted); white-space:pre-wrap; word-break:brea
 <h1>@omarchy</h1>
 <section>
   <div class="head"><h2>Funnel</h2><span class="muted">Oct 25 – Nov 1</span></div>
-  <div id="funnel"></div>
+  <div id="funnel" class="funnel"></div>
+  <div id="tip"></div>
 </section>
 <section>
   <div class="head"><h2>Reply queue</h2><span class="muted" id="count"></span><label><input type="checkbox" id="hide"> Hide done</label></div>
   
+<article data-id="2116980802840052038" data-created="2026-11-01T19:50:30Z">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind bug">bug</span><a href="https://github.com/stevederico/omarchy/issues/217">#217</a><a href="https://x.com/omarmsimon/status/2116980802840052038">@omarmsimon</a><time>2026-11-01</time></div>
+    <h3>linux-omarchy 7.2.8 vulnerable to CVE-2026-98432 via MPTCP</h3>
+    <blockquote>security tip for @omarchy folks: 
+
+CVE-2026-98432 is a linux TCP bug with a remote root exploit. as of now, linux-omarchy is still on 7.2.8, older than the upstream fix (7.2.10/7.2.11).
+
+until the patched kernel ships, turn off off MPTCP, which the known exploit uses (Go apps like Tailscale listen with it by default):
+
+echo &#39;net.mptcp.enabled = 0&#39; | sudo tee /etc/sysctl.d/99-no-mptcp.conf &amp;&amp; sudo sysctl --system
+
+not a full fix, but a layer of protection while you await the patch.</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2116980802840052038&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F217%0A%0ATo+help+fix+it%2C+add+your+Omarchy+version%2C+the+app+involved%2C+and+the+output+of+omarchy-debug+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2116854057511862658" data-created="2026-11-01T17:43:35Z">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/216">#216</a><a href="https://x.com/super_intender/status/2116854057511862658">@super_intender</a><time>2026-11-01</time></div>
+    <h3>Add file icon in Display panel to open monitors.lua</h3>
+    <blockquote>This is a very useful addition to display handling. When I installed the original Omarchy, I had to dig into the files and mess around for a couple of minutes to get my 27” Ultrawide setup properly.
+
+It wasn’t too difficult, but it should be a point and click sort of thing. I would suggest adding a small file icon in the Display component that opens the monitors.conf file, so new users can go “woah..”</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2116854057511862658&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F216%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2116776162756280607" data-created="2026-11-01T17:42:36Z">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind bug">bug</span><a href="https://github.com/stevederico/omarchy/issues/215">#215</a><a href="https://x.com/CodeVoyager29/status/2116776162756280607">@CodeVoyager29</a><time>2026-11-01</time></div>
+    <h3>Screensaver activates over fullscreen video (audio continues)</h3>
+    <blockquote>Is this a bug in Omarchy Linux? When watching video in full screen mode after sometimes the screensaver starts, completely blocking the video while audio is playing. @dhh @omarchy</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2116776162756280607&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F215%0A%0ATo+help+fix+it%2C+add+your+Omarchy+version%2C+the+app+involved%2C+and+the+output+of+omarchy-debug+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2116767401807315242" data-created="2026-11-01T17:42:29Z">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/214">#214</a><a href="https://x.com/johanan_in/status/2116767401807315242">@johanan_in</a><time>2026-11-01</time></div>
+    <h3>Add GUI for trackpad settings including natural scroll</h3>
+    <blockquote>@omarchy Please fix track pad scroll direction, &quot;natural&quot; is not working. And, add GUI for settings.</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2116767401807315242&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F214%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2116743596498182311" data-created="2026-11-01T17:41:40Z">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/213">#213</a><a href="https://x.com/Mycah_E/status/2116743596498182311">@Mycah_E</a><time>2026-11-01</time></div>
+    <h3>Early Bluetooth keyboard support at SDDM login</h3>
+    <blockquote>@mark_k @omarchy I second this, early Bluetooth would be great! Bought a 40% USB keyboard just to login to Omarchy…</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2116743596498182311&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F213%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2116705512373055788" data-created="2026-11-01T17:41:28Z">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/212">#212</a><a href="https://x.com/notSnakeCase/status/2116705512373055788">@notSnakeCase</a><time>2026-11-01</time></div>
+    <h3>Add refresh rate selector alongside resolution picker</h3>
+    <blockquote>@omarchy Add a refresh rate selector too</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2116705512373055788&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F212%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2116696823679316470" data-created="2026-11-01T17:40:39Z">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/211">#211</a><a href="https://x.com/adikari/status/2116696823679316470">@adikari</a><time>2026-11-01</time></div>
+    <h3>Add multi-monitor layout editor to the display panel</h3>
+    <blockquote>@omarchy Been waiting on this. Multi-monitor setups get messy fast, and fixing layout in the display panel beats hunting through scattered config files.</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2116696823679316470&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F211%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2116686065562239378" data-created="2026-11-01T17:40:32Z">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind bug">bug</span><a href="https://github.com/stevederico/omarchy/issues/210">#210</a><a href="https://x.com/skibidiblazor/status/2116686065562239378">@skibidiblazor</a><time>2026-11-01</time></div>
+    <h3>Bluetooth audio completely broken after latest audio configs</h3>
+    <blockquote>I don&#39;t know what the fuck is going on with @omarchy&#39;s latest audio configs but they are catastrophically broken for bluetooth audio on a known working headset.</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2116686065562239378&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F210%0A%0ATo+help+fix+it%2C+add+your+Omarchy+version%2C+the+app+involved%2C+and+the+output+of+omarchy-debug+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2116638108162855416" data-created="2026-11-01T17:39:47Z">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/209">#209</a><a href="https://x.com/kylesean6/status/2116638108162855416">@kylesean6</a><time>2026-11-01</time></div>
+    <h3>Feature: Add a Pomodoro timer</h3>
+    <blockquote>@ncfrontiersman @omarchy Cool,How about adding a Pomodoro timer?</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2116638108162855416&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F209%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2116622895422349659" data-created="2026-11-01T17:39:39Z">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/208">#208</a><a href="https://x.com/jotapesse/status/2116622895422349659">@jotapesse</a><time>2026-11-01</time></div>
+    <h3>Support explicit monitor refresh rate in default config and panel</h3>
+    <blockquote>@omarchy Don&#39;t forget to add monitor refresh rates!</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2116622895422349659&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F208%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2116609887933493442" data-created="2026-11-01T17:38:37Z">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind bug">bug</span><a href="https://github.com/stevederico/omarchy/issues/207">#207</a><a href="https://x.com/MaxHodler/status/2116609887933493442">@MaxHodler</a><time>2026-11-01</time></div>
+    <h3>Internal laptop monitor re-enables on reboot when external display is connected</h3>
+    <blockquote>@omarchy Switching off the laptop&#39;s screen when connected to an external display is bugged.
+
+After a reboot the laptop screen is on again.</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2116609887933493442&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F207%0A%0ATo+help+fix+it%2C+add+your+Omarchy+version%2C+the+app+involved%2C+and+the+output+of+omarchy-debug+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2116608514965795114" data-created="2026-11-01T17:38:26Z">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind bug">bug</span><a href="https://github.com/stevederico/omarchy/issues/206">#206</a><a href="https://x.com/Giovapanasiti/status/2116608514965795114">@Giovapanasiti</a><time>2026-11-01</time></div>
+    <h3>herdrdev app rejects all paste operations</h3>
+    <blockquote>the new @herdrdev app on @omarchy doesnt allow me to paste anything in that. anyone had this issue and solved it?</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2116608514965795114&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F206%0A%0ATo+help+fix+it%2C+add+your+Omarchy+version%2C+the+app+involved%2C+and+the+output+of+omarchy-debug+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2116597401482137717" data-created="2026-11-01T17:37:39Z">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind bug">bug</span><a href="https://github.com/stevederico/omarchy/issues/205">#205</a><a href="https://x.com/NeilChakrabort3/status/2116597401482137717">@NeilChakrabort3</a><time>2026-11-01</time></div>
+    <h3>Pixel distortion / clock sync artifacts on VGA secondary monitor</h3>
+    <blockquote>@omarchy Getting this clock synchronisation issue in my second monitor which is connected via VGA (not HDMI) resulting in complete distortion of pixels in my second screen. Can anyone help?</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2116597401482137717&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F205%0A%0ATo+help+fix+it%2C+add+your+Omarchy+version%2C+the+app+involved%2C+and+the+output+of+omarchy-debug+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2116594939270512718" data-created="2026-11-01T17:37:31Z">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind bug">bug</span><a href="https://github.com/stevederico/omarchy/issues/204">#204</a><a href="https://x.com/bugler/status/2116594939270512718">@bugler</a><time>2026-11-01</time></div>
+    <h3>Steam Deck internal LCD not rotated (800x1280 portrait panel)</h3>
+    <blockquote>@AryanHv @omarchy Thanks, I will be checking this out too.
+
+Oh, I just remembered, there might still be an issue.. rotation!
+
+The internal LCD on the Deck is a portrait panel laid on its side. So you have to rotate it as it&#39;s actually an 800x1280 panel.</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2116594939270512718&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F204%0A%0ATo+help+fix+it%2C+add+your+Omarchy+version%2C+the+app+involved%2C+and+the+output+of+omarchy-debug+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2116593301285470646" data-created="2026-11-01T17:37:25Z">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/203">#203</a><a href="https://x.com/startupfoundry/status/2116593301285470646">@startupfoundry</a><time>2026-11-01</time></div>
+    <h3>Add refresh rate to display settings panel</h3>
+    <blockquote>@omarchy Would love to see refresh rate added here as well! I’ve had a open PR for a couple months to handle that, happy to bring it up to speed for this release if you’re interested!</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2116593301285470646&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F203%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2116591325961425391" data-created="2026-11-01T17:36:32Z">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind bug">bug</span><a href="https://github.com/stevederico/omarchy/issues/202">#202</a><a href="https://x.com/Zlitchufdux/status/2116591325961425391">@Zlitchufdux</a><time>2026-11-01</time></div>
+    <h3>Dual-monitor positions swap after changing unrelated settings</h3>
+    <blockquote>@omarchy Does this mean I won&#39;t have to keep reposition dual monitors? Every time I play with a setting, the monitors are no longer side by side. They are backwards and I have to fix them.</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2116591325961425391&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F202%0A%0ATo+help+fix+it%2C+add+your+Omarchy+version%2C+the+app+involved%2C+and+the+output+of+omarchy-debug+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2116590860251136341" data-created="2026-11-01T17:36:25Z">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/201">#201</a><a href="https://x.com/dennisthomsen/status/2116590860251136341">@dennisthomsen</a><time>2026-11-01</time></div>
+    <h3>Add finer steps to omarchy-display-text-size (13px requested)</h3>
+    <blockquote>@omarchy And please add finer jumps in the text size (like there is no 13px, which looks best on my setup, so had to set it manually) :)</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2116590860251136341&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F201%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2116590727786635488" data-created="2026-11-01T17:35:43Z">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/200">#200</a><a href="https://x.com/pavanftk3/status/2116590727786635488">@pavanftk3</a><time>2026-11-01</time></div>
+    <h3>Add 1.5x to dynamic monitor scale presets</h3>
+    <blockquote>@omarchy Please add 1.5x scale also</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2116590727786635488&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F200%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2116588127188074608" data-created="2026-11-01T17:35:37Z">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/199">#199</a><a href="https://x.com/Festermentation/status/2116588127188074608">@Festermentation</a><time>2026-11-01</time></div>
+    <h3>Add rotation support to monitor panel and settings</h3>
+    <blockquote>@omarchy Could use rotation support too</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2116588127188074608&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F199%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2116587369495433513" data-created="2026-11-01T17:35:30Z">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/198">#198</a><a href="https://x.com/Eyasu_kga/status/2116587369495433513">@Eyasu_kga</a><time>2026-11-01</time></div>
+    <h3>Add refresh rate selector to the monitor panel</h3>
+    <blockquote>@omarchy and add refresh rate pls</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2116587369495433513&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F198%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2116582268802384371" data-created="2026-11-01T17:34:36Z">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/197">#197</a><a href="https://x.com/IM0001/status/2116582268802384371">@IM0001</a><time>2026-11-01</time></div>
+    <h3>Incorporate VRR + HDR features from Omarchy-Screens plugin</h3>
+    <blockquote>@omarchy So is it finally getting the features that I added in my Omarchy-Screens plugin? Could we not just pull in all the features for things like VRR, HDR, the works too?</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2116582268802384371&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F197%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2116582135876448577" data-created="2026-11-01T17:34:30Z">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/196">#196</a><a href="https://x.com/simoneDotDev/status/2116582135876448577">@simoneDotDev</a><time>2026-11-01</time></div>
+    <h3>Add HDR settings to monitor config and theme system</h3>
+    <blockquote>@omarchy please add hdr settings</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2116582135876448577&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F196%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2116564098989383698" data-created="2026-11-01T17:34:23Z">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/195">#195</a><a href="https://x.com/Sathya_raj/status/2116564098989383698">@Sathya_raj</a><time>2026-11-01</time></div>
+    <h3>Add UI control to create new workspaces/spaces</h3>
+    <blockquote>@jankeesvw @omarchy How do you add new spaces using UI?</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2116564098989383698&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F195%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2116552618046886166" data-created="2026-11-01T17:33:37Z">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/194">#194</a><a href="https://x.com/Remidotgg/status/2116552618046886166">@Remidotgg</a><time>2026-11-01</time></div>
+    <h3>Add CVE scanner widget to the Omarchy bar</h3>
+    <blockquote>Patched my server for that new kernel CVE yesterday and realized i had no idea what was open on my own laptop
+
+So i made a CVE scanner for the @omarchy bar
+
+Shows exploited bugs, critical ones with no fix yet, firmware and what needs a restart
+
+https://t.co/rbUpabX4Cg https://t.co/Q8FQ0ekC8O</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2116552618046886166&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F194%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2116531154689962436" data-created="2026-11-01T17:33:26Z">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/193">#193</a><a href="https://x.com/La_JennyLove/status/2116531154689962436">@La_JennyLove</a><time>2026-11-01</time></div>
+    <h3>Add Omarchy to supported Arch-based distributions list</h3>
+    <blockquote>@dunkedtoast Hey Arjun ji, I saw your project and it looks really nice it’s a shame that you don’t support (yet?*) Arch based Linux distributions, because it could be great to have @omarchy there as one of the ones in the list.</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2116531154689962436&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F193%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2116521330371612802" data-created="2026-11-01T17:32:40Z">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/192">#192</a><a href="https://x.com/o_gonzales/status/2116521330371612802">@o_gonzales</a><time>2026-11-01</time></div>
+    <h3>Add support for text effects in omarchy-agent-usage-vibe</h3>
+    <blockquote>@tahayvr @trykino @omarchy are you building a vibe coded port to omarchy? may you make sure it can add text efects. Tysm.</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2116521330371612802&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F192%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2116461910560235731" data-created="2026-11-01T17:32:27Z">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/191">#191</a><a href="https://x.com/grok/status/2116461910560235731">@grok</a><time>2026-11-01</time></div>
+    <h3>Support optional early Bluetooth in initramfs for LUKS passphrase entry</h3>
+    <blockquote>Known Omarchy limitation: Bluetooth stack (modules, firmware, BlueZ) loads after LUKS unlock, so BT keyboards/mice can&#39;t enter the passphrase (same as BIOS). DHH documented it; use wired or Logitech Bolt/Unifying dongle (USB HID, works early).
+
+Community workaround exists: AUR mkinitcpio-bluetooth + add bluetooth hook before encrypt, uhid module, needed firmware, then limine-mkinitcpio -P. Some users successfully unlock with MX Keys this way. Not shipped (PR closed); hardware-specific and bloats initramfs.</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2116461910560235731&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F191%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2116461627281191275" data-created="2026-11-01T17:31:39Z">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/190">#190</a><a href="https://x.com/mark_k/status/2116461627281191275">@mark_k</a><time>2026-11-01</time></div>
+    <h3>Initialize Bluetooth earlier so keyboards work at SDDM login</h3>
+    <blockquote>I&#39;m having the same issue with my bluetooth keyboard and mouse.
+
+I wonder if it couldn&#39;t be possible to initialize the bluetooth stack much earlier in the @omarchy boot process? Maybe worth exploring.
+
+It sucks having to use a wired keyboard just for unlocking Omarchy during every boot.</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2116461627281191275&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F190%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2116423954420375721" data-created="2026-11-01T17:31:27Z">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/189">#189</a><a href="https://x.com/PoSH_Father/status/2116423954420375721">@PoSH_Father</a><time>2026-11-01</time></div>
+    <h3>Add support for opening images/diagrams in Orca</h3>
+    <blockquote>@jankeesvw @omarchy Does it support opening images/diagrams/ like https://t.co/IRzTUwXSJ2 files? Etc. I’m primarily a herdr user but been using orca more cause the native tabs and browser tab let me open any kind of file</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2116423954420375721&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F189%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
 <article data-id="2116405285225202104" data-created="2026-11-01T17:14:39Z">
   <label class="done"><input type="checkbox"></label>
   <div class="main">
@@ -1264,7 +1560,7 @@ When you install the Omarchy you pick your role. It installs the predefined list
 </section>
 </main>
 <script>
-const FUNNEL = {"start":"2026-10-25T17:19:15Z","end":"2026-11-01T17:19:15Z","stages":[{"label":"Mentions","value":3076},{"label":"Keyword matches","value":358},{"label":"Bugs & features","sub":"4 bugs · 15 features","value":19},{"label":"Issues filed","value":19},{"label":"Replies sent","value":null}]}
+const FUNNEL = {"start":"2026-10-25T17:19:15Z","end":"2026-11-01T17:19:15Z","stages":[{"label":"Mentions","value":3076},{"label":"Keyword matches","value":358},{"label":"Issues filed","sub":"4 bugs · 15 features","value":19},{"label":"Replies sent","value":null}]}
 const KEY = "reply-queue:stevederico/omarchy"
 let done = {}
 try { done = JSON.parse(localStorage.getItem(KEY)) || {} } catch {}
@@ -1276,13 +1572,34 @@ function drawFunnel() {
   const replied = cards.filter(c => done[c.dataset.id] && c.dataset.created >= FUNNEL.start && c.dataset.created < FUNNEL.end).length
   const stages = FUNNEL.stages.map(s => s.value === null ? { ...s, value: replied } : s)
   const max = stages[0].value || 1
-  document.getElementById('funnel').innerHTML = stages.map((s, i) => {
-    const prev = i && stages[i - 1].value
-    const pct = i ? (prev ? (s.value / prev * 100).toFixed(1) : '0.0') + '%' : ''
-    return '<div class="row"><div class="label">' + s.label + (s.sub ? '<small>' + s.sub + '</small>' : '') + '</div>' +
-      '<div class="track"><div class="bar" style="width:' + Math.max(s.value / max * 100, 0.5) + '%"></div></div>' +
-      '<div class="num">' + s.value.toLocaleString() + (pct ? '<small>' + pct + '</small>' : '') + '</div></div>'
+  const pctOf = (a, b) => b ? (a / b * 100).toFixed(1) + '%' : '0%'
+  const el = document.getElementById('funnel')
+  el.style.setProperty('--n', stages.length)
+  // Mixpanel-style columns: solid = reached this step, faded = dropped since the step before.
+  el.innerHTML = stages.map((s, i) => {
+    const prev = i ? stages[i - 1].value : s.value
+    const h = v => (v / max * 100) + '%'
+    return '<div class="step" data-i="' + i + '"><div class="plot">' +
+      '<div class="val">' + s.value.toLocaleString() + '</div>' +
+      (i && prev > s.value ? '<div class="ghost" style="height:' + h(prev - s.value) + '"></div>' : '') +
+      '<div class="bar" style="height:' + h(s.value) + '"></div></div>' +
+      '<div class="name">' + s.label + '</div>' +
+      '<small>' + (i ? pctOf(s.value, prev) : '100%') + '</small>' +
+      (s.sub ? '<small>' + s.sub + '</small>' : '') + '</div>'
   }).join('')
+  const tip = document.getElementById('tip')
+  el.querySelectorAll('.step').forEach(node => {
+    const i = +node.dataset.i, s = stages[i], prev = i ? stages[i - 1].value : s.value
+    node.onmousemove = e => {
+      tip.innerHTML = '<div>' + s.label + '</div><b>' + s.value.toLocaleString() + '</b>' +
+        '<div>' + pctOf(s.value, stages[0].value) + ' of mentions</div>' +
+        (i ? '<div>' + pctOf(s.value, prev) + ' of previous · ' + (prev - s.value).toLocaleString() + ' dropped</div>' : '')
+      tip.style.display = 'block'
+      tip.style.left = Math.min(e.clientX + 12, innerWidth - tip.offsetWidth - 8) + 'px'
+      tip.style.top = (e.clientY + 12) + 'px'
+    }
+    node.onmouseleave = () => { tip.style.display = 'none' }
+  })
 }
 const count = () => { document.getElementById('count').textContent = cards.filter(c => !done[c.dataset.id]).length + ' to reply'; drawFunnel() }
 for (const c of cards) {

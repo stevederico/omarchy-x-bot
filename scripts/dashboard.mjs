@@ -44,7 +44,7 @@ export function toQueue(issues) {
   }).sort((a, b) => b.createdAt.localeCompare(a.createdAt))
 }
 
-// Funnel stages for the window in funnel.json. Bugs and features = issues filed in the window.
+// Funnel stages for the window in funnel.json. Every bug or feature Grok finds is filed, so they are one step.
 export function toFunnel(counts, issues) {
   const inRange = issues.filter(i => i.createdAt >= counts.start && i.createdAt < counts.end)
   const features = inRange.filter(i => kindOf(i) === 'feature').length
@@ -54,8 +54,7 @@ export function toFunnel(counts, issues) {
     stages: [
       { label: 'Mentions', value: counts.mentions },
       { label: 'Keyword matches', value: counts.keywordMatches },
-      { label: 'Bugs & features', sub: `${inRange.length - features} bugs · ${features} features`, value: inRange.length },
-      { label: 'Issues filed', value: inRange.length },
+      { label: 'Issues filed', sub: `${inRange.length - features} bugs · ${features} features`, value: inRange.length },
       { label: 'Replies sent', value: null }
     ]
   }
@@ -81,8 +80,8 @@ export function dashboardHtml({ items, funnel, repo }) {
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>omarchy-x-bot</title>
 <style>
-:root { --bg:#fafafa; --fg:#111; --muted:#777; --card:#fff; --line:#e4e4e4; --accent:#2f6fed; --track:#e9e9e9; --bug:#d6453d; --feature:#2f9e5b; }
-@media (prefers-color-scheme: dark) { :root { --bg:#111; --fg:#eee; --muted:#888; --card:#1a1a1a; --line:#2a2a2a; --accent:#5b8cff; --track:#242424; --bug:#ff6b61; --feature:#4cc27c; } }
+:root { --bg:#fafafa; --fg:#111; --muted:#777; --card:#fff; --line:#e4e4e4; --accent:#2a78d6; --track:#e9e9e9; --bug:#d6453d; --feature:#2f9e5b; }
+@media (prefers-color-scheme: dark) { :root { --bg:#111; --fg:#eee; --muted:#888; --card:#1a1a1a; --line:#2a2a2a; --accent:#3987e5; --track:#242424; --bug:#ff6b61; --feature:#4cc27c; } }
 body { margin:0; background:var(--bg); color:var(--fg); font:15px/1.45 system-ui, sans-serif; }
 main { max-width:760px; margin:40px auto; padding:0 16px; }
 h1 { font-size:22px; margin:0 0 24px; }
@@ -91,12 +90,18 @@ section { margin-bottom:40px; }
 .head { display:flex; align-items:baseline; gap:12px; margin-bottom:14px; }
 .muted { color:var(--muted); }
 .head label { margin-left:auto; color:var(--muted); font-size:14px; }
-.row { display:grid; grid-template-columns:150px 1fr 70px; gap:12px; align-items:center; margin:12px 0; }
-.label { font-weight:600; }
-.label small, .num small { display:block; font-weight:400; color:var(--muted); }
-.track { background:var(--track); border-radius:6px; height:30px; display:flex; }
-.bar { background:var(--accent); border-radius:6px; height:100%; min-width:4px; }
-.num { text-align:right; font-variant-numeric:tabular-nums; font-weight:600; }
+.funnel { display:grid; grid-template-columns:repeat(var(--n), 1fr); gap:8px; }
+.step { display:flex; flex-direction:column; min-width:0; }
+.plot { position:relative; height:240px; display:flex; flex-direction:column; justify-content:flex-end; border-bottom:1px solid var(--line); }
+.plot .val { font-weight:600; font-variant-numeric:tabular-nums; text-align:center; margin-bottom:4px; }
+.ghost { background:var(--accent); opacity:.14; border-radius:4px 4px 0 0; }
+.ghost + .bar { border-radius:0; }
+.bar { background:var(--accent); border-radius:4px 4px 0 0; min-height:2px; }
+.step .name { font-weight:600; font-size:13px; margin-top:8px; }
+.step small { display:block; color:var(--muted); font-size:12px; font-variant-numeric:tabular-nums; }
+.step:hover .bar { filter:brightness(1.12); }
+#tip { position:fixed; pointer-events:none; background:var(--card); border:1px solid var(--line); border-radius:8px; padding:8px 10px; font-size:13px; box-shadow:0 4px 16px rgba(0,0,0,.12); display:none; z-index:9; }
+#tip b { font-variant-numeric:tabular-nums; }
 article { display:grid; grid-template-columns:28px 1fr auto; gap:12px; align-items:start; background:var(--card); border:1px solid var(--line); border-radius:10px; padding:14px; margin:10px 0; }
 article.is-done { opacity:.45; }
 body.hide-done article.is-done { display:none; }
@@ -108,7 +113,7 @@ body.hide-done article.is-done { display:none; }
 h3 { font-size:16px; margin:4px 0 6px; }
 blockquote { margin:0; color:var(--muted); white-space:pre-wrap; word-break:break-word; font-size:14px; }
 .reply { background:var(--accent); color:#fff; text-decoration:none; padding:7px 14px; border-radius:8px; font-weight:600; }
-@media (max-width:520px) { .row { grid-template-columns:110px 1fr 56px; } }
+@media (max-width:520px) { .funnel { gap:4px; } .step .name { font-size:11px; } .plot { height:200px; } }
 </style>
 </head>
 <body>
@@ -116,7 +121,8 @@ blockquote { margin:0; color:var(--muted); white-space:pre-wrap; word-break:brea
 <h1>@omarchy</h1>
 <section>
   <div class="head"><h2>Funnel</h2><span class="muted">${esc(day(funnel.start))} – ${esc(day(funnel.end))}</span></div>
-  <div id="funnel"></div>
+  <div id="funnel" class="funnel"></div>
+  <div id="tip"></div>
 </section>
 <section>
   <div class="head"><h2>Reply queue</h2><span class="muted" id="count"></span><label><input type="checkbox" id="hide"> Hide done</label></div>
@@ -136,13 +142,34 @@ function drawFunnel() {
   const replied = cards.filter(c => done[c.dataset.id] && c.dataset.created >= FUNNEL.start && c.dataset.created < FUNNEL.end).length
   const stages = FUNNEL.stages.map(s => s.value === null ? { ...s, value: replied } : s)
   const max = stages[0].value || 1
-  document.getElementById('funnel').innerHTML = stages.map((s, i) => {
-    const prev = i && stages[i - 1].value
-    const pct = i ? (prev ? (s.value / prev * 100).toFixed(1) : '0.0') + '%' : ''
-    return '<div class="row"><div class="label">' + s.label + (s.sub ? '<small>' + s.sub + '</small>' : '') + '</div>' +
-      '<div class="track"><div class="bar" style="width:' + Math.max(s.value / max * 100, 0.5) + '%"></div></div>' +
-      '<div class="num">' + s.value.toLocaleString() + (pct ? '<small>' + pct + '</small>' : '') + '</div></div>'
+  const pctOf = (a, b) => b ? (a / b * 100).toFixed(1) + '%' : '0%'
+  const el = document.getElementById('funnel')
+  el.style.setProperty('--n', stages.length)
+  // Mixpanel-style columns: solid = reached this step, faded = dropped since the step before.
+  el.innerHTML = stages.map((s, i) => {
+    const prev = i ? stages[i - 1].value : s.value
+    const h = v => (v / max * 100) + '%'
+    return '<div class="step" data-i="' + i + '"><div class="plot">' +
+      '<div class="val">' + s.value.toLocaleString() + '</div>' +
+      (i && prev > s.value ? '<div class="ghost" style="height:' + h(prev - s.value) + '"></div>' : '') +
+      '<div class="bar" style="height:' + h(s.value) + '"></div></div>' +
+      '<div class="name">' + s.label + '</div>' +
+      '<small>' + (i ? pctOf(s.value, prev) : '100%') + '</small>' +
+      (s.sub ? '<small>' + s.sub + '</small>' : '') + '</div>'
   }).join('')
+  const tip = document.getElementById('tip')
+  el.querySelectorAll('.step').forEach(node => {
+    const i = +node.dataset.i, s = stages[i], prev = i ? stages[i - 1].value : s.value
+    node.onmousemove = e => {
+      tip.innerHTML = '<div>' + s.label + '</div><b>' + s.value.toLocaleString() + '</b>' +
+        '<div>' + pctOf(s.value, stages[0].value) + ' of mentions</div>' +
+        (i ? '<div>' + pctOf(s.value, prev) + ' of previous · ' + (prev - s.value).toLocaleString() + ' dropped</div>' : '')
+      tip.style.display = 'block'
+      tip.style.left = Math.min(e.clientX + 12, innerWidth - tip.offsetWidth - 8) + 'px'
+      tip.style.top = (e.clientY + 12) + 'px'
+    }
+    node.onmouseleave = () => { tip.style.display = 'none' }
+  })
 }
 const count = () => { document.getElementById('count').textContent = cards.filter(c => !done[c.dataset.id]).length + ' to reply'; drawFunnel() }
 for (const c of cards) {

@@ -1,3 +1,9 @@
+0.36.0
+
+  Vertical funnel chart
+  Merge issue steps
+  Add funnel tooltip
+
 0.34.0
 
   Merge into dashboard
