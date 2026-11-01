@@ -1,0 +1,1270 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reply queue</title>
+<style>
+:root { --bg:#fafafa; --fg:#111; --muted:#777; --card:#fff; --line:#e4e4e4; --accent:#2f6fed; --bug:#d6453d; --feature:#2f9e5b; }
+@media (prefers-color-scheme: dark) { :root { --bg:#111; --fg:#eee; --muted:#888; --card:#1a1a1a; --line:#2a2a2a; --accent:#5b8cff; --bug:#ff6b61; --feature:#4cc27c; } }
+body { margin:0; background:var(--bg); color:var(--fg); font:15px/1.45 system-ui, sans-serif; }
+main { max-width:760px; margin:40px auto; padding:0 16px; }
+header { display:flex; align-items:baseline; gap:12px; margin-bottom:20px; }
+h1 { font-size:20px; margin:0; }
+#count { color:var(--muted); }
+header label { margin-left:auto; color:var(--muted); font-size:14px; }
+article { display:grid; grid-template-columns:28px 1fr auto; gap:12px; align-items:start; background:var(--card); border:1px solid var(--line); border-radius:10px; padding:14px; margin:10px 0; }
+article.is-done { opacity:.45; }
+body.hide-done article.is-done { display:none; }
+.done input { width:18px; height:18px; margin-top:2px; }
+.meta { display:flex; gap:10px; font-size:13px; color:var(--muted); flex-wrap:wrap; }
+.meta a { color:var(--muted); }
+.kind { font-weight:600; text-transform:uppercase; font-size:11px; letter-spacing:.04em; }
+.kind.bug { color:var(--bug); } .kind.feature { color:var(--feature); }
+h2 { font-size:16px; margin:4px 0 6px; }
+blockquote { margin:0; color:var(--muted); white-space:pre-wrap; word-break:break-word; font-size:14px; }
+.reply { background:var(--accent); color:#fff; text-decoration:none; padding:7px 14px; border-radius:8px; font-weight:600; }
+</style>
+</head>
+<body>
+<main>
+<header><h1>Reply queue</h1><span id="count"></span><label><input type="checkbox" id="hide"> Hide done</label></header>
+
+<article data-id="2116405285225202104">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/188">#188</a><a href="https://x.com/eliasstravik/status/2116405285225202104">@eliasstravik</a><time>2026-11-01</time></div>
+    <h2>Native mobile herdr-app with mod and layout support</h2>
+    <blockquote>@ericyen_sc @jankeesvw @omarchy 2.1 is already migrated to herdr-core 🙏
+
+would love to make a mod/layout for herdr-app too but right now that’s only desktop and for me it’s important to have it on phone as well - a native herdr mobile app with mods/layout would be awesome.</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2116405285225202104&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F188%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2116370378524090676">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/187">#187</a><a href="https://x.com/grok/status/2116370378524090676">@grok</a><time>2026-11-01</time></div>
+    <h2>Add multimonitor support for companions</h2>
+    <blockquote>@x6c75 @tcballard @bot @omarchy Multimonitor support would let the companions roam freely and keep their eyes on you no matter which screen you&#39;re on. Nice idea.</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2116370378524090676&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F187%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2116370282667528561">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/186">#186</a><a href="https://x.com/x6c75/status/2116370282667528561">@x6c75</a><time>2026-11-01</time></div>
+    <h2>Add multimonitor support to Hyprland config and shell</h2>
+    <blockquote>@tcballard @grok @bot @omarchy loving this, multimonitor support would be amazing</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2116370282667528561&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F186%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2116235086735495353">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/185">#185</a><a href="https://x.com/0xwisemanumanah/status/2116235086735495353">@0xwisemanumanah</a><time>2026-11-01</time></div>
+    <h2>Add Spread Shot interactive game theme to official themes page</h2>
+    <blockquote>I recently switched to Omarchy aand I&#39;m loving it already, so I turned my Omarchy wallpaper into a game.
+
+Spread Shot is an all-black, arcade-red theme for @omarchy where the wallpaper is a pixel-art run-and-gun. An AI plays it behind your windows while you work. Press Super+Ctrl+G and the controls are yours:
+
+← → move
+↑ jump
+↓ duck
+Firing is automatic
+Esc/Super + Ctrl + G/ or 45 seconds of inactivity gives your keyboard back
+
+What&#39;s in it:
+• 4 stages: jungle, snowfield, enemy base, alien hive
+• A boss at the end of each: a defense wall, a tank, a shielded reactor, and an alien heart
+• 3 lives, extra lives, a spread-gun power-up, a MISSION COMPLETE ending, then a harder Loop 2
+• Your high score is saved
+• Pick a stage with Omarchy&#39;s own background switcher (Super+Ctrl+Space)
+
+It also had to stay light, because a wallpaper shouldn&#39;t tax your machine. It&#39;s a single C program drawing straight onto the desktop layer, with no GPU and no browser engine. On my Dell Latitude (i5-4300U) it uses ~7 MB of RAM and ~7% of one core while visible, and it stops drawing when windows cover it.
+
+The theme installs like any other Omarchy theme. The game is a separate opt-in step, because Omarchy (rightly) never runs code from a theme:
+
+omarchy theme install https://t.co/FA93XtgXTe
+make -C ~/.config/omarchy/themes/spread-shot/game install
+
+Built with Claude Code
+https://t.co/Fp2i30esAa
+
+Would love to see it on the Omarchy themes page someday, @dhh @omarchy</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2116235086735495353&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F185%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2116167063978881409">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/184">#184</a><a href="https://x.com/CEOAlexColon/status/2116167063978881409">@CEOAlexColon</a><time>2026-11-01</time></div>
+    <h2>Add support for RTX Spark on N1X hardware</h2>
+    <blockquote>Ready to install @omarchy on this N1X 128gb. There&#39;s too much hardware potential on this stack to be bogged by Windows. @dhh what do we need to unlock this chip with Omarchy? I&#39;m not seeing any support for the RTX Spark yet.</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2116167063978881409&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F184%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2115893608146513989">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind bug">bug</span><a href="https://github.com/stevederico/omarchy/issues/183">#183</a><a href="https://x.com/RecursiveIntell/status/2115893608146513989">@RecursiveIntell</a><time>2026-11-01</time></div>
+    <h2>Chromium cannot post (or use shortcuts) without full restart</h2>
+    <blockquote>I&#39;ll give you this though @omarchy, Ares seems pleased with the overall performance. 97% prompt cache hit rate, it attributes to the OS. Can&#39;t post from computer unless i restart cuz of the chromium or keyboard shortcut issue. https://t.co/jbWAtWHWdY</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2115893608146513989&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F183%0A%0ATo+help+fix+it%2C+add+your+Omarchy+version%2C+the+app+involved%2C+and+the+output+of+omarchy-debug+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2115891905556861097">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind bug">bug</span><a href="https://github.com/stevederico/omarchy/issues/182">#182</a><a href="https://x.com/RecursiveIntell/status/2115891905556861097">@RecursiveIntell</a><time>2026-11-01</time></div>
+    <h2>omarchy-launch-browser fails to reopen Chromium after first close</h2>
+    <blockquote>Chromium stops opening with super + shift + enter once you close it after it&#39;s been open for awhile and try to reopen it again.  If you&#39;re gonna make keyboard shortcuts the main interaction point, make them work @omarchy.  I&#39;ve seen and fixed these issues from agent code a lot.</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2115891905556861097&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F182%0A%0ATo+help+fix+it%2C+add+your+Omarchy+version%2C+the+app+involved%2C+and+the+output+of+omarchy-debug+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2115886980810600576">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind bug">bug</span><a href="https://github.com/stevederico/omarchy/issues/181">#181</a><a href="https://x.com/RecursiveIntell/status/2115886980810600576">@RecursiveIntell</a><time>2026-11-01</time></div>
+    <h2>voxxel config UI corrupts after changing hotkey to Caps Lock</h2>
+    <blockquote>Is it a known issue for @omarchy to act this way in the voxxel config?  If it matters for context, i turned on the setting to change the hot key, changed it to caps lock, saved and exited.  caps lock didn&#39;t work, still the weird keyboard thing, then go back to settings, see this.
+
+I really want to love an agentic operating system @dhh -- all my work is on rust based, bounded, governed, evidence-first agent runtimes.  But, I need a stable environment to work in.  I&#39;ve never had issues like this with a linux distro before.  Seems like it needs someone to properly run regression tests on the agent&#39;s output as you develop at a rapid pace or setup a staging area before merging to main.</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2115886980810600576&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F181%0A%0ATo+help+fix+it%2C+add+your+Omarchy+version%2C+the+app+involved%2C+and+the+output+of+omarchy-debug+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2115828237158998483">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/180">#180</a><a href="https://x.com/minton/status/2115828237158998483">@minton</a><time>2026-11-01</time></div>
+    <h2>Support running on Apple Silicon Macs with touch input</h2>
+    <blockquote>Large parts of macOS won&#39;t work well with touch. But it will be sweet to get @omarchy runnings on this.</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2115828237158998483&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F180%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2115825465873330503">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind bug">bug</span><a href="https://github.com/stevederico/omarchy/issues/179">#179</a><a href="https://x.com/JourneyDeck/status/2115825465873330503">@JourneyDeck</a><time>2026-11-01</time></div>
+    <h2>X.desktop webapp prevents normal boot, forces safe mode</h2>
+    <blockquote>@mark_k @omarchy I accidently left X web app installed and now my laptop won&#39;t boot to anything besides safe mode because X keeps trying to load at boot. I&#39;m sure I can turn this off somehow in safe mode, but just hasn&#39;t figured it out yet</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2115825465873330503&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F179%0A%0ATo+help+fix+it%2C+add+your+Omarchy+version%2C+the+app+involved%2C+and+the+output+of+omarchy-debug+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2115722258484273229">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/178">#178</a><a href="https://x.com/pwnwire/status/2115722258484273229">@pwnwire</a><time>2026-11-01</time></div>
+    <h2>Make multi-monitor mixed-res/Hz/aspect handling independent of Hyprland</h2>
+    <blockquote>Sounds like a Wayland/Hyprland quirk to me. With Omarchy now having dedicated devs, I hope it grows more independent from Hyprland where it makes sense, and multi-monitor should be on that list. I&#39;ve tried add-ons for this, but mixed resolution/Hz/aspect ratios still cause trouble.</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2115722258484273229&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F178%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2115717712491995371">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/177">#177</a><a href="https://x.com/grealish/status/2115717712491995371">@grealish</a><time>2026-11-01</time></div>
+    <h2>Feature: Qualcomm Thunderbolt/USB4 + Snapdragon WWAN support</h2>
+    <blockquote>@levelsio @dhh @omarchy I would love to see Omarchy movement challenge support issues for like @Qualcomm Thunderbolt support (USB4 + DP-alt) and WWAN support on @Snapdragon - because it&#39;s all broken and x2 doesn&#39;t look any more promising. Any luck there?</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2115717712491995371&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F177%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2115560336682283010">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/176">#176</a><a href="https://x.com/MB4_00/status/2115560336682283010">@MB4_00</a><time>2026-11-01</time></div>
+    <h2>Add reliable phone integration alternative to KDE Connect (Windows Phone Link st</h2>
+    <blockquote>Hey @dhh @omarchy can we get a better alternative to kde connect for Linux and android. I miss the windows connect, it was so intuitive and just worked. KDE connect almost never &#39;connects&#39; or keeps a connection for me and is missing so many features from the windows alternative.</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2115560336682283010&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F176%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2115528644755947620">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/175">#175</a><a href="https://x.com/aftonone/status/2115528644755947620">@aftonone</a><time>2026-11-01</time></div>
+    <h2>Add surround sound, OLED safety, and AI disable/remove options</h2>
+    <blockquote>@omarchy Such a scam. My installation said 2 minutes but it really took 10-15. 
+
+But even then who cares about how fast it installs. That should be the least of anyone’s concerns. Meanwhile there’s no surround sound support, no OLED safety features, no way to disable or remove ai etc.</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2115528644755947620&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F175%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2115403674721694156">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/174">#174</a><a href="https://x.com/LinuxGamer_UK/status/2115403674721694156">@LinuxGamer_UK</a><time>2026-11-01</time></div>
+    <h2>Restore 4.0-style multi-monitor workspace movement with SUPER+SHIFT+6-10</h2>
+    <blockquote>Yeah I never liked the original out the box multi monitor support of 4.0.. This one still takes some getting used to as I like to SUPER + SHIFT + 6 -10 to move tiles into my other monitor but this seems to give each screen a full 10 so moving stuff between monitors becomes different</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2115403674721694156&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F174%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2115178597539578253">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/173">#173</a><a href="https://x.com/joongkwang/status/2115178597539578253">@joongkwang</a><time>2026-11-01</time></div>
+    <h2>Make Super+Tab cycle recent workspaces like GNOME/Alt+Tab</h2>
+    <blockquote>@notesbyfloat @omarchy Just learned super + ctrl + tab is will switch between recent workspaces. I have to rewire my brain to add ctrl, but the behavior is more consistent with alt+tab</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2115178597539578253&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F173%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2115178525435019440">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/172">#172</a><a href="https://x.com/grok/status/2115178525435019440">@grok</a><time>2026-11-01</time></div>
+    <h2>Add xAI OAuth BYO support for Wonder on Linux/Omarchy</h2>
+    <blockquote>xAI OAuth for SuperGrok/X Premium+ already powers several agents and tools. Wonder supports Grok models in its picker and BYO for Claude/Codex on Mac/Windows only. No public timeline exists for full xAI OAuth BYO or Linux/Omarchy desktop support in Wonder. Check https://t.co/KEA20cCZT6 for updates.</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2115178525435019440&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F172%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2115178369398550577">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/171">#171</a><a href="https://x.com/lukejmorrison/status/2115178369398550577">@lukejmorrison</a><time>2026-11-01</time></div>
+    <h2>Add support for xAI OAuth subscriptions</h2>
+    <blockquote>@usewonder @grok when will you support xai OAuth subscriptions and @omarchy arch linux desktop, I wonder?</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2115178369398550577&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F171%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2115103896008118392">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/170">#170</a><a href="https://x.com/henrikklee/status/2115103896008118392">@henrikklee</a><time>2026-11-01</time></div>
+    <h2>Add HFS+ support to Mac installation</h2>
+    <blockquote>@shayne_legault @BitcoinGrower @omarchy would be great to be able to add HFS+ support to https://t.co/1g7ELNavrl but seems that there are still big blockers</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2115103896008118392&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F170%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2113017473071210940">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind bug">bug</span><a href="https://github.com/stevederico/omarchy/issues/169">#169</a><a href="https://x.com/maciejka77/status/2113017473071210940">@maciejka77</a><time>2026-10-21</time></div>
+    <h2>systemd-oomd kills entire session via terminal scope on swap pressure</h2>
+    <blockquote>Funny issue on @Omarchy today - it started killing all my processes right after startup, then OpenCode gave me a &#39;no space to write&#39; message. I don&#39;t have much stuff besides... node projects... 
+
+Holy f*** - this is killing me and my PC https://t.co/zOnDdvmGlH</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2113017473071210940&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F169%0A%0ATo+help+fix+it%2C+add+your+Omarchy+version%2C+the+app+involved%2C+and+the+output+of+omarchy-debug+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2112995997316264121">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/168">#168</a><a href="https://x.com/frixaco/status/2112995997316264121">@frixaco</a><time>2026-10-21</time></div>
+    <h2>Add optional DAW + VST support for music production</h2>
+    <blockquote>the only thing between me and @omarchy is DAW support tbh (Ableton, FL etc. and a few popular VSTs)
+
+pls</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2112995997316264121&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F168%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2112987361021718779">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/167">#167</a><a href="https://x.com/SandorhaziM/status/2112987361021718779">@SandorhaziM</a><time>2026-10-21</time></div>
+    <h2>Add more monitoring tools alongside btop</h2>
+    <blockquote>@omarchy - what features to add beside btop? https://t.co/Lll0dru8H9</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2112987361021718779&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F167%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2112967600795721958">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind bug">bug</span><a href="https://github.com/stevederico/omarchy/issues/166">#166</a><a href="https://x.com/pablomanjarress/status/2112967600795721958">@pablomanjarress</a><time>2026-10-21</time></div>
+    <h2>Terminal always stacks on top of Slack</h2>
+    <blockquote>@genx7up @omarchy rockets stick the landing but my terminal ends up stacked on top of slack every single time (unsolved problem of our era)</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2112967600795721958&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F166%0A%0ATo+help+fix+it%2C+add+your+Omarchy+version%2C+the+app+involved%2C+and+the+output+of+omarchy-debug+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2112940653932167467">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/165">#165</a><a href="https://x.com/parkerbrowndev/status/2112940653932167467">@parkerbrowndev</a><time>2026-10-21</time></div>
+    <h2>Add reset-workspace hotkeys for mistiled windows</h2>
+    <blockquote>@mebaww @omarchy I have fat fingers more than my fair share of mis tiles.
+Suggest a &#39;RESET WORKSPACE&#39; hotkey. Tell your agent: 
+
+`Bind super+r to re-tile this workspace, and super+shift+r to smash floating windows into tiles.` https://t.co/obvfVrvDj5</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2112940653932167467&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F165%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2112830312342270335">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/164">#164</a><a href="https://x.com/jwlben/status/2112830312342270335">@jwlben</a><time>2026-10-21</time></div>
+    <h2>Feature: Support for Raycast-style plugins</h2>
+    <blockquote>@typecraft_dev @omarchy does it support raycast plugins?</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2112830312342270335&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F164%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2112798971164811673">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/163">#163</a><a href="https://x.com/TaaviTibicen/status/2112798971164811673">@TaaviTibicen</a><time>2026-10-21</time></div>
+    <h2>Add multi-user support</h2>
+    <blockquote>@omarchy Will it get multi user support?</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2112798971164811673&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F163%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2112796588439687430">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/162">#162</a><a href="https://x.com/1r0nM1nd/status/2112796588439687430">@1r0nM1nd</a><time>2026-10-21</time></div>
+    <h2>Add Snapdragon (aarch64) platform support</h2>
+    <blockquote>@mark_k @omarchy WHERE ARE WE AT ON SNAODRAGON SUPPORT?</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2112796588439687430&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F162%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2112784726536708454">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/161">#161</a><a href="https://x.com/OCCCraft/status/2112784726536708454">@OCCCraft</a><time>2026-10-21</time></div>
+    <h2>Add quick LLM chat support via byok</h2>
+    <blockquote>@typecraft_dev @omarchy Will you add support for quickly chatting with LLM’s through byok? I love that functionality in raycast</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2112784726536708454&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F161%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2112767094974812403">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind bug">bug</span><a href="https://github.com/stevederico/omarchy/issues/160">#160</a><a href="https://x.com/androbuntuco/status/2112767094974812403">@androbuntuco</a><time>2026-10-21</time></div>
+    <h2>Alt+Space does nothing after install</h2>
+    <blockquote>@typecraft_dev @omarchy I installed in on my machine. But when i try alt+space it doesn&#39;t show anything. Is there something wrong?</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2112767094974812403&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F160%0A%0ATo+help+fix+it%2C+add+your+Omarchy+version%2C+the+app+involved%2C+and+the+output+of+omarchy-debug+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2112679132387844213">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/159">#159</a><a href="https://x.com/ollies0x/status/2112679132387844213">@ollies0x</a><time>2026-10-20</time></div>
+    <h2>Add Thunderbolt support for aarch64-apple (M1) single-cable LG monitor/hub</h2>
+    <blockquote>I tried @omarchy on my M1 metal but needed Thunderbolt. I have a single cable connected to my LG monitor / hub.
+
+Back to MacOS, however...
+
+After trying &quot;try @omarchy&quot; I, for one, cannot wait for the Kernel for the M1 to support Thunderbolt to be ready, it&#39;s going to be brilliant https://t.co/tSnUdLmiYN</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2112679132387844213&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F159%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2112677631271526870">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/158">#158</a><a href="https://x.com/vinii_joga10/status/2112677631271526870">@vinii_joga10</a><time>2026-10-20</time></div>
+    <h2>Detect services that never started, not just failed ones</h2>
+    <blockquote>@TheCanadienEh @omarchy Only the ones that failed, but I think would be a nice feature to also detect the ones that never started</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2112677631271526870&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F158%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2112662274926370837">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/157">#157</a><a href="https://x.com/ja818_/status/2112662274926370837">@ja818_</a><time>2026-10-20</time></div>
+    <h2>Support remote Claude agents without desktop UI integration</h2>
+    <blockquote>I work with @omarchy on my Mac using Try Omarchy
+
+The issue for actual work is that u need to split the RAM with macOS and a bunch of Claude sessions ate all of it
+
+So I moved every agent to a server
+
+Amarchy still puts them on my Omarchy desktop like they were local: same sidebar, same keys, same notifications
+
+I code in Omarchy, the agents work somewhere else, and I can close the lid. best my setup has ever felt</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2112662274926370837&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F157%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2112662114636890424">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/156">#156</a><a href="https://x.com/stevederico/status/2112662114636890424">@stevederico</a><time>2026-10-20</time></div>
+    <h2>Add Persian keyboard layout / input method support</h2>
+    <blockquote>@mark_k @AryanHv @omarchy @grok yes Persian has been added as language for UI translation. but no persian input exists so i made a PR to add it. 
+
+here my PR to add persian keyboard support https://t.co/BbY4kX2tfu</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2112662114636890424&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F156%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2112622239161938004">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/155">#155</a><a href="https://x.com/iampoul/status/2112622239161938004">@iampoul</a><time>2026-10-20</time></div>
+    <h2>Add Oculus/Meta Quest VR support for gaming (Beat Saber)</h2>
+    <blockquote>@iamdothash @omarchy @BeatSaber Love beatsaber, great vr experience 👌 and of course omarchy is king, we need more support for oculus in the Linux world</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2112622239161938004&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F155%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2112606854950096896">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind bug">bug</span><a href="https://github.com/stevederico/omarchy/issues/154">#154</a><a href="https://x.com/pinoxTweet/status/2112606854950096896">@pinoxTweet</a><time>2026-10-20</time></div>
+    <h2>SDDM requires 2-3 password attempts before login succeeds</h2>
+    <blockquote>@Razumasu @dhh @omarchy Even after new install, a login screen that requires three password attempts like it’s a riddle from a fantasy gatekeeper. I still have Omarchy login issue, it logs me in after 2nd, 3rd try not on 1st. waiting for upstream updates.</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2112606854950096896&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F154%0A%0ATo+help+fix+it%2C+add+your+Omarchy+version%2C+the+app+involved%2C+and+the+output+of+omarchy-debug+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2112585386442571889">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/153">#153</a><a href="https://x.com/JacksonJSKelly/status/2112585386442571889">@JacksonJSKelly</a><time>2026-10-20</time></div>
+    <h2>Include printer drivers and CUPS tools by default</h2>
+    <blockquote>@dhh Hi, can you fix Printer drivers because they are missing in @omarchy  it will be nice. That what i liked in Fedora. Hope you fix this.</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2112585386442571889&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F153%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2112584402899292360">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind bug">bug</span><a href="https://github.com/stevederico/omarchy/issues/152">#152</a><a href="https://x.com/Veysi_Tansu/status/2112584402899292360">@Veysi_Tansu</a><time>2026-10-20</time></div>
+    <h2>oma-cast doctor: FAIL on plugin IPC and backend system.healthPing</h2>
+    <blockquote>@typecraft_dev @omarchy @dhh oma-cast doctor
+  ok    plugin is enabled
+  FAIL  plugin answers IPC
+  FAIL  backend answers system.healthPing</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2112584402899292360&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F152%0A%0ATo+help+fix+it%2C+add+your+Omarchy+version%2C+the+app+involved%2C+and+the+output+of+omarchy-debug+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2112567913299505420">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/151">#151</a><a href="https://x.com/AmeinEskinder/status/2112567913299505420">@AmeinEskinder</a><time>2026-10-20</time></div>
+    <h2>Support high-fidelity audio (Waves MaxxAudio) and video</h2>
+    <blockquote>@omarchy one thing that made me go back to windows 11 is the high fidelity video graphics and sound cards (waves audio system) if there is a fix for those I am going ASAP</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2112567913299505420&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F151%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2112567821280625027">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/150">#150</a><a href="https://x.com/John4ZX4/status/2112567821280625027">@John4ZX4</a><time>2026-10-20</time></div>
+    <h2>Add a license file to the repository</h2>
+    <blockquote>@typecraft_dev @omarchy Could you add a license? My clanker is complaining.</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2112567821280625027&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F150%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2112558135206432769">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind bug">bug</span><a href="https://github.com/stevederico/omarchy/issues/149">#149</a><a href="https://x.com/Tslajksn/status/2112558135206432769">@Tslajksn</a><time>2026-10-20</time></div>
+    <h2>ALT+PRINT screenrecord bind conflicts with SysRq/REISUB</h2>
+    <blockquote>@dhh @omarchy PSA: the default ALT + PRINT screenrecord bind can interfere with Alt+SysRq, so the kernel&#39;s REISUB emergency reboot may not fire (SysRq shares the PrtSc key on most keyboards). Unbinding it fixed it for me: hl.unbind(&quot;ALT + PRINT&quot;) in ~/.config/hypr/bindings.lua. Maybe move screenrecord to another keybinding by default?</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2112558135206432769&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F149%0A%0ATo+help+fix+it%2C+add+your+Omarchy+version%2C+the+app+involved%2C+and+the+output+of+omarchy-debug+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2112545450863604206">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/148">#148</a><a href="https://x.com/OjisanKaichou/status/2112545450863604206">@OjisanKaichou</a><time>2026-10-20</time></div>
+    <h2>Persistent app installation across administrative wipes</h2>
+    <blockquote>The biggest issue I’ve had with installing things on the bot computers is that they administratively wipe the computers very frequently. Sometimes multiple times per day. Only user data is retained across wipes, applications (such as tailscale) are not. Fortunately Omarchy is fast to install, but your bots will be reinstalling it constantly.</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2112545450863604206&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F148%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2112516743021134259">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind bug">bug</span><a href="https://github.com/stevederico/omarchy/issues/147">#147</a><a href="https://x.com/sebuzdugan/status/2112516743021134259">@sebuzdugan</a><time>2026-10-20</time></div>
+    <h2>Launcher ranking change immediately before Enter launches wrong app</h2>
+    <blockquote>@typecraft_dev @omarchy one ranking change before enter can launch the wrong app, habit learning needs stable results</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2112516743021134259&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F147%0A%0ATo+help+fix+it%2C+add+your+Omarchy+version%2C+the+app+involved%2C+and+the+output+of+omarchy-debug+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2112510674727309526">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/146">#146</a><a href="https://x.com/engnr_george/status/2112510674727309526">@engnr_george</a><time>2026-10-20</time></div>
+    <h2>Add quick prompt or runtime selector to default agent menu</h2>
+    <blockquote>@typecraft_dev @omarchy @dhh Need to check this out. Does it make sense to also add like a quick prompt to your default agent? Or that it even gives you options where to run it (chatGPT, opencode,...)</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2112510674727309526&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F146%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2112506661621379286">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind bug">bug</span><a href="https://github.com/stevederico/omarchy/issues/145">#145</a><a href="https://x.com/miguelg_dev/status/2112506661621379286">@miguelg_dev</a><time>2026-10-20</time></div>
+    <h2>QEMU with KVM hangs on host kernel kvm_spurious_fault in vmx_vcpu_create</h2>
+    <blockquote>@tcballard @bot @omarchy My @Bot got the Try Omarchy v0.3.0 image booting straight in QEMU, but KVM on its box trips a host kernel bug (kvm_spurious_fault in vmx_vcpu_create), so the app hangs. Software emulation works, just slow. Happy to have it email tibo the logs if useful.</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2112506661621379286&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F145%0A%0ATo+help+fix+it%2C+add+your+Omarchy+version%2C+the+app+involved%2C+and+the+output+of+omarchy-debug+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2112483409276846219">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/144">#144</a><a href="https://x.com/pinoxTweet/status/2112483409276846219">@pinoxTweet</a><time>2026-10-20</time></div>
+    <h2>Add WezTerm as supported terminal option alongside Ghostty</h2>
+    <blockquote>Latest update on Omarchy messed up ghostty. wanted something closer to windows terminal feel that is cross platform, rust based and support lua like the rest of the Omarchy ecosystem. 30k gh stars
+Found it !!  WezTerm  and it&#39;s awesome. fully integrated with theme.
+@dhh @omarchy https://t.co/G1R0XHSLuZ</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2112483409276846219&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F144%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2112450983594991740">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind bug">bug</span><a href="https://github.com/stevederico/omarchy/issues/143">#143</a><a href="https://x.com/volfpeter/status/2112450983594991740">@volfpeter</a><time>2026-10-20</time></div>
+    <h2>Spotify crashes after every track</h2>
+    <blockquote>@spotify reports a crash after every single track on @omarchy - somehow the Spotify apps/experience just keep getting worse</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2112450983594991740&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F143%0A%0ATo+help+fix+it%2C+add+your+Omarchy+version%2C+the+app+involved%2C+and+the+output+of+omarchy-debug+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2112438220562760073">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/142">#142</a><a href="https://x.com/_voltcrash/status/2112438220562760073">@_voltcrash</a><time>2026-10-20</time></div>
+    <h2>Support viciae as an alternative launcher/spotlight</h2>
+    <blockquote>@typecraft_dev @omarchy I know we can reverse-engineer anything nowadays
+but I feel there&#39;s quite a lot of projects already in this space (spotlight/raycast/etc) which could benefit from our support!
+
+vicinae is one such project that is super good and is cross-platform!
+
+https://t.co/ipGSRjUzN3</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2112438220562760073&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F142%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2112430354602836086">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/141">#141</a><a href="https://x.com/SatishRai001/status/2112430354602836086">@SatishRai001</a><time>2026-10-20</time></div>
+    <h2>Add Waydroid support</h2>
+    <blockquote>@JoshuaSWarren @omarchy @OmarchyMac is it goinig to support waydroid or not</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2112430354602836086&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F141%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2112418866831950035">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/140">#140</a><a href="https://x.com/AyushSanj/status/2112418866831950035">@AyushSanj</a><time>2026-10-20</time></div>
+    <h2>Add USB-C display output support for aarch64-apple hardware</h2>
+    <blockquote>Tried @omarchy , since it takes hardware support from @AsahiLinux , it won’t be able to support usb c display output. And thats what i was really looking forward.
+When will be released?
+But the experience in omarchy is incredible 🔥</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2112418866831950035&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F140%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2112385250982510953">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/139">#139</a><a href="https://x.com/ryanrhughes/status/2112385250982510953">@ryanrhughes</a><time>2026-10-20</time></div>
+    <h2>Everwhen: add people to zones, wider location list, auto-sync system timezone</h2>
+    <blockquote>Sometimes the smallest updates bring the most joy.
+
+I made a few small tweaks to Everwhen, the world clock @jasonfried created for @omarchy after using it for a bit.
+
+A big challenge for me is always remembering who is in a region. So I made it easy to add people. That small visual reference alone is a game changer.
+
+While I share a timezone with New York, I don&#39;t find myself caring about the weather in NY, so you can select from a much wider array of locations to bring better relevance.
+
+And when you update your location in Everwhen, it automatically syncs that with your system clock providing a much nicer experience for that.
+
+One of MANY fantastic features shipping soon in Omarchy Quattro RS 4.5.0.</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2112385250982510953&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F139%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2112353587422777454">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/138">#138</a><a href="https://x.com/ollies0x/status/2112353587422777454">@ollies0x</a><time>2026-10-20</time></div>
+    <h2>Add Thunderbolt monitor support for MacBook Pro</h2>
+    <blockquote>I LOVE the @omarchy concept &quot;we can fix everything&quot; and the community is next level. It&#39;s the future of software and operating systems to have community push forwards and build.
+
+But I&#39;ve been thinking. I need thunderbolt via my MBP to my monitor for my connection.
+
+So...</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2112353587422777454&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F138%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2112316370587398632">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/137">#137</a><a href="https://x.com/PrakashMarvin/status/2112316370587398632">@PrakashMarvin</a><time>2026-10-19</time></div>
+    <h2>Add oma-cast with FFF-backed file search as optional component</h2>
+    <blockquote>@typecraft_dev @omarchy @dhh oma-cast is such a good fit for Omarchy. I just opened a PR adding FFF-backed file search — a small sidecar, Files section in root, open/reveal/copy, existing installs stay opt-in. Would love your take: https://t.co/Q7rPZ1dVwa</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2112316370587398632&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F137%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2112287220229108047">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/136">#136</a><a href="https://x.com/MaazChowdhry/status/2112287220229108047">@MaazChowdhry</a><time>2026-10-19</time></div>
+    <h2>Support Raycast-style plugins/extensions for the launcher</h2>
+    <blockquote>@typecraft_dev @omarchy Does it support raycast plugins/extensions?</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2112287220229108047&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F136%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2112285964273885579">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/135">#135</a><a href="https://x.com/amsb/status/2112285964273885579">@amsb</a><time>2026-10-19</time></div>
+    <h2>Feature: Raycast-like launcher parity instead of new fragmentation</h2>
+    <blockquote>@typecraft_dev @omarchy Thought I&#39;d forever be a part-time macOS user due to my reliance on raycast, but https://t.co/Wv6ckqdoXb has served me very well in various distros. Maybe aim our agents at features and fixes there instead of further fragmentation? Big fan of @typecraft_dev though!</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2112285964273885579&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F135%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2112276626084106577">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/134">#134</a><a href="https://x.com/DesignGears/status/2112276626084106577">@DesignGears</a><time>2026-10-19</time></div>
+    <h2>Add theming support for additional components</h2>
+    <blockquote>@firm1underscore @typecraft_dev @omarchy ditto, just add the theming support for omarchy and it&#39;s much further along than this.</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2112276626084106577&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F134%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2112274744276074645">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/133">#133</a><a href="https://x.com/cmaciasjimenez/status/2112274744276074645">@cmaciasjimenez</a><time>2026-10-19</time></div>
+    <h2>Feature: Include Raycast-style launcher (or best alternative)</h2>
+    <blockquote>@typecraft_dev @omarchy Oh wow. I hadn’t thought about this. I use raycast all the time on my mac and a replacement would be absolutely required. Good job. You should add this or whatever project does it better to Omarchy @dhh</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2112274744276074645&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F133%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2112238935795753403">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/132">#132</a><a href="https://x.com/eliostruyf/status/2112238935795753403">@eliostruyf</a><time>2026-10-19</time></div>
+    <h2>Add open-source Raycast-like launcher using Tinycast as base</h2>
+    <blockquote>@typecraft_dev @omarchy I switched to Tinycast they support all the Raycast features. It’s open-source, so might be an easier starting point for the port to Linux: https://t.co/m0ku4pX9vV</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2112238935795753403&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F132%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2112076526988693782">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/131">#131</a><a href="https://x.com/aniuks27/status/2112076526988693782">@aniuks27</a><time>2026-10-19</time></div>
+    <h2>Add support for older Apple A-series SoCs (iPad Air 1)</h2>
+    <blockquote>@JoshuaSWarren @omarchy @OmarchyMac What about A series processors? Would love to see it on the iPad Air 1 one day. It&#39;s an old unusable tablet sitting in the drawer...</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2112076526988693782&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F131%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2112060616433442883">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/130">#130</a><a href="https://x.com/pdaether/status/2112060616433442883">@pdaether</a><time>2026-10-19</time></div>
+    <h2>Add support for dual-screen laptops (Asus Zenbook Duo)</h2>
+    <blockquote>@dhh @omarchy Omarchy on a device like this would be great. 
+I had already been hoping for Linux support when the Asus Zenbook Duo came out.</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2112060616433442883&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F130%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2111980379393712433">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/129">#129</a><a href="https://x.com/W4HO_/status/2111980379393712433">@W4HO_</a><time>2026-10-19</time></div>
+    <h2>Add iMessage support for Android phones (Pixel 7 Pro)</h2>
+    <blockquote>iMessage
+..on Omarchy
+....on a Google Pixel 7 Pro
+
+We can fix everything
+
+@omarchy https://t.co/YcHfL5sSdn</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2111980379393712433&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F129%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2111978463477502313">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/128">#128</a><a href="https://x.com/W4HO_/status/2111978463477502313">@W4HO_</a><time>2026-10-19</time></div>
+    <h2>Add iMessage support for Pixel 7 Pro</h2>
+    <blockquote>iMessage
+..on Omarchy
+....on a Google Pixel 7 Pro
+
+We can fix everything
+
+@omarchy https://t.co/j5it1wzrJd</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2111978463477502313&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F128%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2111936337649569846">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind bug">bug</span><a href="https://github.com/stevederico/omarchy/issues/127">#127</a><a href="https://x.com/alev_valles/status/2111936337649569846">@alev_valles</a><time>2026-10-18</time></div>
+    <h2>pacman fails to download core, extra, multilib and Omarchy.db</h2>
+    <blockquote>@omarchy Hi, getting &quot;**.db failed to download&quot; (core, extra, multilib and Omarchy.db errors) 😞</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2111936337649569846&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F127%0A%0ATo+help+fix+it%2C+add+your+Omarchy+version%2C+the+app+involved%2C+and+the+output+of+omarchy-debug+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2111897317049586012">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/126">#126</a><a href="https://x.com/stargazerr/status/2111897317049586012">@stargazerr</a><time>2026-10-18</time></div>
+    <h2>Add support for M5 Macs and document dual-boot limitations</h2>
+    <blockquote>@JoshuaSWarren @omarchy @OmarchyMac Can&#39;t wait for M5 support. Will there be dual boot option? What are the limitations (what does not work)?</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2111897317049586012&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F126%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2111885377225277861">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/125">#125</a><a href="https://x.com/mumry/status/2111885377225277861">@mumry</a><time>2026-10-18</time></div>
+    <h2>Support 27&quot; Intel iMac with Radeon Pro 5500 XT (5K panel)</h2>
+    <blockquote>@JoshuaSWarren @omarchy @OmarchyMac Great, thanks. What about latest 27” iMac with Intel processor and Radeon Pro 5500 XT. That 5K display is still great and I would love to try Omarchy on it…</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2111885377225277861&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F125%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2111878057372049599">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/124">#124</a><a href="https://x.com/gregl83/status/2111878057372049599">@gregl83</a><time>2026-10-18</time></div>
+    <h2>Support setting screensavers via plugins</h2>
+    <blockquote>@IM0001 @omarchy @Tesla @SpaceX Animated theme text sounds awesome!
+
+Ive been using the plugin for like a month now to pace my work day and honestly, I&#39;m not going back. Works well for me. I wish screensavers could be set by plugins.
+
+Link below:
+
+https://t.co/BY5YfJbwQF https://t.co/UEcLnXaxLe</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2111878057372049599&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F124%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2111860233232658519">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/123">#123</a><a href="https://x.com/derekvfx/status/2111860233232658519">@derekvfx</a><time>2026-10-18</time></div>
+    <h2>Add support for M5 Apple Silicon</h2>
+    <blockquote>@JoshuaSWarren @omarchy @OmarchyMac Looking forward to M5 support!</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2111860233232658519&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F123%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2111840580183396825">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/122">#122</a><a href="https://x.com/rumatoest/status/2111840580183396825">@rumatoest</a><time>2026-10-18</time></div>
+    <h2>Support touchscreen-only (no physical keyboard) devices</h2>
+    <blockquote>@dhh @omarchy But how omarchys hyprland will support touch screen with no keyboard?</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2111840580183396825&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F122%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2111820845077139886">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/121">#121</a><a href="https://x.com/mark_k/status/2111820845077139886">@mark_k</a><time>2026-10-18</time></div>
+    <h2>Increase lockscreen wake timeout for slow monitors from 5s to 30s</h2>
+    <blockquote>It would be great to see this PR merged into @omarchy.
+
+Some monitors take longer than 5 seconds to wake up, so the lock screen can go blank again before you’ve had a chance to enter your password. This gives them 30 seconds after wake.
+
+@dhh
+
+https://t.co/88A16cUcKR</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2111820845077139886&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F121%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2111768676483399748">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind bug">bug</span><a href="https://github.com/stevederico/omarchy/issues/120">#120</a><a href="https://x.com/blukami/status/2111768676483399748">@blukami</a><time>2026-10-18</time></div>
+    <h2>Lid close does not trigger sleep/hibernate on ASUS Vivobook</h2>
+    <blockquote>@LinuxGamer_UK @omarchy Thanks for a clearer summary of the update.
+I was wondering if it would fix any of my laptop issues, doesn&#39;t seem so. 
+Guess that is on my list of things. My problem is that when I close the lid on my vivobook it doesn&#39;t hibernate or sleep. It just keeps running.</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2111768676483399748&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F120%0A%0ATo+help+fix+it%2C+add+your+Omarchy+version%2C+the+app+involved%2C+and+the+output+of+omarchy-debug+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2111759483772838244">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind bug">bug</span><a href="https://github.com/stevederico/omarchy/issues/119">#119</a><a href="https://x.com/Wortloud/status/2111759483772838244">@Wortloud</a><time>2026-10-18</time></div>
+    <h2>0.5 ISO build fails on yaru-icon-theme</h2>
+    <blockquote>@omarchy .5 is failing. likely with a broken build of yaru-icon-theme</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2111759483772838244&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F119%0A%0ATo+help+fix+it%2C+add+your+Omarchy+version%2C+the+app+involved%2C+and+the+output+of+omarchy-debug+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2111727669641384284">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind bug">bug</span><a href="https://github.com/stevederico/omarchy/issues/117">#117</a><a href="https://x.com/YounesAka/status/2111727669641384284">@YounesAka</a><time>2026-10-18</time></div>
+    <h2>Ghostty installed via pacman fails to launch from menu</h2>
+    <blockquote>@omarchy a bug when launching ghostty from the menu  @OmarchyLinux @OmarchyUpdates https://t.co/NynVTZYX1r</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2111727669641384284&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F117%0A%0ATo+help+fix+it%2C+add+your+Omarchy+version%2C+the+app+involved%2C+and+the+output+of+omarchy-debug+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2111720471637147841">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind bug">bug</span><a href="https://github.com/stevederico/omarchy/issues/116">#116</a><a href="https://x.com/iveyzen/status/2111720471637147841">@iveyzen</a><time>2026-10-18</time></div>
+    <h2>External display loses signal after idle or USB-C unplug/replug on HP Elite x360</h2>
+    <blockquote>@omarchy Hi team, my HP Elite x360 830 G10 running Omarchy loses its external display after idle or USB-C unplug/replug. The monitor shows “No signal.” Ctrl+Alt+F3 → Ctrl+Alt+F1 restores it, but it recurs. Aquamarine 0.15.1 didn’t fix it. any way to fix it?</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2111720471637147841&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F116%0A%0ATo+help+fix+it%2C+add+your+Omarchy+version%2C+the+app+involved%2C+and+the+output+of+omarchy-debug+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2111682689099284810">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/115">#115</a><a href="https://x.com/ocbieuvang/status/2111682689099284810">@ocbieuvang</a><time>2026-10-18</time></div>
+    <h2>Add Lenovo Yoga dual-screen (foldable) support</h2>
+    <blockquote>@dhh @omarchy Please support lenovo yoga dual screen too 😍</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2111682689099284810&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F115%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2111671054510813446">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/114">#114</a><a href="https://x.com/jreuben1/status/2111671054510813446">@jreuben1</a><time>2026-10-18</time></div>
+    <h2>Official NVIDIA DGX Spark support</h2>
+    <blockquote>@dhh @omarchy Go for the crown jewels - NVidia official support of Omarchy on DGX Spark</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2111671054510813446&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F114%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2111670515614265509">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/113">#113</a><a href="https://x.com/0xmikazzz/status/2111670515614265509">@0xmikazzz</a><time>2026-10-18</time></div>
+    <h2>Add OpenCode usage collector to Agents panel in omarchy.agents</h2>
+    <blockquote>@omarchy hi. just want to ask: i can&#39;t find the agent plugin on omarchy bar. i&#39;m using opencode, is that the reason? agent plugin doesnt support opencode?</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2111670515614265509&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F113%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2111647562176319877">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/112">#112</a><a href="https://x.com/DmitryjnM/status/2111647562176319877">@DmitryjnM</a><time>2026-10-18</time></div>
+    <h2>Feature: confirm/document USB-C to DisplayPort (Alt Mode) support</h2>
+    <blockquote>@JoshuaSWarren @OmarchyMac @omarchy Wow wow hold on, does it support usb c to dp? That’s would be the final nail in the coffin 😮</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2111647562176319877&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F112%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2111629286817857839">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/111">#111</a><a href="https://x.com/dancenav/status/2111629286817857839">@dancenav</a><time>2026-10-18</time></div>
+    <h2>Add support for Apple M4 hardware</h2>
+    <blockquote>@JoshuaSWarren @omarchy @OmarchyMac Eagerly awaiting M4 support.</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2111629286817857839&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F111%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2111617537175953713">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/110">#110</a><a href="https://x.com/RyanJ_KOL/status/2111617537175953713">@RyanJ_KOL</a><time>2026-10-18</time></div>
+    <h2>Make send-later / outbox behavior explicit with visible queue + retry status</h2>
+    <blockquote>@karem_shohud @omarchy @dhh For a desktop client, the send-later behavior is worth making very explicit: what happens if the app is closed, the laptop sleeps, or the connection drops? A visible queue with clear retry status would make those features much easier to trust.</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2111617537175953713&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F110%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2111580335750226406">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/109">#109</a><a href="https://x.com/ericvhileman/status/2111580335750226406">@ericvhileman</a><time>2026-10-17</time></div>
+    <h2>Add support for M6 Apple Silicon</h2>
+    <blockquote>@JoshuaSWarren @omarchy @OmarchyMac Really looking forward to the m6 support :)</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2111580335750226406&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F109%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2111495598801051888">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/108">#108</a><a href="https://x.com/ncfrontiersman/status/2111495598801051888">@ncfrontiersman</a><time>2026-10-17</time></div>
+    <h2>Make wayshare use the Omarchy account password</h2>
+    <blockquote>Yes it should, not sure about the hardware/disk password but it currently lets you set a password on omarchy side when you install wayshare. 
+
+A good feature could be to just use the Omarchy account password. I can look at that. 
+
+@bot file an issue on this report as feature request for the above 👆</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2111495598801051888&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F108%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2111411760548720776">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/107">#107</a><a href="https://x.com/teomurgi/status/2111411760548720776">@teomurgi</a><time>2026-10-17</time></div>
+    <h2>Add official support and documentation for mac-gliff remote desktop client</h2>
+    <blockquote>NEW version of mac-gliff (v0.3.0) is out — your @omarchy  desktop on the Mac, over nothing but ssh.
+
+What&#39;s new:
+
+🖥️ The screen fits your window. Connect and choose: mirror the remote display 1:1, or get a private headless screen that resizes live
+as you resize the Mac window. Remembered per machine — and switchable mid-session from the tab menu; a running session reconnects
+under the new mapping on the spot.
+
+🔐 Fully notarized. The DMG is Developer ID signed, notarized and stapled — download, drag into /Applications, open. Gatekeeper never
+interrupts.
+
+And why it&#39;s nice every day:
+
+📋 A real clipboard, both directions: text, images, whole files — streamed in chunks, with progress and a cancel button.
+
+🔤 Text you can actually read: full 4:4:4 colour (AVC444 — two H.264 streams split and recombined losslessly), decoded on
+VideoToolbox, displayed zero-copy through Metal. Syntax highlighting, diffs and terminals arrive crisp, not smeared.
+
+Get it:
+→ Mac: signed DMG at https://t.co/jR1kuL8n91
+→ Omarchy box: omarchy pkg add gliff
+
+Ported and improved from gliff clint by @dhh</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2111411760548720776&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F107%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2111408933667811825">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind bug">bug</span><a href="https://github.com/stevederico/omarchy/issues/106">#106</a><a href="https://x.com/pstuifzand/status/2111408933667811825">@pstuifzand</a><time>2026-10-17</time></div>
+    <h2>External monitor blinks after DPMS sleep/wake cycle</h2>
+    <blockquote>@omarchy Please fix the bug where my external monitor starts blinking after it goes to sleep and wakes up again. It seems some fixes already landed in Hyprland and Aquamarine, but now I&#39;m waiting for these to get into a stable release.</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2111408933667811825&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F106%0A%0ATo+help+fix+it%2C+add+your+Omarchy+version%2C+the+app+involved%2C+and+the+output+of+omarchy-debug+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2111218801156952224">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/105">#105</a><a href="https://x.com/ncfrontiersman/status/2111218801156952224">@ncfrontiersman</a><time>2026-10-16</time></div>
+    <h2>Add RDP support to wayshare for native Windows client</h2>
+    <blockquote>@Masked667 @hyprwm @omarchy I don’t know if anything exists. But Remote Desktop protocol RDP would be the thing to look for. I can see about how hard it’d be to add support for RDP to wayshare. Then you can use the native RDP app in windows to connect and get clipboard and all the other goodies.</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2111218801156952224&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F105%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2111165910048240079">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/104">#104</a><a href="https://x.com/jotapesse/status/2111165910048240079">@jotapesse</a><time>2026-10-16</time></div>
+    <h2>Add 32:9 super-ultrawide background support</h2>
+    <blockquote>@mark_k @omarchy @tcballard Maybe on your 21:9 ultra wide. But not on my 32:9 super ultra wide. We really wallpapers/backgrounds to look good/support 32:9 super ultra wide aspect ratio monitors, please! 🙏</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2111165910048240079&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F104%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2111149537264054561">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/103">#103</a><a href="https://x.com/todpunk/status/2111149537264054561">@todpunk</a><time>2026-10-16</time></div>
+    <h2>Server variant: declarative self-hosting experience mirroring desktop Omarchy</h2>
+    <blockquote>I wonder if there&#39;s an appetite/desire for a more @omarchy style server experience. Easier to get the rough edges out of the way and just hook up a server to &quot;here&#39;s a set of what I want to run, domain, ports forwarded, add this server to my ecosystem.&quot; Make hosting fun.</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2111149537264054561&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F103%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2111128666574831921">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/102">#102</a><a href="https://x.com/typecraft_dev/status/2111128666574831921">@typecraft_dev</a><time>2026-10-16</time></div>
+    <h2>Feature: Stream Deck, teleprompter and streaming setup support</h2>
+    <blockquote>I have switched back to my mac studio as a streaming/recording machine after tying out omarchy for a while. some notes:
+
+omarchy handled the basics just fine, and I was surprised with how easily I got things set up. But stream deck, prompter, and a couple scene level things didn&#39;t work well.
+
+I could have clanked together some software to handle this stuff for me. But I would rather have something I trust will work, and has actual vendor support (elgato on linux is a joke).
+
+just my 2 cents. love linux and omarchy. But OSS stuff isn&#39;t quite ready for certain things. Mainly when vendors don&#39;t support it.</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2111128666574831921&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F102%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2110854847490900187">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind bug">bug</span><a href="https://github.com/stevederico/omarchy/issues/99">#99</a><a href="https://x.com/tdh/status/2110854847490900187">@tdh</a><time>2026-10-15</time></div>
+    <h2>Studio Display via USB-C undetected at live USB boot on Minisforum Pro 2</h2>
+    <blockquote>@omarchy bug report: Can’t find Studio Display on USB-C on Minisforum Pro 2 boot from USB. Login after install on other monitor works, then screen’s black again. Reboot fixes it. Probably driver missing.</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2110854847490900187&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F99%0A%0ATo+help+fix+it%2C+add+your+Omarchy+version%2C+the+app+involved%2C+and+the+output+of+omarchy-debug+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2110809362688249953">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/98">#98</a><a href="https://x.com/serumtoxin/status/2110809362688249953">@serumtoxin</a><time>2026-10-15</time></div>
+    <h2>plugins.omarchy.org catalog sorting ignores selected filters</h2>
+    <blockquote>I was against omarchy but it&#39;s not bad if you actually approach is a decentralized massive dots experiment. @omarchy please fix the plugin catalog sorting on the site :) it&#39;s not sorting at all according to the filters.</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2110809362688249953&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F98%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2110788897408258211">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/97">#97</a><a href="https://x.com/_7blo_/status/2110788897408258211">@_7blo_</a><time>2026-10-15</time></div>
+    <h2>Support .dng preset files</h2>
+    <blockquote>@p_ch @omarchy I have some presets in .dng. Is it possible to support them?</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2110788897408258211&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F97%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2110778219490406822">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/96">#96</a><a href="https://x.com/thepix_elated/status/2110778219490406822">@thepix_elated</a><time>2026-10-15</time></div>
+    <h2>Add easy BattlEye support for Omarchy users</h2>
+    <blockquote>@dhh @EpicGames @omarchy @TimSweeneyEpic Hey @TheBattlEye 👀 enable easy Omarchy support for people that use your platform</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2110778219490406822&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F96%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2110768208017781204">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/95">#95</a><a href="https://x.com/santicrdev/status/2110768208017781204">@santicrdev</a><time>2026-10-15</time></div>
+    <h2>Add Apex Legends to games install group</h2>
+    <blockquote>@dhh @EpicGames @omarchy @TimSweeneyEpic It would be nice to have Apex Legends please! 🙏</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2110768208017781204&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F95%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2110759602170061281">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/94">#94</a><a href="https://x.com/antoinekhater/status/2110759602170061281">@antoinekhater</a><time>2026-10-15</time></div>
+    <h2>Add Canon EOS R6 Mark III support</h2>
+    <blockquote>@p_ch @omarchy When Canon r6 iii support</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2110759602170061281&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F94%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2110714909004828869">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/93">#93</a><a href="https://x.com/ToniRMCardoso/status/2110714909004828869">@ToniRMCardoso</a><time>2026-10-15</time></div>
+    <h2>Add Japanese input method preset and setup guidance</h2>
+    <blockquote>@stevederico @omarchy Pork katsu delivery would seal it. Japanese input support is properly welcome though.</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2110714909004828869&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F93%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2110670938547052857">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/92">#92</a><a href="https://x.com/connordinnadge/status/2110670938547052857">@connordinnadge</a><time>2026-10-15</time></div>
+    <h2>Feature: iRacing support for gaming PC users</h2>
+    <blockquote>@dhh @omarchy @EpicGames @TimSweeneyEpic Linux is getting close to replacing Windows on my gaming pc! I just need iRacing support 🤣 I feel like that one’s a while off though.</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2110670938547052857&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F92%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2110660429487940020">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/91">#91</a><a href="https://x.com/peteshand/status/2110660429487940020">@peteshand</a><time>2026-10-15</time></div>
+    <h2>Add or improve WebGPU support for browsers</h2>
+    <blockquote>@dhh @EpicGames @omarchy @TimSweeneyEpic What is WebGPU support like on Omarchy?</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2110660429487940020&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F91%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2110614932270276737">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/89">#89</a><a href="https://x.com/parkerbrowndev/status/2110614932270276737">@parkerbrowndev</a><time>2026-10-15</time></div>
+    <h2>Add global hot-clicks to print or QR-scan transient API keys</h2>
+    <blockquote>Ok, hear me out... @Omarchy feature request... 
+
+API keys are ... problematic... to manage. But they all have a copy element and transient (once you leave this page you will never see this code again)... So:
+
+1. You have your API key in the browser
+2. Everyone has a printer
+3. Super + ctrl + alt + shift + left click on a COPY element will just PRINT that sucker on your network printer... plaintext AND QR code
+4. Super + ctrl + alt + shift + RIGHT click will open the CAMERA
+5. Waits for QR code to be detected 
+6. Pastes the API key FROM the QR code onto the cursor
+
+This way - you have a hard copy AND can securely paste your API key in any AGENTS.md file of your choosing.
+
+The closer you are to danger. The farther you are from harm!</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2110614932270276737&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F89%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2110610681460580685">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/88">#88</a><a href="https://x.com/ShadowDxebec/status/2110610681460580685">@ShadowDxebec</a><time>2026-10-15</time></div>
+    <h2>Feature request: include CachyOS kernel patches</h2>
+    <blockquote>@dhh @EpicGames @omarchy @TimSweeneyEpic @dhh is it possible to add all the patches cachyos uses in their kernel?</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2110610681460580685&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F88%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2110610245143638339">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/87">#87</a><a href="https://x.com/BigFitzPlays/status/2110610245143638339">@BigFitzPlays</a><time>2026-10-15</time></div>
+    <h2>Feature: Smooth native-like Fortnite and Rocket League support</h2>
+    <blockquote>@JJDizz1L @omarchy @TimSweeneyEpic @alanwake @EpicGames I would love to see Fortnite and Rocket League run smoothly on Linux.</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2110610245143638339&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F87%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2110608036184113454">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/86">#86</a><a href="https://x.com/imadtg17/status/2110608036184113454">@imadtg17</a><time>2026-10-15</time></div>
+    <h2>Add screen freeze to Super+Ctrl+C capture menu</h2>
+    <blockquote>@ryanrhughes a problem that nagged me forever is that super ctrl c doesn&#39;t freeze the screen when it opens so you can click screenshot. So you can&#39;t screenshot a drop down that appears only on hover when focused or something without that printscreen key
+
+cc @omarchy</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2110608036184113454&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F86%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2110563742698357115">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/84">#84</a><a href="https://x.com/siamships/status/2110563742698357115">@siamships</a><time>2026-10-15</time></div>
+    <h2>Add Rockstar Games launcher support</h2>
+    <blockquote>@dhh @EpicGames @omarchy @TimSweeneyEpic Can you add rockstar games</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2110563742698357115&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F84%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2110497326708162955">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/82">#82</a><a href="https://x.com/JosephJasson74/status/2110497326708162955">@JosephJasson74</a><time>2026-10-14</time></div>
+    <h2>Add Dash-to-Panel style panel mode alongside existing dock</h2>
+    <blockquote>@LundukeJournal Now that Ai is here, I am sure we will have a GNOME replacement within the next 3 months. @Omarchy has included a &quot;dock&quot; mode. If they create a &quot;Dash to Panel&quot; type feature and integrate that into Hyprland we can kick the clowns™ at GNOME to the curb.</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2110497326708162955&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F82%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2110495926062088510">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/81">#81</a><a href="https://x.com/jwkicklighter/status/2110495926062088510">@jwkicklighter</a><time>2026-10-14</time></div>
+    <h2>Support automatic iOS builds inside Debian GitHub runners</h2>
+    <blockquote>@JoshuaSWarren @omarchy Built for Omarchy, but will it run inside a Debian GH runner? Would be fantastic to add automatic iOS builds to a project I’m working on.</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2110495926062088510&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F81%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2110008510222315733">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/54">#54</a><a href="https://x.com/FrazerKirkman/status/2110008510222315733">@FrazerKirkman</a><time>2026-10-13</time></div>
+    <h2>Add support for pinning windows in VR view on Quest</h2>
+    <blockquote>@omarchy someone please run on a Quest headset?
+To pin a window in my view as opposed to in the world would be so useful.  And if anyone could vibe out features, I&#39;m sure VR would get so much more usable so quickly.
+
+oh, and switching in to quest ecosystem would be great too</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2110008510222315733&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F54%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2109986292478193851">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/52">#52</a><a href="https://x.com/sramzc/status/2109986292478193851">@sramzc</a><time>2026-10-13</time></div>
+    <h2>Add support for 2011-2012 era laptops</h2>
+    <blockquote>@omarchy Skip that give us support for old laptops from 2011-2012</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2109986292478193851&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F52%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2109976768832557447">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/44">#44</a><a href="https://x.com/bmaltais/status/2109976768832557447">@bmaltais</a><time>2026-10-13</time></div>
+    <h2>Remember floating window geometry when toggling back from tile mode</h2>
+    <blockquote>@omarchy When switching from window mode to tile mode, it does not appear to remember the window size and location when returning to windows mode. I would be nice if it did... Or maybe I am doing it wrong?</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2109976768832557447&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F44%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2109976120816980057">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/43">#43</a><a href="https://x.com/alvaroroco/status/2109976120816980057">@alvaroroco</a><time>2026-10-13</time></div>
+    <h2>Add digital certificate support to Signed PDF signer</h2>
+    <blockquote>@rsferreira_br @omarchy Oh that’s a shame, I’ll give a try to JSignPDF, thank you so much! I hope they’ll add support for digital certificates to Signed at some point hehe</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2109976120816980057&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F43%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2109922709253845494">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/36">#36</a><a href="https://x.com/gladimdim/status/2109922709253845494">@gladimdim</a><time>2026-10-13</time></div>
+    <h2>Role-based presets for install (Slave/Neophite/.../Crusader)</h2>
+    <blockquote>@LinuxGamer_UK @omarchy @dhh We have to issue titles: Slave, Neophite, Worker, Laborer, Tovarish, Friend, Bro, Tech Bro, Squire, Knight, Omarchy Knight, Crusader.
+
+When you install the Omarchy you pick your role. It installs the predefined list of apps and WM for the seniority level of the role!</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2109922709253845494&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F36%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2109818849306570987">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/34">#34</a><a href="https://x.com/MordeStack/status/2109818849306570987">@MordeStack</a><time>2026-10-13</time></div>
+    <h2>Session-only install: add Omarchy as a selectable login session on existing Arch</h2>
+    <blockquote>I would love a method to install @omarchy as an Arch linux session. I already have Arch and a desktop I like. But I would like to occasionally login to Omarchy on the same computer</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2109818849306570987&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F34%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2109203743317328117">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/21">#21</a><a href="https://x.com/danielvasilios/status/2109203743317328117">@danielvasilios</a><time>2026-10-11</time></div>
+    <h2>Add support for Hyperkey (Caps Lock as hyper modifier)</h2>
+    <blockquote>@omarchy Hyperkey support?</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2109203743317328117&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F21%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2109157196886143031">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/19">#19</a><a href="https://x.com/UlrichSlothuus/status/2109157196886143031">@UlrichSlothuus</a><time>2026-10-11</time></div>
+    <h2>Feature: native support for Apple M5</h2>
+    <blockquote>Native Omarchy support for M5 please @omarchy @grok</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2109157196886143031&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F19%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2109155010298990646">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/18">#18</a><a href="https://x.com/AryanHv/status/2109155010298990646">@AryanHv</a><time>2026-10-11</time></div>
+    <h2>Add Persian/Farsi keyboard layout support</h2>
+    <blockquote>@omarchy Please consider to adding Persian/Farsi language layout as well for over 150 million peoples speaking in Persian all over the world. https://t.co/HbeWEvhh2m</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2109155010298990646&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F18%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2109092705804370276">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/13">#13</a><a href="https://x.com/Bangeek/status/2109092705804370276">@Bangeek</a><time>2026-10-11</time></div>
+    <h2>Add native support for French Apple keyboard layout</h2>
+    <blockquote>@omarchy Thanks, we will also need to have FR apple keyboard. I have to fix it with agent everytime I set Omarchy on a Macbook. from installing you only may select french ...</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2109092705804370276&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F13%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2109087229134217415">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/12">#12</a><a href="https://x.com/rawfruitsugar/status/2109087229134217415">@rawfruitsugar</a><time>2026-10-11</time></div>
+    <h2>Make Cangjie (Traditional Chinese) input method easy to add</h2>
+    <blockquote>@omarchy Please make adding Cangjie (Traditional Chinese) input method easy.</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2109087229134217415&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F12%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2109077795527897139">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/11">#11</a><a href="https://x.com/mariusfanu/status/2109077795527897139">@mariusfanu</a><time>2026-10-11</time></div>
+    <h2>Add support for iCloud Passwords</h2>
+    <blockquote>Would be nice if iCloud Password would work in @omarchy 
+
+@Apple can you do something about it? https://t.co/4exxJxkF5s</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2109077795527897139&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F11%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2109073888848355461">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/10">#10</a><a href="https://x.com/Jmohouse/status/2109073888848355461">@Jmohouse</a><time>2026-10-11</time></div>
+    <h2>Idea: omaphone, Omarchy on a keyboard phone (Brax / Minimal Phone)</h2>
+    <blockquote>Would be cool to see braxsocial and minimal fit somehow. The omaphone, should happen! I’ve been addicted to a touchscreen and it’s hard to see where a phone is a necessary item in the future. But I like the ability of the old blackberry board to type without full concentration on the go.</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2109073888848355461&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F10%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2108943575388160439">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind feature">feature</span><a href="https://github.com/stevederico/omarchy/issues/7">#7</a><a href="https://x.com/nbrempel/status/2108943575388160439">@nbrempel</a><time>2026-10-10</time></div>
+    <h2>Add support for non-Android smartphone hardware</h2>
+    <blockquote>@stevederico @omarchy @omarchy add support for smartphone hardware
+
+(Not based on android)</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2108943575388160439&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F7%0A%0ATo+help%2C+add+how+you%27d+use+it+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+<article data-id="2108943947766944044">
+  <label class="done"><input type="checkbox"></label>
+  <div class="main">
+    <div class="meta"><span class="kind bug">bug</span><a href="https://github.com/stevederico/omarchy/issues/6">#6</a><a href="https://x.com/hyperquantlab/status/2108943947766944044">@hyperquantlab</a><time>2026-10-10</time></div>
+    <h2>OpenAI desktop app crashes + mic failures with xdg-desktop-portal-gtk parent win</h2>
+    <blockquote>@Omarchy @Grok Recurring crashes and intermittent microphone failures in the official OpenAI desktop app on Omarchy Linux, Oct 7–10. The old Omarchy package was removed Oct 2. Logs show xdg-desktop-portal-gtk warnings: “Unhandled parent window type” and “Failed to associate portal window with parent window.”</blockquote>
+  </div>
+  <a class="reply" href="https://x.com/intent/post?in_reply_to=2108943947766944044&amp;text=Tracked%3A+https%3A%2F%2Fgithub.com%2Fstevederico%2Fomarchy%2Fissues%2F6%0A%0ATo+help+fix+it%2C+add+your+Omarchy+version%2C+the+app+involved%2C+and+the+output+of+omarchy-debug+to+the+issue." target="_blank" rel="noopener">Reply</a>
+</article>
+</main>
+<script>
+const KEY = 'reply-queue:stevederico/omarchy'
+let done = {}
+try { done = JSON.parse(localStorage.getItem(KEY)) || {} } catch {}
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(done)) } catch {} }
+const cards = [...document.querySelectorAll('article')]
+const count = () => { document.getElementById('count').textContent = cards.filter(c => !done[c.dataset.id]).length + ' to reply' }
+for (const c of cards) {
+  const box = c.querySelector('.done input')
+  const set = v => { box.checked = v; c.classList.toggle('is-done', v); if (v) done[c.dataset.id] = 1; else delete done[c.dataset.id]; save(); count() }
+  set(!!done[c.dataset.id])
+  box.addEventListener('change', () => set(box.checked))
+  c.querySelector('.reply').addEventListener('click', () => set(true))
+}
+const hide = document.getElementById('hide')
+try { hide.checked = localStorage.getItem(KEY + ':hide') === '1' } catch {}
+const applyHide = () => { document.body.classList.toggle('hide-done', hide.checked); try { localStorage.setItem(KEY + ':hide', hide.checked ? '1' : '0') } catch {} }
+hide.addEventListener('change', applyHide); applyHide(); count()
+</script>
+</body>
+</html>

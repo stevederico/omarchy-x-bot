@@ -1,3 +1,12 @@
+0.33.0
+
+  Merge v1 pages
+
+0.32.0
+
+  Add funnel page
+  Add queue snapshot
+
 0.31.0
 
   Add v2 spec
